@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "When Your Business Coaches Hate Your Plan: A Midlife Crisis & Path Forward"
+title: "Big Plans Fail Fast: Looking for a New Direction"
 date: 2025-02-28 11:00:00 -0000
 categories: [ micro-saas, entrepreneurship, building-in-public, validation, failure ]
 ---

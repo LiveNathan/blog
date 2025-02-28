@@ -18,6 +18,22 @@ month-long pity party (possibly a midlife crisis).
 - [Slowly Finding My Way Back](#slowly-finding-my-way-back)
 - [Seeking New Directions](#seeking-new-directions)
 
+## A Quick Recap of My Original Plan
+
+For those who missed my previous post, my ambitious 5-month plan involved rapidly launching 5 directory websites by July
+2025. The strategy was to use these directories as market validation tools rather than end products themselves. Instead
+of relying on customer interviews, I wanted to observe real user behavior and engagement to identify genuine market
+needs.
+
+Each directory would serve as a testing ground to uncover pain points and opportunities within specific niches. Once I
+identified areas with demonstrated demand, I planned to develop more comprehensive solutions (likely SaaS products) to
+address those needs. The key insight was that directories could be launched quickly with minimal investment while still
+delivering real value to users—making them perfect for validation.
+
+I was excited about this approach because it would allow me to abandon my own "clever ideas" that nobody cared about,
+and instead focus on discovering actual market demand through observable user behavior. Unfortunately, as you'll read,
+this plan ran into some significant obstacles when I sought expert feedback.
+
 ## When the Experts Say No
 
 Here's what went down: I met with two highly successful business coaches – and I mean genuinely successful people who've
@@ -65,6 +81,32 @@ I cautiously dipped my toes back into work:
    in winter instead of summer. Trading the ten-minute Minnesota ritual of layering protective gear just to collect mail
    for the simplicity of "throw on a coat and go" was liberating.
 
+Here's an expanded section about your keyword research app that provides more context while remaining concise:
+
+## Updates to My Keyword Research App
+
+For those who've been following along, I made significant improvements to
+my [keyword research app](https://www.b2bdemandgenerationstrategy.com/) (yes, it's formally called "B2B Demand
+Generation Strategy," but that's quite a mouthful, so I typically just call it the keyword research app).
+
+The most substantial update is that keywords are now sourced from three different API endpoints instead of just one.
+This means when you conduct research, you'll potentially get thousands of keyword results to filter through rather than
+just a few hundred. I've also squashed several bugs that were causing frustration.
+
+The app was originally designed to help directory builders save time by analyzing content sources (like Reddit) to
+uncover hidden demand, validating directory-worthy keywords based on search volume and competition, and keeping research
+organized. It's been especially helpful for people like Mark, a software engineer who's building multiple directories as
+side projects while working full-time.
+
+I've been contemplating changes to the pricing model too. Currently, it
+costs $20 per research session, but I recently read an article suggesting that most users dislike credit-based pricing for AI-powered applications. The recommendation was to implement progressive pricing instead—essentially letting users consume the service first and then pay for it. For example, let them use $
+1 worth of credit, then pay for it, then use $10 and pay for that, and so on. This seems like a more user-friendly
+approach that I might implement in the future.
+
+If you're working on directory sites or any content that requires keyword validation, it might be worth checking out.
+The goal is to help you avoid spending months building something nobody is searching for—a lesson I've learned the hard
+way.
+
 ## Seeking New Directions
 
 To get motivated, I started reading Noah Kagan's book (which has a silly title). I tend to follow business advice
@@ -95,12 +137,30 @@ I spoke with several people, created mockups, and started getting excited. The c
 a $100/year solution specifically designed for AV technicians, streamlined and easy to use, positioned between free Google Sheets (manual, time-consuming) and $
 400/year QuickBooks (overpowered).
 
-Then
 I [posted on Reddit](https://www.reddit.com/r/livesound/comments/1iux53h/how_do_you_handle_invoicing_for_your_freelance/)
-asking AV folks how they currently handle invoicing. I got lots of comments (exciting!), and for each person who shared
-their solution, I asked: "Is there anything you wish it did differently?"
+asking AV folks how they currently handle invoicing. The post received significant engagement (15K views and 91 comments
+at the time of writing), which initially seemed promising – clearly this was a topic people cared about.
 
-To my shock, almost everyone said "no."
+For each person who shared their solution, I asked some variation of: "Is there anything you wish it did differently?"
+To my surprise, almost everyone said "no."
+
+The thread revealed a diverse ecosystem of solutions that people are genuinely happy with:
+
+- Several users enthusiastically endorsed **Wave** as "fantastic," "very intuitive," and "significantly cheaper than
+  QuickBooks and better in every way"
+- Others praised **Square Invoices** for being free, easy to use, and accessible via mobile app
+- Some preferred **Excel/Word templates** they've customized over time
+- There were mentions of **Zoho Books** (free for a single user with full package including expense tracking)
+- A few used **Quickbooks** and felt it was worth the cost for their specific needs
+- Several other options appeared: **Harvest**, **Invoice Ninja**, **FreshBooks**, **Express Invoice**, and even
+  specialty software for specific countries
+
+What was striking wasn't just the variety of solutions, but how satisfied users were with their current setup. When I
+tried to uncover pain points by asking what they'd change, responses included:
+
+- "No. It's pretty powerful and can do way more than I need."
+- "Not really. It's not top of the line software by any stretch, but it's absolutely good enough for what I need."
+- "Nope. Are you looking to make a competitor?"
 
 This was a massive red flag. How could my initial conversations suggest there's no good solution for AV technicians,
 while this broader sample seemed perfectly content with existing options?
@@ -116,7 +176,8 @@ shooting down one business concept per week until something sticks.
 
 In the meantime, I'm working on:
 
-1. **A new SubAligner feature** that analyzes loudspeaker measurements and automatically generates alignment solutions.
+1. **A new [SubAligner](https://www.subaligner.com/) feature** that analyzes loudspeaker measurements and automatically
+   generates alignment solutions.
    This is more of a personal project – something I've wanted to do just to see if it works. It's been fun converting my
    old MATLAB code into Java.
 

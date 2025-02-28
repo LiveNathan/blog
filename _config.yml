@@ -1,0 +1,28 @@
+title: Nathan's Blog
+description: Building a profitable micro-saas through pre-sell validation and sharing lessons learned along the way.
+author: Nathan Lively
+
+# Build settings
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-feed
+
+# Site settings
+baseurl: "/blog"
+url: "https://livenathan.github.io"
+
+# Social media
+github_username: livenathan
+twitter_username: NathanDoFrango
+linkedin_username: nathanlively
+
+# Defaults for posts
+defaults:
+  -
+    scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      comments: true

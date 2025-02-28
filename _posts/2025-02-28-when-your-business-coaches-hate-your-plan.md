@@ -16,6 +16,7 @@ month-long pity party (possibly a midlife crisis).
 - [When the Experts Say No](#when-the-experts-say-no)
 - [The Almost-Midlife Crisis](#the-almost-midlife-crisis)
 - [Slowly Finding My Way Back](#slowly-finding-my-way-back)
+- [The Crew Advance Experiment](#the-crew-advance-experiment)
 - [Seeking New Directions](#seeking-new-directions)
 
 ## A Quick Recap of My Original Plan
@@ -130,6 +131,46 @@ I even sent that exact question to my mailing list and received an intriguing re
 specifically for audiovisual technicians. This resonated with me, especially since I've recently accepted that it's
 perfectly okay to create software that already exists in some form – just like it's okay to open a restaurant that
 serves hamburgers despite McDonald's existing.
+
+## The Crew Advance Experiment
+
+After my week of ACIM-fueled reflection, I decided to try a new approach. Instead of chasing directory websites, I'd
+work on something directly connected to my audio experience: a Crew Advance tool.
+
+For those not in the industry, a "crew advance" is the documentation AV companies send to technicians before an event
+with all the critical details—call times, locations, equipment lists, contacts, etc. Having worked in live sound for
+years, I'd repeatedly observed the pain points: advances sent too late for proper preparation, version control
+nightmares when details change, and critical information buried in unstructured emails.
+
+The concept seemed promising:
+
+1. Create a web application that pulls data directly from Flex (the industry-standard rental/inventory management
+   system)
+2. Generate mobile-friendly event pages with shareable, secure links
+3. Keep information updated in real-time when things change
+4. Organize details by department so techs could easily find what's relevant to them
+
+I spent about a week on validation:
+
+- Created a detailed product specification
+- Contacted Flex consultants to verify technical feasibility
+- Posted in industry forums to gauge interest
+- Spoke with potential users
+
+The response was lukewarm at best. One Flex consultant confirmed the technical possibility but mentioned it wasn't a
+frequent customer request. Industry veterans essentially said, "We've already figured this out."
+
+[Their existing solutions](https://www.reddit.com/r/livesound/comments/1iord09/how_does_your_company_handle_crew_advances/):
+
+- "We just use a Google Doc template"
+- "Our Flex pull sheets work fine for this"
+- "We have a standard email format we've used for years"
+
+I was hoping to find an excited "Yes, we need this!" Instead, I got a collective shrug. The problem existed, but
+apparently not acutely enough for companies to invest in a specialized solution. Bitchin' ain't switchin'.
+
+This validation failure led me down yet another path—one that would eventually bring me to Reddit to explore invoicing
+solutions for AV technicians.
 
 ## The Reddit Reality Check
 

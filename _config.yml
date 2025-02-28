@@ -26,3 +26,16 @@ defaults:
     values:
       layout: "post"
       comments: true
+
+# Exclude files from processing
+exclude:
+  - README.md
+  - LICENSE
+  - Gemfile
+  - Gemfile.lock
+  - .gitignore
+
+# Collections
+collections:
+  posts:
+    output: true

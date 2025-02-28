@@ -5,11 +5,6 @@ date: 2025-01-31 11:00:00 -0000
 categories: [micro-saas, directories, validation, entrepreneurship, building-in-public]
 ---
 
----
-layout: post
-title: "Building a Profitable Micro-SaaS Through Directory-First Validation"
----
-
 Hi there! 👋
 
 (shit, already off to a bad start. i don't think i'm supposed to use yellow emojis anymore.)

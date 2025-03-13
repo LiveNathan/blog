@@ -11,48 +11,33 @@ I'm back with more updates: some wins, some losses, lots of learning.
 
 - [AV Technician Hire: The Wind-Down](#av-technician-hire-the-wind-down)
 - [SubAligner: From MATLAB to Java](#subaligner-from-matlab-to-java)
-- [GainGuardian/DiSP: Exploring Car Audio](#gainguardian-exploring-car-audio)
-- [The Tax Adulting Update](#the-tax-adulting-update)
+- [GainGuardian/DiSP: Exploring Car Audio](#gainguardiandisp-exploring-car-audio)
+- [What's Next?](#whats-next)
+
+## Back to My Audio Roots
+
+After spending months exploring directory websites and various SaaS ideas (as detailed in
+my [January business plan](https://nathanlively.substack.com/p/building-a-profitable-micro-saas)
+and [February update](https://nathanlively.substack.com/p/big-plans-fail-fast)), I've come full circle back to audio
+physics—the field where my expertise and passion truly align. This shift wasn't planned, but as you'll see below, it's
+where I'm finding the most traction and excitement.
 
 ## AV Technician Hire: The Wind-Down
 
 What I should celebrate here is that I put minimal effort into testing this business idea—maybe 6 hours of keyword
 research, 16-hour building assets (website, mailing list, etc.), and another 16 hours on updates. The validation
-happened quickly, which is exactly what I was aiming for in my [January business plan]({% post_url
-2025-01-31-new-personal-blog-and-business-plan %}).
+happened quickly, which is exactly what I was aiming for in my January business plan.
 
-Here's what I told my mailing list this week:
+Here's the key message I shared with my mailing list this week:
 
-> Hi everyone,
+> After four months of running AV Technician Hire, I've made the difficult decision to wind down the project. Despite
+> attracting some initial interest (about 20 survey responses), the data shows declining page views each month and no
+> evidence that anyone secured work through the platform.
 >
-> I wanted to reach out with an update on AV Technician Hire. After careful consideration, I've made the difficult
-> decision to wind down this project.
->
-> ### Why I'm Making This Decision
->
-> When I launched this site four months ago, it was an experiment with two clear goals:
-> 1. Create something that genuinely helps people in the AV industry
-> 2. Build a viable business model that could sustain itself
->
-> After reviewing the data and feedback, I've realized that despite my best efforts, the project isn't achieving either
-> goal effectively. Page views have declined month over month, and while around 20 people filled out the survey form,
-> follow-up conversations didn't translate into meaningful connections or business opportunities.
->
-> ### What I've Learned
->
-> The AV industry remains heavily relationship-driven. Every time I shared this project online, I received numerous
-> questions about how I was validating or authenticating the technicians on the site. These conversations highlighted a
-> fundamental challenge: the industry runs almost exclusively on personal referrals, and that paradigm isn't changing
-> anytime soon.
->
-> When I reached out personally to those who expressed interest, only one person responded. When I proposed a service to
-> help match them with qualified professionals, they expressed skepticism that such matching was even possible. This
-> reinforced something I've learned in business - when people believe a problem has no solution, it's extremely
-> difficult
-> to sell them on one.
->
-> To my knowledge, no one has secured work through the platform, and no meaningful connections have been made. After
-> four months, these results suggest the current approach isn't working.
+> The key insight: The AV industry remains heavily relationship-driven. Every conversation highlighted that the industry
+> runs almost exclusively on personal referrals, and that paradigm isn't changing anytime soon. When I proposed a service
+> to help match people with qualified professionals, the skepticism was clear—many didn't believe such matching was even
+> possible.
 
 What I'm most afraid of is that people will be upset with me for asking them to get involved and support me, only for me
 to give up. But I've learned that failing fast is better than dragging out something that's not working. The site will
@@ -60,112 +45,80 @@ be taken down on March 17th, and I'm moving on to focus my energy elsewhere.
 
 ## SubAligner: From MATLAB to Java
 
-I've been continuing work on a new feature for SubAligner that allows users to upload their own measurements. It's
-essentially a tiny portion of the full application pulled out so users can use it independently, rather than just having
-it generate pre-alignment delay values stored in a database.
+Moving away from directories, I've returned to enhancing SubAligner with a new feature that allows users to upload their
+own measurements instead of relying on pre-stored values in a database.
 
-On the development side, it's been fun translating my code from MATLAB to Java. There aren't libraries for the kind of
-element-wise operations that are so easy in MATLAB, where you can just do math from one array to another without nested
-loops. It's tedious but fascinating to consider exactly what's happening in each operation. I'm immensely grateful for
-AI coding support and test-driven development here—they've been essential for checking my math and algorithms.
+The development process has been particularly interesting—translating audio physics algorithms from MATLAB to Java
+requires a different approach to mathematical operations. Where MATLAB excels at element-wise operations between arrays,
+Java requires more explicit coding. Thankfully, test-driven development and AI assistance have been invaluable in
+verifying my mathematical translations.
 
-The feature now lets you upload transfer function measurements from your audio analyzer and organize them into location
-pairs. It then batch-processes all files to find the best delay and polarity solution for:
+The new feature now lets users upload transfer function measurements from audio analyzers and:
 
-1. Each individual location pair
-2. A global compromise solution that works best across all locations
+1. Organize measurements into location pairs
+2. Process files to find optimal delay and polarity solutions for each pair
+3. Generate a global compromise solution that works best across all locations
 
 | ![first feature demo](/assets/images/2025/03/leaving-directories/2025-03-04%20at%2012.10.32.png) | ![feature demo update](/assets/images/2025/03/leaving-directories/2025-03-10%20at%2014.57.02@2x.png) |
 
-The single location alignments are working great, but the compromise solution is hit-or-miss. I thought I could apply
-the same scoring mechanism I'm using on the single locations to also find the best compromise, but sometimes the result
-is way off. I'm considering whether it might be easier to just generate an average between all measurements and find
-alignment for that average, but I find the current approach more novel and interesting since it tries to find the
-compromise between every measurement location.
+While single location alignments are working well, I'm still refining the compromise solution algorithm. The current
+approach tries to find the optimal balance between all measurement locations rather than simply averaging them—more
+novel but challenging to perfect.
 
-My first beta tester complained it would take too long to use in the field, but if you number files sequentially before
-uploading, the location pairs are generated automatically. Plus, any tool gets faster after you've used it for a while.
+This work connects to a fundamental question in live sound: what's the minimum number of steps needed to successfully
+calibrate an entire sound system? With constant time pressure at live events, efficient workflows are essential.
 
-This project ties into a larger question I've been exploring for years: what's the minimum number of steps needed to
-successfully calibrate an entire sound system? This is a crucial question in live event production, where time is always
-scarce, and there are countless fires to put out. One of the most common questions I've gotten over the last decade is "
-What would you do if you only had X minutes?" People are constantly looking for shortcuts and more efficient
-workflows—and so am I.
+## GainGuardian/DiSP: Exploring Car Audio
 
-Here's the workflow I'm proposing with this new feature:
+You may remember GainGuardian, my anti-feedback VST plugin based on Adam
+Hill's [Diffuse Signal Processing (DiSP)](https://adamjhill.com/2020/05/27/demo-diffuse-signal-processing-disp/)
+research. I'm revitalizing this project with two significant changes:
 
-1. Take at least 8 measurements of your main and subwoofer system
-2. Load them into this tool to find alignment solutions
-3. Generate averages based on that alignment
-4. Perform EQ against the combined system
+1. Expanding beyond feedback to address universal sound system issues like comb filtering, room modes, and crossover
+   alignment
+2. Partnering with Adam to ensure proper implementation and add legitimacy to the project
 
-From a business perspective, I'm not sure this will significantly impact SubAligner itself. My first beta tester already
-has a subscription, so for them, it's just a nice added benefit. The second tester said they're already happy with their
-current alignment method. What I've found is that if people have dedicated years to learning a tool and workflow,
-they're often not just uninterested in new approaches—they can feel threatened by them.
+Our immediate questions: which industry do we target first, and what specific product do we offer?
 
-## GainGuardian: Exploring Car Audio
+Car audio has emerged as our leading candidate because:
 
-You may remember an anti-feedback VST plugin that I was selling last year called GainGuardian. It was based
-on [Diffuse Signal Processing (DiSP)](https://adamjhill.com/2020/05/27/demo-diffuse-signal-processing-disp/) research by
-Adam Hill. I'm rededicating myself to this project with two big changes:
+1. It exhibits all the acoustic problems our technology addresses
+2. It has less stringent latency requirements than live sound applications
+3. There's an enthusiastic community of technical users
 
-1. Focus on applying DiSP to more general problems that affect every sound system like comb filtering, room modes, and
-   crossover alignment.
-2. Partner with Adam to make sure I'm getting the implement right and bring more support and legitamicy to the project.
-
-The two biggest questions we need to answer are: what industry do we start with, and what do we sell to them?
-
-Car audio (a.k.a. mobile audio or car hi-fi) is at the top of our list because:
-
-1. It exhibits all the symptoms our technology treats
-2. It has less intense requirements on latency than other applications
-3. There's a passionate community of enthusiasts
-
-I've started reaching out to students and colleagues who work professionally on car audio systems to validate that they'
-re aware of problems like comb filtering and room modes. I also made
-a [Reddit post](https://www.reddit.com/r/CarAV/comments/1j5s8of/whats_your_biggest_sound_quality_frustration/) to
-understand how people talk about these issues and gauge their technical understanding.
-
-The post got significant engagement:
+To validate this direction, I created
+a [Reddit post](https://www.reddit.com/r/CarAV/comments/1j5s8of/whats_your_biggest_sound_quality_frustration/) asking
+about sound quality frustrations. The response was encouraging:
 
 - 10,000 views
 - 81 comments
-- Multiple users sharing RTA measurements and discussing complex concepts
+- Many users sharing technical measurements and discussing complex acoustical concepts
 
-The responses strongly support our hypothesis that car audio presents an excellent market opportunity. Many commenters
-described issues that could potentially be addressed by signal decorrelation:
+Several commenters specifically described issues that signal decorrelation could potentially solve:
 
 > "This is an RTA graph of pink noise on the previous iteration of my car's stereo before EQ. See the dips at ~140hz,
 > 400hz, and 1900hz? Those are frequency cancellations due to the layout of my car's interior with the factory speaker
 > locations. No amount of EQ boosting will fix them." - **bigpoppa822**
 
-One user even conceptualized a solution similar to DiSP:
+My immediate next step is to create pre-processed demo tracks for enthusiasts to test in their systems, rather than
+jumping straight to hardware development. This approach allows for rapid validation before significant investment:
 
-> "The only magic I could think of in a vehicle would be to somehow reproduce extra audio during playback that would
-> cancel out unwanted reflections." - **ifixtheinternet**
+1. Create an information site with downloadable demo tracks
+2. Develop a web app for custom track processing
+3. Eventually move to hardware solutions if demand proves strong
 
-The next step is figuring out how to get some demo tracks to these enthusiasts so they can hear the results themselves.
-Rather than investing months in building hardware, I can pre-process audio tracks and send them for testing, since the
-car audio environment is primarily about playback. My rough plan is to:
-
-1. Put up a site where people can get information and download demo tracks
-2. Later implement a web app where they can upload their own tracks for processing
-3. Eventually develop hardware they can buy and implement in their systems
-
-I'm not smart enough to predict exactly which industry will embrace this technology, so my approach is to make a
-prioritized list and test as quickly as possible. Getting the technology into people's hands fast and seeing their
-reactions is crucial.
-
-If you're a car audio enthusiast or work in mobile audio and would like to test a demo, please reach out!
+If you're involved with car audio and interested in testing these demos, please reach out!
 
 ## What's Next?
 
-I'm still figuring that out. After my big directory website plans collapsed (see [my previous post]({% post_url
-2025-02-28-big-plans-fail-fast-looking-for-a-new-direction %})), I've been trying different approaches:
+With my directory website plans shelved, I'm focusing my energy on three clear paths forward:
 
-1. I'm continuing to improve SubAligner with user-driven features
-2. Exploring the potential of DiSP technology in car audio
-3. Asking for ideas and validating them quickly
+1. **SubAligner Enhancement**: Continuing development of user-requested features and refining the measurement upload
+   capabilities
+2. **DiSP Technology Applications**: Taking concrete steps to test signal decorrelation in car audio environments, with
+   plans to expand to other verticals if successful
+3. **Balanced Validation**: Maintaining my commitment to failing fast, but now with projects more aligned to my core
+   expertise
 
-I'd love to hear from you. What would you do if you were in my shoes?
+In the next month, I plan to release the first public beta of the new SubAligner feature and have at least 5 car audio
+enthusiasts testing DiSP-processed audio. I'll report back on what I learn from both initiatives.

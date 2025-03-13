@@ -75,9 +75,7 @@ pairs. It then batch-processes all files to find the best delay and polarity sol
 1. Each individual location pair
 2. A global compromise solution that works best across all locations
 
-| ![Image 1 Alt Text](path/to/image1.jpg) | ![Image 2 Alt Text](path/to/image2.jpg) |
-|-----------------------------------------|-----------------------------------------|
-| Caption for Image 1                     | Caption for Image 2                     |
+| ![first feature demo](/assets/images/2025/03/leaving-directories/2025-03-04%20at%2012.10.32.png) | ![feature demo update](/assets/images/2025/03/leaving-directories/2025-03-10%20at%2014.57.02@2x.png) |
 
 The single location alignments are working great, but the compromise solution is hit-or-miss. I thought I could apply
 the same scoring mechanism I'm using on the single locations to also find the best compromise, but sometimes the result

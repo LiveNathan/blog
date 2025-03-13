@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Building in Public: Failures, Physics, and Finding My Way"
+title: "Leaving Directories–Back to Audio Physics"
 date: 2025-03-15 09:00:00 -0000
 categories: [ micro-saas, entrepreneurship, building-in-public, validation, audio ]
 ---
@@ -47,7 +47,8 @@ Here's what I told my mailing list this week:
 >
 > When I reached out personally to those who expressed interest, only one person responded. When I proposed a service to
 > help match them with qualified professionals, they expressed skepticism that such matching was even possible. This
-> reinforced something I've learned in business - when people believe a problem has no solution, it's extremely difficult
+> reinforced something I've learned in business - when people believe a problem has no solution, it's extremely
+> difficult
 > to sell them on one.
 >
 > To my knowledge, no one has secured work through the platform, and no meaningful connections have been made. After
@@ -73,6 +74,10 @@ pairs. It then batch-processes all files to find the best delay and polarity sol
 
 1. Each individual location pair
 2. A global compromise solution that works best across all locations
+
+| ![Image 1 Alt Text](path/to/image1.jpg) | ![Image 2 Alt Text](path/to/image2.jpg) |
+|-----------------------------------------|-----------------------------------------|
+| Caption for Image 1                     | Caption for Image 2                     |
 
 The single location alignments are working great, but the compromise solution is hit-or-miss. I thought I could apply
 the same scoring mechanism I'm using on the single locations to also find the best compromise, but sometimes the result
@@ -103,10 +108,13 @@ they're often not just uninterested in new approaches—they can feel threatened
 
 ## GainGuardian: Exploring Car Audio
 
-I've taken the first cautious steps with this project, which is a collaboration with Adam Hill
-around [Diffuse Signal Processing (DiSP)](https://adamjhill.com/2020/05/27/demo-diffuse-signal-processing-disp/). I
-drafted a partnership agreement so we have a slightly formal structure under which we can operate and share code,
-assets, and ideas, but I'm trying not to overcomplicate things, so I'm not creating any legal business entity yet.
+You may remember an anti-feedback VST plugin that I was selling last year called GainGuardian. It was based
+on [Diffuse Signal Processing (DiSP)](https://adamjhill.com/2020/05/27/demo-diffuse-signal-processing-disp/) research by
+Adam Hill. I'm rededicating myself to this project with two big changes:
+
+1. Focus on applying DiSP to more general problems that affect every sound system like comb filtering, room modes, and
+   crossover alignment.
+2. Partner with Adam to make sure I'm getting the implement right and bring more support and legitamicy to the project.
 
 The two biggest questions we need to answer are: what industry do we start with, and what do we sell to them?
 

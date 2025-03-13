@@ -59,7 +59,8 @@ The new feature now lets users upload transfer function measurements from audio 
 2. Process files to find optimal delay and polarity solutions for each pair
 3. Generate a global compromise solution that works best across all locations
 
-| ![first feature demo](/assets/images/2025/03/leaving-directories/2025-03-04%20at%2012.10.32.png) | ![feature demo update](/assets/images/2025/03/leaving-directories/2025-03-10%20at%2014.57.02@2x.png) |
+![first feature demo](/assets/images/2025/03/leaving-directories/2025-03-04%20at%2012.10.32.png)
+![feature demo update](/assets/images/2025/03/leaving-directories/2025-03-10%20at%2014.57.02@2x.png)
 
 While single location alignments are working well, I'm still refining the compromise solution algorithm. The current
 approach tries to find the optimal balance between all measurement locations rather than simply averaging them—more

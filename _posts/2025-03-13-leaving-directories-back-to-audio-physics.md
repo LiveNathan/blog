@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Leaving Directories–Back to Audio Physics"
-date: 2025-03-15 09:00:00 -0000
+date: 2025-03-13 09:00:00 -0000
 categories: [ micro-saas, entrepreneurship, building-in-public, validation, audio ]
 ---
 

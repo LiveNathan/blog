@@ -61,6 +61,14 @@ I was initially nervous about making the switch. My DevOps skills were (and stil
 minimum for basic deployments. But with careful planning and the help from Claude, I managed to execute a successful
 migration with minimal downtime.
 
+One of the biggest sources of nervousness during this migration was that SubAligner was built before I embraced
+Test-Driven Development (TDD). With almost no automated tests in place, I couldn't simply run a test suite to verify
+everything was working correctly after the migration. Each manual verification step was critical. If I were migrating
+one of my newer applications today, the process would be much less stressful since I now build with comprehensive test
+coverage from the start. TDD not only improves code quality but significantly reduces the risk involved in operations
+like platform migrations, giving you confidence that your application still works as expected after major infrastructure
+changes.
+
 ## Preparing for Migration
 
 The key to this successful migration was preparation. I worked on developing a comprehensive plan, spent a day debugging

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Migrating from Railway to Coolify: Java Spring Boot with PostgreSQL and Redis"
-date: 2025-03-20 09:00:00 -0000
+date: 2025-03-20 06:00:00 -0000
 categories: [ devops, java, spring-boot, postgresql, redis, migration, subaligner ]
 ---
 

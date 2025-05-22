@@ -1,63 +1,36 @@
 # Overlap Save Method for Frequency Domain Convolution: A Practical Approach
 
-## Outline
+## 1. Introduction
 
-1. **Introduction**
-    - Personal motivation
-    - Why this post exists
-    - Target audience (developers who prefer code over mathematical abstractions)
-    - Disclaimer about expertise level
+> While programming can help in understanding mathematical concepts, it's not the other way around. –Mike X. Cohen
 
-2. **Background**
-    - Time domain vs. frequency domain convolution
-    - The convolution theorem
-    - Why real-time applications need frequency domain approaches
-    - Latency considerations
+Math is hard. And I think part of why it's so hard is the use of so many symbols. But I guess it's the same when
+learning any language. At the beginning it all looks like jibberish. Eventually, with practice, you are no longer
+sounding out each syllable, you just see patterns of works and sentences. I can do this with various amounts of ease
+with English, Portuguese, Java, and MATLAB.
 
-3. **Overlap Methods Overview**
-    - Why we need overlap methods
-    - Overlap Add method (brief overview)
-    - Overlap Save method (focus of this post)
-    - Comparative advantages
+Euler's formula is considered to be one of the most beautiful equations in mathematics. It can be written like
+this: $e^{ix} = \cos(x) + i\sin(x)$
 
-4. **Basic Overlap Save Implementation**
-    - Algorithm explanation
-    - MATLAB implementation
-    - Testing against time domain convolution
+In MATLAB you can write it like this: `result = exp(1i * x) - (cos(x) + 1i * sin(x));`
 
-5. **Advanced Challenges**
-    - Handling kernels longer than block size
-    - Kernel partitioning techniques
-    - Implementation and testing
+But it's easier to read like this:
 
-6. **Crossfades Between Kernels**
-    - Why kernel crossfades are needed
-    - Traditional approaches
-    - Frequency domain crossfade implementation
-    - Performance benefits
+```matlab
+angleInRadians = pi;
+result = exp(1i * angleInRadians) + 1;
+xCoordinate = real(result);
+yCoordinate = imag(result);
+```
 
-7. **Real-world Application in Gain Guardian**
-    - Current implementation vs. proposed approach
-    - Performance comparisons
-    - Quality considerations
+Or in Java:
 
-8. **Java Implementation**
-    - Converting MATLAB prototype to Java
-    - Testing against MATLAB reference
-    - Optimizations for Java
-
-9. **Conclusion**
-    - Summary of findings
-    - Future explorations
-    - Community feedback invitation
-
-10. **Appendix: MATLAB Gripes** (optional lighthearted section)
-    - Development environment limitations
-    - Alternative approaches
-
-## Draft Content for Sections You've Covered
-
-### 1. Introduction
+```java
+double angleInRadians = Math.PI;
+Complex result = Complex.ofPolar(1.0, angleInRadians).add(Complex.ONE);
+double xCoordinate = result.getReal();
+double yCoordinate = result.getImaginary();
+```
 
 As a developer working on audio processing, I recently found myself struggling to implement the overlap save method for
 frequency domain convolution. Despite searching through numerous resources, I couldn't find an explanation that clicked
@@ -73,13 +46,13 @@ facing similar challenges.
 I implement them in real projects. If you spot technical errors or have suggestions for improvement, please share them
 in the comments!
 
-### 2. Background
+## 2. Background
 
 When processing audio signals, convolution is a fundamental operation that allows us to apply effects like reverb,
 equalization, or simulate acoustic spaces. There are two main approaches to convolution: time domain and frequency
 domain.
 
-#### Time Domain vs. Frequency Domain Convolution
+### Time Domain vs. Frequency Domain Convolution
 
 Time domain convolution directly implements the mathematical definition of convolution. It's straightforward to
 understand and implement, produces high-quality results, and is perfectly suitable for offline processing. However, it
@@ -88,7 +61,7 @@ becomes computationally expensive for long signals or large kernels, making it i
 For my project, Gain Guardian, we initially implemented time domain convolution for offline processing. While this
 approach worked well and produced high-quality results, it was simply too slow for real-time processing.
 
-#### The Convolution Theorem
+### The Convolution Theorem
 
 The convolution theorem states that convolution in the time domain equals multiplication in the frequency domain:
 
@@ -106,7 +79,7 @@ practice, there are differences due to:
 - Circular vs. linear convolution effects
 - Implementation details
 
-#### Why Real-time Applications Need Frequency Domain Approaches
+### Why Real-time Applications Need Frequency Domain Approaches
 
 For real-time applications, frequency domain convolution offers significant performance advantages. By transforming the
 signal and kernel to the frequency domain using Fast Fourier Transform (FFT), performing multiplication, and then
@@ -116,9 +89,9 @@ The key to real-time processing is to work with blocks of the input signal rathe
 The size of these blocks directly affects latency – smaller blocks reduce latency but increase computational overhead
 due to more frequent FFT operations.
 
-### 3. Overlap Methods Overview
+## 3. Overlap Methods Overview
 
-#### Why We Need Overlap Methods
+### Why We Need Overlap Methods
 
 When processing signals in blocks using frequency domain convolution, we encounter an important issue: the FFT
 inherently performs circular convolution, while we typically want linear convolution for audio processing. This
@@ -138,9 +111,9 @@ The overlap save method attracted my attention for two key reasons:
 
 ## Technical Sections (Added Based on Your Request)
 
-### 4. Basic Overlap Save Implementation
+## 4. Basic Overlap Save Implementation
 
-#### Algorithm Explanation
+### Algorithm Explanation
 
 The overlap save method works by:
 
@@ -154,7 +127,7 @@ The overlap save method works by:
 The key insight is that by processing overlapping segments and discarding the circular convolution artifacts, we can
 achieve linear convolution results efficiently.
 
-#### MATLAB Implementation
+### MATLAB Implementation
 
 Here's a basic implementation of the overlap save method in MATLAB:
 
@@ -201,7 +174,7 @@ function y = overlapSave(x, h, blockSize)
 end
 ```
 
-#### Testing Against Time Domain Convolution
+### Testing Against Time Domain Convolution
 
 To verify that our implementation is correct, we should compare it with MATLAB's built-in time domain convolution:
 
@@ -228,13 +201,13 @@ subplot(3,1,2); plot(y_os); title('Overlap Save Method');
 subplot(3,1,3); plot(y_ref - y_os); title('Difference');
 ```
 
-### 5. Advanced Challenges: Handling Long Kernels
+## 5. Advanced Challenges: Handling Long Kernels
 
 When the kernel length exceeds the block size, the basic overlap save implementation breaks down. This is a common
 challenge in applications like room acoustics or long reverb effects, where impulse responses can be thousands of
 samples long.
 
-#### Kernel Partitioning Techniques
+### Kernel Partitioning Techniques
 
 To handle long kernels efficiently, we need to partition the impulse response into smaller segments that can be
 processed separately and then combined. There are several approaches to kernel partitioning:
@@ -289,13 +262,13 @@ function y = overlapSavePartitioned(x, h, blockSize)
 end
 ```
 
-### 6. Crossfades Between Kernels
+## 6. Crossfades Between Kernels
 
 One of the most challenging aspects of real-time convolution is handling changes in the impulse response. For
 applications like Gain Guardian that need to switch kernels frequently, smoothly transitioning between impulse responses
 is crucial to avoid audible artifacts.
 
-#### Why Kernel Crossfades Are Needed
+### Why Kernel Crossfades Are Needed
 
 When an impulse response changes suddenly, it can cause audible clicks, pops, or other artifacts in the output signal.
 This is especially problematic for applications where parameters are adjusted in real-time, such as:
@@ -304,7 +277,7 @@ This is especially problematic for applications where parameters are adjusted in
 - Dynamic equalization
 - Adaptive filtering systems
 
-#### Frequency Domain Crossfades
+### Frequency Domain Crossfades
 
 The traditional approach to kernel crossfades involves:
 
@@ -383,3 +356,26 @@ end
 
 This approach offers approximately 30% better performance compared to running two separate convolutions and crossfading
 in the time domain. It also provides a more elegant solution since everything remains in the frequency domain.
+
+## Real-world Application in Gain Guardian
+
+- Current implementation vs. proposed approach
+- Performance comparisons
+- Quality considerations
+
+## Java Implementation
+
+- Converting MATLAB prototype to Java
+- Testing against MATLAB reference
+- Optimizations for Java
+
+## Conclusion
+
+- Summary of findings
+- Future explorations
+- Community feedback invitation
+
+## Appendix: MATLAB Gripes (optional lighthearted section)
+
+- Development environment limitations
+- Alternative approaches

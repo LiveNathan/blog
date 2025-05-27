@@ -1,8 +1,8 @@
 # Overlap Save Method for Frequency Domain Convolution: A Practical Approach
 
-## 1. Introduction
+## Introduction
 
-> While programming can help in understanding mathematical concepts, it's not the other way around. –Mike X. Cohen
+> While programming can help in understanding mathematical concepts, it's not the other way around. — Mike X. Cohen
 
 Math is hard. And I think part of why it's so hard is the use of so many symbols. But I guess it's the same when
 learning any language. At the beginning it all looks like jibberish. Eventually, with practice, you are no longer
@@ -34,32 +34,58 @@ double yCoordinate = result.getImaginary();
 
 As a developer working on audio processing, I recently found myself struggling to implement the overlap save method for
 frequency domain convolution. Despite searching through numerous resources, I couldn't find an explanation that clicked
-with my brain. Most materials were either too abstract or too heavily focused on mathematical concepts rather than
-practical code examples.
+with my brain. Most materials were either too abstract or too heavily focused on mathematical concepts. I did find some
+code examples but they, but none of them made sense to me.
 
 This blog post is my attempt to explain the overlap save method in a way that would have helped me understand it faster.
 I'll focus on practical implementations in MATLAB and Java, showing code examples rather than complex equations whenever
 possible. By writing this, I'm hoping to solidify my own understanding while providing a resource for other developers
 facing similar challenges.
 
-**Disclaimer:** I don't have a formal background in signal processing. I'm a software developer learning DSP concepts as
+**Disclaimer:** I don't have a formal background in DSP. I'm a sound engineer turned software developer learning DSP
+concepts as
 I implement them in real projects. If you spot technical errors or have suggestions for improvement, please share them
-in the comments!
+in the comments or send me a DM!
 
-## 2. Background
+## Background
 
-When processing audio signals, convolution is a fundamental operation that allows us to apply effects like reverb,
-equalization, or simulate acoustic spaces. There are two main approaches to convolution: time domain and frequency
+When processing audio signals, convolution is a fundamental operation that allows us to combine two signals. This is
+often how we get reverb or simulate acoustic spaces but can also be used to apply EQ filters. There are two main
+approaches to convolution: time domain and frequency
 domain.
+
+signal + kernel = result
 
 ### Time Domain vs. Frequency Domain Convolution
 
-Time domain convolution directly implements the mathematical definition of convolution. It's straightforward to
+Time domain convolution combines two time series. At each signal sample you calculate the dot product of the kernel and
+the signal to get the result, which is the new sample at that position. Then you go to the next signal sample. It's just
+addition and multiplication. It's straightforward to
 understand and implement, produces high-quality results, and is perfectly suitable for offline processing. However, it
 becomes computationally expensive for long signals or large kernels, making it impractical for real-time applications.
+Not only do you have to visit every sample in the signal, but then for each signal sample, you have to visit every
+sample in the kernel giving you a loop inside of a loop, which is a complexity of O(N^2).
 
-For my project, Gain Guardian, we initially implemented time domain convolution for offline processing. While this
-approach worked well and produced high-quality results, it was simply too slow for real-time processing.
+Here's what it might look like in OOP.
+
+```java
+for(int i = halfKernelLength;
+i<signalLength +halfKernelLength;i++){
+double sum = 0;
+    for(
+int k = 0;
+k<kernel.length;k++){
+int signalIndex = iter - halfKernelLength + k;
+sum +=paddedSignal[signalIndex]*kernel[k];
+        }
+resultTimeDomain[iter]=sum;
+}
+```
+
+For my project, Gain Guardian, we initially implemented time domain convolution for offline processing. In my case my
+kernels are usually 8192 samples long so it takes about 30 seconds to perform convolution on a normal music file. While
+this
+approach worked well and produced high-quality results, it is simply too slow for real-time processing.
 
 ### The Convolution Theorem
 

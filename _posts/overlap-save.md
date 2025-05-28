@@ -64,39 +64,68 @@ addition and multiplication. It's straightforward to
 understand and implement, produces high-quality results, and is perfectly suitable for offline processing. However, it
 becomes computationally expensive for long signals or large kernels, making it impractical for real-time applications.
 Not only do you have to visit every sample in the signal, but then for each signal sample, you have to visit every
-sample in the kernel giving you a loop inside of a loop, which is a complexity of O(N^2).
+sample in the kernel giving you a loop inside of a loop, which is a complexity of O(N²).
 
-Here's what it might look like in OOP.
+Here's what it might look like in Java. Even if the code isn't clear to you, you can still see that's only addition and
+multiplication.
 
 ```java
-for(int i = halfKernelLength;
-i<signalLength +halfKernelLength;i++){
-double sum = 0;
-    for(
-int k = 0;
-k<kernel.length;k++){
-int signalIndex = iter - halfKernelLength + k;
-sum +=paddedSignal[signalIndex]*kernel[k];
-        }
-resultTimeDomain[iter]=sum;
+public class TimeConvolution {
+
+   public static double[] convolve(double[] signal, double[] kernel) {
+      int outputLength = signal.length + kernel.length - 1;
+      double[] result = new double[outputLength];
+
+      for (int outputIndex = 0; outputIndex < outputLength; outputIndex++) {
+         for (int kernelIndex = 0; kernelIndex < kernel.length; kernelIndex++) {
+            int signalIndex = outputIndex - kernelIndex;
+            if (signalIndex >= 0 && signalIndex < signal.length) {
+               result[outputIndex] += signal[signalIndex] * kernel[kernelIndex];
+            }
+         }
+      }
+
+      return result;
+   }
 }
 ```
 
 For my project, Gain Guardian, we initially implemented time domain convolution for offline processing. In my case my
 kernels are usually 8192 samples long so it takes about 30 seconds to perform convolution on a normal music file. While
-this
-approach worked well and produced high-quality results, it is simply too slow for real-time processing.
+this approach works well and produces high-quality results, it is simply too slow for real-time processing.
 
 ### The Convolution Theorem
 
 The convolution theorem states that convolution in the time domain equals multiplication in the frequency domain:
 
-```
-x(t) * h(t) ⟷ X(f) · H(f)
-```
+```java
+public class FrequencyConvolution {
 
-Where `x(t)` is the input signal, `h(t)` is the impulse response (kernel), and `X(f)` and `H(f)` are their respective
-Fourier transforms.
+   public static double[] convolve(double[] signal, double[] kernel) {
+      int resultLength = signal.length + kernel.length - 1;
+
+      Complex[] signalSpectrum = FFT.forward(signal, resultLength);
+      Complex[] kernelSpectrum = FFT.forward(kernel, resultLength);
+
+      Complex[] convolutionSpectrum = new Complex[resultLength];
+      for (int i = 0; i < resultLength; i++) {
+         convolutionSpectrum[i] = signalSpectrum[i].multiply(kernelSpectrum[i]);
+      }
+
+      Complex[] result = FFT.inverse(convolutionSpectrum);
+
+      return extractReal(result, signal.length);
+   }
+
+   private static double[] extractReal(Complex[] complexResult, int outputLength) {
+      double[] result = new double[outputLength];
+      for (int i = 0; i < outputLength; i++) {
+         result[i] = complexResult[i].real();
+      }
+      return result;
+   }
+}
+```
 
 In theory, time domain convolution and frequency domain convolution should produce identical results. However, in
 practice, there are differences due to:
@@ -104,6 +133,8 @@ practice, there are differences due to:
 - Numerical precision issues
 - Circular vs. linear convolution effects
 - Implementation details
+
+In my experience the two samples above should produce matching results to a precision of 1e-14, which is high!
 
 ### Why Real-time Applications Need Frequency Domain Approaches
 

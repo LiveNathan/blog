@@ -9,27 +9,39 @@ learning any language. At the beginning it all looks like jibberish. Eventually,
 sounding out each syllable, you just see patterns of works and sentences. I can do this with various amounts of ease
 with English, Portuguese, Java, and MATLAB.
 
-Euler's formula is considered to be one of the most beautiful equations in mathematics. It can be written like
-this: $e^{ix} = \cos(x) + i\sin(x)$
+The mathematical definition of convolution looks intimidating:
 
-In MATLAB you can write it like this: `result = exp(1i * x) - (cos(x) + 1i * sin(x));`
+$(x * h)[n] = \sum_{m=-\infty}^{\infty} x[m] \cdot h[n-m]$
 
-But it's easier to read like this:
+MATLAB has some helpful signal processing functions built in that abstract away all of the complication, allowing you to
+simply write convolution like this: `y = conv(x, h);`
+
+But we are going to write it out step by step for two reasons:
+
+1. To better understand how it works
+2. For more control
+
+Here's an example. No need to understand this, yet. Just and example to show how much easier it is to read in code than
+the equation above. Of course, all of this is relative. If you're used to reading equations and not code, then maybe the
+equation is easier to read, but I'm writing this for software developers. (spoiler alert: I intentially used academic
+var names below to make it difficult to read.)
 
 ```matlab
-angleInRadians = pi;
-result = exp(1i * angleInRadians) + 1;
-xCoordinate = real(result);
-yCoordinate = imag(result);
-```
-
-Or in Java:
-
-```java
-double angleInRadians = Math.PI;
-Complex result = Complex.ofPolar(1.0, angleInRadians).add(Complex.ONE);
-double xCoordinate = result.getReal();
-double yCoordinate = result.getImaginary();
+function y = tdConv(x, h)
+    Lx = length(x);
+    Lh = length(h);
+    Ly = Lx + Lh - 1;
+    
+    xp = [zeros(1, Lh - 1), x, zeros(1, Lh - 1)];
+    y = zeros(1, Ly);
+    
+    for n = 1:Ly
+        for m = 1:Lh
+            k = n + Lh - m;
+            y(n) = y(n) + xp(k) * h(m);
+        end
+    end
+end
 ```
 
 As a developer working on audio processing, I recently found myself struggling to implement the overlap save method for
@@ -134,7 +146,7 @@ practice, there are differences due to:
 - Circular vs. linear convolution effects
 - Implementation details
 
-In my experience the two samples above should produce matching results to a precision of 1e-14, which is high!
+In my experience, the two samples above should produce matching results to a precision of 1e-14, which is high!
 
 ### Why Real-time Applications Need Frequency Domain Approaches
 
@@ -146,7 +158,7 @@ The key to real-time processing is to work with blocks of the input signal rathe
 The size of these blocks directly affects latency – smaller blocks reduce latency but increase computational overhead
 due to more frequent FFT operations.
 
-## 3. Overlap Methods Overview
+## Overlap Methods Overview
 
 ### Why We Need Overlap Methods
 
@@ -164,22 +176,20 @@ The overlap save method attracted my attention for two key reasons:
 
 1. It's generally more computationally efficient because it doesn't require additional storage for accumulating results
 2. It allows for implementing frequency domain crossfades between kernels, which is crucial for my application where
-   filters need to change frequently
+   kernels need to change frequently
 
-## Technical Sections (Added Based on Your Request)
-
-## 4. Basic Overlap Save Implementation
+## Basic Overlap Save Implementation
 
 ### Algorithm Explanation
 
-The overlap save method works by:
+The overlap save method overview:
 
-1. Dividing the input signal into overlapping blocks
-2. Applying FFT to each block
-3. Multiplying with the FFT of the zero-padded kernel
-4. Applying IFFT to get the time domain result
-5. Discarding the first M-1 samples (where M is the kernel length) from each result block
-6. Concatenating the valid parts of each result block
+1. Divide the input signal into overlapping blocks
+2. Apply FFT to each block
+3. Multiply with the FFT of the zero-padded kernel
+4. Apply IFFT to get the time domain result
+5. Discard the first overlapping samples from each result block
+6. Concatenate them
 
 The key insight is that by processing overlapping segments and discarding the circular convolution artifacts, we can
 achieve linear convolution results efficiently.

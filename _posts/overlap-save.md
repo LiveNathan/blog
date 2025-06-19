@@ -1,5 +1,161 @@
 # Overlap Save Method for Frequency Domain Convolution: A Practical Approach
 
+## Step by step convolution
+
+Whenever I'm trying to learn something new or understand something hard I usually start by procrastanating. Maybe there
+are some YT videos I can watch for a while instead of getting started. Then, a few hours later, I fianlly convince
+myself to get started by taking the smallest possible step. What's the least I can do?
+
+### Known values
+
+I might not know much about convolution, but I think I remember that if you convolve any signal with an impulse then you
+just get the signal back. I can make it even easier by just convolving two impulses together.
+
+Let's start with the Apache Commons implementation of time domain convolution.
+
+```java
+public class ApacheAdapter implements Convolution {
+   @Override
+   public double[] with(double[] signal, double[] kernel) {
+      return MathArrays.convolve(signal, kernel);
+   }
+}
+```
+
+Here are 3 characterization tests. I hope these demonstrate that I like to take very small steps.
+
+```java
+
+@Test
+void impulseConvolution_returnsIdentity() {
+   Convolution convolution = new ApacheAdapter();
+   double[] signal = {1};
+   double[] kernel = {1};
+
+   double[] actual = convolution.with(signal, kernel);
+
+   assertThat(actual).isEqualTo(kernel);
+}
+
+@Test
+void twoElementConvolution_computesExpectedValues() {
+   Convolution convolution = new ApacheAdapter();
+   double[] signal = {1, 0.5};
+   double[] kernel = {0.2, 0.1};
+
+   double[] result = convolution.with(signal, kernel);
+
+   assertThat(result.length).isEqualTo(signal.length + kernel.length - 1); // 2 + 2 - 1 = 3
+   // result[0] = signal[0] * kernel[0] = 1 * 0.2 = 0.2
+   assertThat(result[0]).isEqualTo(0.2);  // 1 * 0.2
+   // result[1] = signal[0] * kernel[1] + signal[1] * kernel[0]
+   // result[1] = (1 * 0.1) + (0.5 * 0.2) = 0.2
+   assertThat(result[1]).isEqualTo(0.2);  // 1 * 0.1 + 0.5 * 0.2
+   // result[2] = signal[1] * kernel[1]
+   // result[2] = 0.5 * 0.1 = 0.05
+   assertThat(result[2]).isEqualTo(0.05); // 0.5 * 0.1
+}
+
+@Test
+void convolutionIsCommutative() {
+   Convolution convolution = new ApacheAdapter();
+   double[] signal = {1, 2, 3};
+   double[] kernel = {0.5, 0.25};
+
+   double[] result1 = convolution.with(signal, kernel);
+   double[] result2 = convolution.with(kernel, signal);
+
+   assertThat(result1).isEqualTo(result2);
+}
+```
+
+## Copy and refactor
+
+Now that we have characterized a known working implementation of time domain convolution, let's write our own custom
+implementation to improve our understanding. But, write it from scratch? No way! That's way too hard. Instead let's copy
+the Apache method and rafactor it.
+
+Don't try to understand this, yet. Just appreciate how concise it is before we wreck it with our refactoring.
+
+```java
+public class CustomAdapter implements Convolution {
+   @Override
+   public double[] with(double[] x, double[] h) {
+      MathUtils.checkNotNull(x);
+      MathUtils.checkNotNull(h);
+
+      final int xLen = x.length;
+      final int hLen = h.length;
+
+      if (xLen == 0 || hLen == 0) {
+         throw new NoDataException();
+      }
+
+      // initialize the output array
+      final int totalLength = xLen + hLen - 1;
+      final double[] y = new double[totalLength];
+
+      // straightforward implementation of the convolution sum
+      for (int n = 0; n < totalLength; n++) {
+         double yn = 0;
+         int k = FastMath.max(0, n + 1 - xLen);
+         int j = n - k;
+         while (k < hLen && j >= 0) {
+            yn += x[j--] * h[k++];
+         }
+         y[n] = yn;
+      }
+
+      return y;
+   }
+}
+```
+
+Let's parametrize our tests so that they will also run against our new custom adapter.
+
+```java
+static Stream<Convolution> convolutionImplementations() {
+   return Stream.of(new ApacheAdapter(), new CustomAdapter());
+}
+
+@ParameterizedTest
+@MethodSource("convolutionImplementations")
+void impulseConvolution_returnsIdentity(Convolution convolution) {
+   double[] signal = {1};
+   double[] kernel = {1};
+
+   double[] actual = convolution.with(signal, kernel);
+
+   assertThat(actual).isEqualTo(kernel);
+}
+
+@ParameterizedTest
+@MethodSource("convolutionImplementations")
+void twoElementConvolution_computesExpectedValues(Convolution convolution) {
+   double[] signal = {1, 0.5};
+   double[] kernel = {0.2, 0.1};
+
+   double[] result = convolution.with(signal, kernel);
+
+   assertThat(result.length).isEqualTo(signal.length + kernel.length - 1);
+   assertThat(result[0]).isEqualTo(0.2);
+   assertThat(result[1]).isEqualTo(0.2);
+   assertThat(result[2]).isEqualTo(0.05);
+}
+
+@ParameterizedTest
+@MethodSource("convolutionImplementations")
+void convolutionIsCommutative(Convolution convolution) {
+   double[] signal = {1, 2, 3};
+   double[] kernel = {0.5, 0.25};
+
+   double[] result1 = convolution.with(signal, kernel);
+   double[] result2 = convolution.with(kernel, signal);
+
+   assertThat(result1).isEqualTo(result2);
+}
+```
+
 ## Introduction
 
 > While programming can help in understanding mathematical concepts, it's not the other way around. — Mike X. Cohen

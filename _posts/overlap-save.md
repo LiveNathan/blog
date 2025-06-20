@@ -156,6 +156,57 @@ void convolutionIsCommutative(Convolution convolution) {
 }
 ```
 
+### Refactor 1 - Rename vars
+
+The first easiest thing to do for better code understanding is to rename the variables using expressive variable names.
+The first time I did this I had an LLM do it for me.
+
+```java
+
+@Override
+public double[] with(double[] signal, double[] kernel) {
+   MathUtils.checkNotNull(signal);
+   MathUtils.checkNotNull(kernel);
+
+   final int signalLength = signal.length;
+   final int kernelLength = kernel.length;
+
+   if (signalLength == 0 || kernelLength == 0) {
+      throw new NoDataException();
+   }
+   final int resultLength = signalLength + kernelLength - 1;
+   final double[] result = new double[resultLength];
+
+   for (int resultIndex = 0; resultIndex < resultLength; resultIndex++) {
+      double sum = 0;
+      int kernelIndex = FastMath.max(0, resultIndex + 1 - signalLength);
+      int signalIndex = resultIndex - kernelIndex;
+      while (kernelIndex < kernelLength && signalIndex >= 0) {
+         sum += signal[signalIndex--] * kernel[kernelIndex++];
+      }
+      result[resultIndex] = sum;
+   }
+
+   return result;
+}
+```
+
+### Refactor 2 - Remove defense
+
+This implementation achieves conciseness and elegance through two key design choices:
+
+1. **Implicit zero padding**: The `result` array is initialized with zeros by default. When the loop conditions (
+   `kernelIndex < kernelLength && signalIndex >= 0`) prevent execution at the boundaries, the sum remains zero,
+   effectively providing the necessary padding without explicit boundary handling.
+
+2. **Implicit kernel flipping**: The combination of `signalIndex--` and `kernelIndex++` reads the signal backwards while
+   traversing the kernel forwards. This achieves the mathematical equivalent of kernel reversal required by convolution,
+   without explicitly flipping the kernel array.
+
+Unfortunately, what makes this code elegant and concise also make it difficult to read. When I try to read through the
+loop in my mind, I give up almost immediately. I hate defensive code. It makes everything harder to read. Let's see if
+we can remove all of the defensive code and make the explicit zero padding and kernel flipping excplicit.
+
 ## Introduction
 
 > While programming can help in understanding mathematical concepts, it's not the other way around. — Mike X. Cohen

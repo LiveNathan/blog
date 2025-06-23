@@ -162,8 +162,6 @@ The first easiest thing to do for better code understanding is to rename the var
 The first time I did this I had an LLM do it for me.
 
 ```java
-
-@Override
 public double[] with(double[] signal, double[] kernel) {
    MathUtils.checkNotNull(signal);
    MathUtils.checkNotNull(kernel);
@@ -206,6 +204,72 @@ This implementation achieves conciseness and elegance through two key design cho
 Unfortunately, what makes this code elegant and concise also make it difficult to read. When I try to read through the
 loop in my mind, I give up almost immediately. I hate defensive code. It makes everything harder to read. Let's see if
 we can remove all of the defensive code and make the explicit zero padding and kernel flipping excplicit.
+
+```java
+public double[] with(double[] signal, double[] kernel) {
+   MathUtils.checkNotNull(signal);
+   MathUtils.checkNotNull(kernel);
+
+   final int signalLength = signal.length;
+   final int kernelLength = kernel.length;
+
+   if (signalLength == 0 || kernelLength == 0) {
+      throw new NoDataException();
+   }
+
+   final int resultLength = signalLength + kernelLength - 1;
+   final double[] result = new double[resultLength];
+
+   // Step 1: Pad the signal with zeros on both sides
+   final int padding = kernelLength - 1;
+   final int paddedLength = signalLength + 2 * padding;
+   final double[] paddedSignal = new double[paddedLength];
+   System.arraycopy(signal, 0, paddedSignal, padding, signalLength);
+
+   // Step 2: Flip the kernel for convolution (vs. correlation)
+   final double[] flippedKernel = ArrayUtils.clone(kernel);
+   ArrayUtils.reverse(flippedKernel);
+
+   // Step 3: Slide the flipped kernel over the padded signal
+   for (int outputPos = 0; outputPos < resultLength; outputPos++) {
+      double sum = 0;
+      int paddedSignalStartPos = outputPos + padding - kernelLength + 1;
+
+      for (int kernelPos = 0; kernelPos < kernelLength; kernelPos++) {
+         sum += paddedSignal[paddedSignalStartPos + kernelPos] * flippedKernel[kernelPos];
+      }
+      result[outputPos] = sum;
+   }
+
+   return result;
+}
+```
+
+### Refactor 3 - Make the sliding window visible
+
+It would be nice to have the sliding window concept be more concrete and visible.
+
+```java
+public double[] with(double[] signal, double[] kernel) {
+   // setup removed for brevity
+   // Step 3: Slide the flipped kernel over the padded signal
+   for (int outputPos = 0; outputPos < resultLength; outputPos++) {
+      int windowStartPos = outputPos + padding - kernelLength + 1;
+
+      // Extract the current window from the padded signal
+      double[] signalWindow = Arrays.copyOfRange(paddedSignal, windowStartPos, windowStartPos + kernelLength);
+
+      // Compute dot product of window and flipped kernel
+      double sum = 0;
+      for (int i = 0; i < kernelLength; i++) {
+         sum += signalWindow[i] * flippedKernel[i];
+      }
+      result[outputPos] = sum;
+   }
+
+   return result;
+}
+```
 
 ## Introduction
 

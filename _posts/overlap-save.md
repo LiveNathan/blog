@@ -271,6 +271,11 @@ public double[] with(double[] signal, double[] kernel) {
 }
 ```
 
+### Refactor 4 - Smaller methods
+
+Our method is only about 40 lines long, but splitting it into smaller methods will make it even easier to understand and
+test.
+
 ## Introduction
 
 > While programming can help in understanding mathematical concepts, it's not the other way around. — Mike X. Cohen

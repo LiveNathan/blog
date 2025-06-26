@@ -276,6 +276,239 @@ public double[] with(double[] signal, double[] kernel) {
 Our method is only about 40 lines long, but splitting it into smaller methods will make it even easier to understand and
 test.
 
+```java
+ public double[] with(double[] signal, double[] kernel) {
+   validateInputs(signal, kernel);
+
+   final double[] paddedSignal = padSignal(signal, kernel.length);
+   final double[] reversedKernel = reverseKernel(kernel);
+
+   return computeConvolution(paddedSignal, reversedKernel, signal.length);
+}
+
+private void validateInputs(double[] signal, double[] kernel) {
+   MathUtils.checkNotNull(signal);
+   MathUtils.checkNotNull(kernel);
+
+   if (signal.length == 0 || kernel.length == 0) {
+      throw new NoDataException();
+   }
+}
+
+double[] padSignal(double[] signal, int kernelLength) {
+   final int padding = kernelLength - 1;
+   final int paddedLength = signal.length + 2 * padding;
+   final double[] paddedSignal = new double[paddedLength];
+   System.arraycopy(signal, 0, paddedSignal, padding, signal.length);
+   return paddedSignal;
+}
+
+double[] reverseKernel(double[] kernel) {
+   final double[] flippedKernel = ArrayUtils.clone(kernel);
+   ArrayUtils.reverse(flippedKernel);
+   return flippedKernel;
+}
+
+private double[] computeConvolution(double[] paddedSignal, double[] reversedKernel, int signalLength) {
+   int kernelLength = reversedKernel.length;
+   final int resultLength = signalLength + kernelLength - 1;
+   final double[] result = new double[resultLength];
+   final int padding = kernelLength - 1;
+
+   for (int outputPos = 0; outputPos < resultLength; outputPos++) {
+      result[outputPos] = computeWindowConvolution(paddedSignal, reversedKernel,
+              outputPos, padding, kernelLength);
+   }
+
+   return result;
+}
+
+private double computeWindowConvolution(double[] paddedSignal, double[] preparedKernel,
+                                        int outputPos, int padding, int kernelLength) {
+   int windowStartPos = outputPos + padding - kernelLength + 1;
+   double sum = 0;
+
+   for (int i = 0; i < kernelLength; i++) {
+      sum += paddedSignal[windowStartPos + i] * preparedKernel[i];
+   }
+
+   return sum;
+}
+```
+
+Let's add two new tests tht will help us nail down the behavior of our new methods and start setting ourselves up well
+to drive new behavior change later.
+
+```java
+
+@Test
+void preparePaddedSignal_addsCorrectPadding() {
+   TimeDomainAdapter adapter = new TimeDomainAdapter();
+   double[] signal = {1, 2};
+   int kernelLength = 3;
+
+   double[] paddedSignal = adapter.padSignal(signal, kernelLength);
+
+   assertThat(paddedSignal).containsExactly(0, 0, 1, 2, 0, 0);
+}
+
+@Test
+void prepareKernel_flipsArray() {
+   TimeDomainAdapter adapter = new TimeDomainAdapter();
+   double[] kernel = {1, 2, 3};
+
+   double[] reversedKernel = adapter.reverseKernel(kernel);
+
+   assertThat(reversedKernel).containsExactly(3, 2, 1);
+}
+```
+
+### Into the frequency domain
+
+#### Refactor 1 - Copy
+
+I created FrequencyDomainAdapter by copying TimeDomainAdapter. Even though much of it will change, it's so much easier
+to edit existing code than to start from scratch.
+
+#### Refactor 2 - Padding
+
+We are still going to perform the same input validation so that method can stay. We are also still going to perform
+padding, but this time instead of padding the beginning and end of the signal to facilitate the sliding window, we zero
+pad the end of both signal and kernel until they are both the same length and a power of two. Making them the same
+length makes the multiplication step easy and making their length a power of two satisfies the FFT transform
+requirement.
+
+```java
+public class FrequencyDomainAdapter implements Convolution {
+   @Override
+   public double[] with(double[] signal, double[] kernel) {
+      validateInputs(signal, kernel);
+
+      int convolutionLength = signal.length + kernel.length - 1;
+      int paddedLength = CommonUtil.nextPowerOfTwo(convolutionLength);
+
+      final double[] paddedSignal = padArray(signal, paddedLength);
+      final double[] paddedKernel = padArray(kernel, paddedLength);
+
+      // fft
+      // multiply
+      // ifft
+   }
+
+   double[] padArray(double[] array, int targetLength) {
+      double[] padded = new double[targetLength];
+      System.arraycopy(array, 0, padded, 0, array.length);
+      return padded;
+   }
+}
+```
+
+#### Refactor 3 - FFT
+
+Performing the FFT transform is just a call to the Apache Commons method.
+
+```java
+Complex[] transform(double[] signal) {
+   FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
+   return fft.transform(signal, TransformType.FORWARD);
+}
+```
+
+Let's add a test for it.
+
+```java
+
+@Test
+void transform_computesFFTForPowerOfTwoSignal() {
+   FrequencyDomainAdapter adapter = new FrequencyDomainAdapter();
+   double[] signal = {1, 2};
+
+   Complex[] transform = adapter.transform(signal);
+
+   assertThat(transform).hasSize(2);
+   // FFT of [1, 2] should be [3+0i, -1+0i]
+   assertThat(transform[0].getReal()).isEqualTo(3.0);
+   assertThat(transform[0].getImaginary()).isEqualTo(0.0);
+   assertThat(transform[1].getReal()).isEqualTo(-1.0);
+   assertThat(transform[1].getImaginary()).isEqualTo(0.0);
+}
+```
+
+#### Refactor 4 - IFFT
+
+The inverse transform is very similar, but we only need the real values.
+
+```java
+double[] inverseTransformRealOnly(Complex[] transform) {
+   FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
+   Complex[] result = fft.transform(transform, TransformType.INVERSE);
+
+   double[] realResult = new double[result.length];
+   for (int i = 0; i < result.length; i++) {
+      realResult[i] = result[i].getReal();
+   }
+   return realResult;
+}
+```
+
+```java
+
+@Test
+void transformRoundTrip_preservesOriginalSignal() {
+   FrequencyDomainAdapter adapter = new FrequencyDomainAdapter();
+   double[] original = {1, 2, 3, 4};
+
+   Complex[] transformed = adapter.transform(adapter.padArray(original, 8));
+   double[] roundTrip = adapter.inverseTransformRealOnly(transformed);
+
+   assertThat(roundTrip).usingElementComparator(doubleComparator())
+           .containsExactly(1, 2, 3, 4, 0, 0, 0, 0);
+}
+```
+
+#### Refactor 5 - Multiply
+
+Convolution in the frequency domain is simply multiplication. Yay!
+
+```java
+private Complex[] multiplyTransforms(Complex[] transform1, Complex[] transform2) {
+   Complex[] result = new Complex[transform1.length];
+   for (int i = 0; i < transform1.length; i++) {
+      result[i] = transform1[i].multiply(transform2[i]);
+   }
+   return result;
+}
+```
+
+### Refactor 6 - Tie it all together
+
+Let's tie it all together and trim any extra zeros.
+
+```java
+public double[] with(double[] signal, double[] kernel) {
+   validateInputs(signal, kernel);
+
+   int convolutionLength = signal.length + kernel.length - 1;
+   int paddedLength = CommonUtil.nextPowerOfTwo(convolutionLength);
+
+   final double[] paddedSignal = padArray(signal, paddedLength);
+   final double[] paddedKernel = padArray(kernel, paddedLength);
+   final Complex[] signalTransform = transform(paddedSignal);
+   final Complex[] kernelTransform = transform(paddedKernel);
+
+   final Complex[] productTransform = multiplyTransforms(signalTransform, kernelTransform);
+   final double[] convolutionResult = inverseTransformRealOnly(productTransform);
+
+   return extractValidPortion(convolutionResult, convolutionLength);
+}
+
+private double[] extractValidPortion(double[] paddedResult, int validLength) {
+   double[] result = new double[validLength];
+   System.arraycopy(paddedResult, 0, result, 0, validLength);
+   return result;
+}
+```
+
 ## Introduction
 
 > While programming can help in understanding mathematical concepts, it's not the other way around. — Mike X. Cohen

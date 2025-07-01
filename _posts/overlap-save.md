@@ -509,6 +509,77 @@ private double[] extractValidPortion(double[] paddedResult, int validLength) {
 }
 ```
 
+### Refactor 7 - Prepare for OLS
+
+To prepare for the OverlapSaveAdapter, let's move those signal transform method into a common class so we don't have to
+write them again (or worry about them again!) and simplify the method names.
+
+Afterwards the FrequencyDomainAdapter will look like this:
+
+```java
+public double[] with(double[] signal, double[] kernel) {
+   SignalTransformer.validate(signal, kernel);
+
+   int convolutionLength = signal.length + kernel.length - 1;
+   int paddedLength = CommonUtil.nextPowerOfTwo(convolutionLength);
+
+   final double[] paddedSignal = SignalTransformer.pad(signal, paddedLength);
+   final double[] paddedKernel = SignalTransformer.pad(kernel, paddedLength);
+   final Complex[] signalTransform = SignalTransformer.fft(paddedSignal);
+   final Complex[] kernelTransform = SignalTransformer.fft(paddedKernel);
+
+   final Complex[] productTransform = SignalTransformer.multiply(signalTransform, kernelTransform);
+   final double[] convolutionResult = SignalTransformer.ifft(productTransform);
+
+   return extractValidPortion(convolutionResult, convolutionLength);
+}
+```
+
+## Overlap Save
+
+### Refactor 1 - Copy
+
+Let's start by simply copying over the FrequencyDomainAdapter into a new OverlapSaveAdapter and updating our tests.
+
+```java
+static Stream<Convolution> convolutionImplementations() {
+   return Stream.of(new ApacheAdapter(), new TimeDomainAdapter(),
+           new FrequencyDomainAdapter(), new OverlapSaveAdapter());
+}
+```
+
+### Refactor 2 - Define vars
+
+#### FFT size
+
+In FrequencyDomainAdapter we set the FFT size to the next best value higher than the final length of the result. In
+OverlapSaveAdapter we are free to set the FFT size to whatever we want. There are some ways to optimize this, but I'm
+going to skip thta explanation to stay focused on the mechanics of the OLS method itself.
+
+```java
+int fftSize = calculateOptimalFftSize(signal.length, kernelLength);
+```
+
+#### Block Size
+
+FFT treats the input signal as periodic (repeating in a cycle), which produces circular convolution instead of the
+linear convolution we want. This circular wraparound corrupts the first `kernelLength - 1` samples of each result. The
+remaining `fftSize - kernelLength + 1` samples are valid - this is our `blockSize`.
+
+```java
+int blockSize = fftSize - kernelLength + 1;
+```
+
+We want to know the exact index where that block starts so we'll create `blockStartIndex`.
+
+```java
+int blockStartIndex = kernelLength - 1;
+```
+
+The overlap-save method works by overlapping input blocks and saving only the valid portion of each convolution result.
+
+### Refactor 3 -
+
 ## Introduction
 
 > While programming can help in understanding mathematical concepts, it's not the other way around. — Mike X. Cohen

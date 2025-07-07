@@ -576,7 +576,40 @@ We want to know the exact index where that block starts so we'll create `blockSt
 int blockStartIndex = kernelLength - 1;
 ```
 
-The overlap-save method works by overlapping input blocks and saving only the valid portion of each convolution result.
+### Refactor 3 - Pad signal
+
+We need to pad the signal with zeros just as we did in FrequencyDomainAdapter, but this time instead of padding the end
+we need to pad the start.
+
+```java
+private double[] padSignalStart(double[] signal, int resultLength, int blockStartIndex) {
+   double[] paddedSignal = new double[resultLength];
+   System.arraycopy(signal, 0, paddedSignal, blockStartIndex, signal.length);
+   return paddedSignal;
+}
+```
+
+Later I'll refactor this into a padding method that we can use commonly across our implementations. Something like this:
+
+```java
+double[] paddedSignal = SignalTransformer.pad(
+        signal,
+        blockStartIndex, // startPaddingAmount
+        resultLength - signal.length - blockStartIndex  // endPaddingAmount
+);
+```
+
+### Refactor 4 - Process in blocks
+
+Let's get started with the real meat of the OLS convolution. The overlap-save method works by overlapping input blocks
+and saving only the valid portion of each convolution result. I considered doing with in a while loop, but in the end I
+think a for loop is more conventional and testable.
+
+First we'll calculate the total number of for loop iterations.
+
+`int totalBlocks = (signal.length + blockSize - 1) / blockSize;`
+
+This is equivalent to `Math.ceil(signal.length / blockSize)` but avoids floating-point arithmetic.
 
 ### Refactor 3 -
 

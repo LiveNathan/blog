@@ -611,6 +611,37 @@ First we'll calculate the total number of for loop iterations.
 
 This is equivalent to `Math.ceil(signal.length / blockSize)` but avoids floating-point arithmetic.
 
+Now, inside of this for loop where we iterate over all of the blocks:
+
+Each time through the loop we need to:
+
+1. Get the next signal block.
+2. FFT the signal
+3. Multiply kernel and signal tranform
+4. IFFT back to the time domain
+5. Extract the valid result block and add it to the result.
+
+The computational heavy lifting is done for us by Apache Commons Math4, but the part that we as programmers need to take
+care of is the tricky indexing.
+
+#### Process Blocks 1 - Get the next signal block
+
+Each time through the loop we will extract the next block of input signal starting at `blockIndex * blockSize`. I kind
+of hate using `System.arraycopy` because it's not very readable, but it get's used a lot in these operations so I'm
+trying to just embrace it and get used to it.
+
+`System.arraycopy(
+     paddedSignal,  // Source object 
+     nextBlockStartIndex,  // Source index 
+     block,  // Destination object
+     0,  // Destination index
+     copyLength  // Source length
+);`
+
+Most of the time copyLength is just fftSize, but the final block might be smaller than fftSize.
+
+`int copyLength = Math.min(fftSize, paddedSignal.length - nextBlockStartIndex);`
+
 ### Refactor 3 -
 
 ## Introduction

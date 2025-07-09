@@ -1,5 +1,8 @@
 # Overlap Save Method for Frequency Domain Convolution: A Practical Approach
 
+This being a practical approach, I'm going to dive straight into the code. Skip to the second half for more context and
+theory.
+
 ## Step by step convolution
 
 Whenever I'm trying to learn something new or understand something hard I usually start by procrastanating. Maybe there
@@ -642,7 +645,25 @@ Most of the time copyLength is just fftSize, but the final block might be smalle
 
 `int copyLength = Math.min(fftSize, paddedSignal.length - nextBlockStartIndex);`
 
-### Refactor 3 -
+#### Process Block 2 - Valid portion
+
+In most cases, the valid portion of the result of convolution will be equal to the block size, but as above, the final
+block is a special case since it will likely be smaller than the block size.
+
+`int validLength = Math.min(blockSize, resultLength - nextBlockStartIndex);`
+
+Now that we have the length of the valid portion of the result of convolution that we want to keep we can simply copy it
+over to the output array.
+
+`System.arraycopy(
+   blockResult,  // Source object
+   blockStartIndex,  // Source index
+   result,  // Destination object
+   nextBlockStartIndex,  // Destination index
+   validLength);  // Source length to copy`
+
+All tests pass, but I did have to introduce a precision of 1e-15 into the equality assertions. This is common with
+floating point arithimetic.
 
 ## Introduction
 
@@ -657,35 +678,39 @@ The mathematical definition of convolution looks intimidating:
 
 $(x * h)[n] = \sum_{m=-\infty}^{\infty} x[m] \cdot h[n-m]$
 
-MATLAB has some helpful signal processing functions built in that abstract away all of the complication, allowing you to
-simply write convolution like this: `y = conv(x, h);`
+Apache commons has some helpful signal processing functions built in that abstract away all of the complication,
+allowing you to
+simply write convolution like this: `MathArrays.convolve(signal, kernel);`
 
-But we are going to write it out step by step for two reasons:
-
-1. To better understand how it works
-2. For more control
+But we are going to write it out step by step so that we can refactor it into the OLS method. Then in part two we'll
+look at switch switching kernels mid-signal.
 
 Here's an example. No need to understand this, yet. Just and example to show how much easier it is to read in code than
 the equation above. Of course, all of this is relative. If you're used to reading equations and not code, then maybe the
 equation is easier to read, but I'm writing this for software developers. (spoiler alert: I intentially used academic
 var names below to make it difficult to read.)
 
-```matlab
-function y = tdConv(x, h)
-    Lx = length(x);
-    Lh = length(h);
-    Ly = Lx + Lh - 1;
-    
-    xp = [zeros(1, Lh - 1), x, zeros(1, Lh - 1)];
-    y = zeros(1, Ly);
-    
-    for n = 1:Ly
-        for m = 1:Lh
-            k = n + Lh - m;
-            y(n) = y(n) + xp(k) * h(m);
-        end
-    end
-end
+```java
+public static double[] convolve(double[] x, double[] h) {
+
+   final int xLen = x.length;
+   final int hLen = h.length;
+
+   final int totalLength = xLen + hLen - 1;
+   final double[] y = new double[totalLength];
+
+   for (int n = 0; n < totalLength; n++) {
+      double yn = 0;
+      int k = JdkMath.max(0, n + 1 - xLen);
+      int j = n - k;
+      while (k < hLen && j >= 0) {
+         yn += x[j--] * h[k++];
+      }
+      y[n] = yn;
+   }
+
+   return y;
+}
 ```
 
 As a developer working on audio processing, I recently found myself struggling to implement the overlap save method for
@@ -722,31 +747,11 @@ becomes computationally expensive for long signals or large kernels, making it i
 Not only do you have to visit every sample in the signal, but then for each signal sample, you have to visit every
 sample in the kernel giving you a loop inside of a loop, which is a complexity of O(N²).
 
-Here's what it might look like in Java. Even if the code isn't clear to you, you can still see that's only addition and
+Looking back at the example above, the indexing is the most complicated part. Otherwise, you can still see that's only
+addition and
 multiplication.
 
-```java
-public class TimeConvolution {
-
-   public static double[] convolve(double[] signal, double[] kernel) {
-      int outputLength = signal.length + kernel.length - 1;
-      double[] result = new double[outputLength];
-
-      for (int outputIndex = 0; outputIndex < outputLength; outputIndex++) {
-         for (int kernelIndex = 0; kernelIndex < kernel.length; kernelIndex++) {
-            int signalIndex = outputIndex - kernelIndex;
-            if (signalIndex >= 0 && signalIndex < signal.length) {
-               result[outputIndex] += signal[signalIndex] * kernel[kernelIndex];
-            }
-         }
-      }
-
-      return result;
-   }
-}
-```
-
-For my project, Gain Guardian, we initially implemented time domain convolution for offline processing. In my case my
+For my project, GainGuardian, we initially implemented time domain convolution for offline processing. In my case my
 kernels are usually 8192 samples long so it takes about 30 seconds to perform convolution on a normal music file. While
 this approach works well and produces high-quality results, it is simply too slow for real-time processing.
 
@@ -755,31 +760,31 @@ this approach works well and produces high-quality results, it is simply too slo
 The convolution theorem states that convolution in the time domain equals multiplication in the frequency domain:
 
 ```java
-public class FrequencyConvolution {
+public class FrequencyDomainAdapter implements Convolution {
+   @Override
+   public double[] with(double[] signal, double[] kernel) {
+      SignalTransformer.validate(signal, kernel);
 
-   public static double[] convolve(double[] signal, double[] kernel) {
       int resultLength = signal.length + kernel.length - 1;
+      int paddedLength = CommonUtil.nextPowerOfTwo(resultLength);
 
-      Complex[] signalSpectrum = FFT.forward(signal, resultLength);
-      Complex[] kernelSpectrum = FFT.forward(kernel, resultLength);
+      final double[] paddedSignal = SignalTransformer.pad(signal, paddedLength);
+      final double[] paddedKernel = SignalTransformer.pad(kernel, paddedLength);
+      final Complex[] signalTransform = SignalTransformer.fft(paddedSignal);
+      final Complex[] kernelTransform = SignalTransformer.fft(paddedKernel);
 
-      Complex[] convolutionSpectrum = new Complex[resultLength];
-      for (int i = 0; i < resultLength; i++) {
-         convolutionSpectrum[i] = signalSpectrum[i].multiply(kernelSpectrum[i]);
-      }
+      final Complex[] productTransform = SignalTransformer.multiply(signalTransform, kernelTransform);
+      final double[] convolutionResult = SignalTransformer.ifft(productTransform);
 
-      Complex[] result = FFT.inverse(convolutionSpectrum);
-
-      return extractReal(result, signal.length);
+      return extractValidPortion(convolutionResult, resultLength);
    }
 
-   private static double[] extractReal(Complex[] complexResult, int outputLength) {
-      double[] result = new double[outputLength];
-      for (int i = 0; i < outputLength; i++) {
-         result[i] = complexResult[i].real();
-      }
+   private double[] extractValidPortion(double[] paddedResult, int validLength) {
+      double[] result = new double[validLength];
+      System.arraycopy(paddedResult, 0, result, 0, validLength);
       return result;
    }
+
 }
 ```
 

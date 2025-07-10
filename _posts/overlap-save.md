@@ -14,14 +14,22 @@ step-by-step implementation, and practical examples. We'll build up from time do
 frequency domain approaches, and finally implement overlap save - all while maintaining test coverage to verify our
 results.
 
+> **All the code in this post is available in
+the [overlap-save-demo repository](https://github.com/LiveNathan/overlap-save-demo) with complete implementations and
+tests.**
+
 ## Starting Simple: Time Domain Convolution
 
 Whenever I'm trying to learn something complex, I start with the smallest possible step. For convolution, that means
 working with impulses - if you convolve any signal with an impulse, you just get the signal back.
 
-Let's begin with Apache Commons' time domain implementation as our reference:
+Let's begin with a simple interface and Apache Commons' implementation as our reference:
 
 ```java
+public interface Convolution {
+   double[] with(double[] signal, double[] kernel);
+}
+
 public class ApacheAdapter implements Convolution {
    @Override
    public double[] with(double[] signal, double[] kernel) {
@@ -33,7 +41,6 @@ public class ApacheAdapter implements Convolution {
 Here's how I characterize the behavior with simple tests:
 
 ```java
-
 @ParameterizedTest
 @MethodSource("allImplementations")
 void impulseConvolution_returnsIdentity(Convolution convolution) {
@@ -58,19 +65,10 @@ void twoElementConvolution_computesExpectedValues(Convolution convolution) {
    assertThat(result[1]).isEqualTo(0.2);   // 1 * 0.1 + 0.5 * 0.2  
    assertThat(result[2]).isEqualTo(0.05);  // 0.5 * 0.1
 }
-
-@ParameterizedTest
-@MethodSource("allImplementations")
-void convolutionIsCommutative(Convolution convolution) {
-   double[] signal = {1, 2, 3};
-   double[] kernel = {0.5, 0.25};
-
-   double[] result1 = convolution.with(signal, kernel);
-   double[] result2 = convolution.with(kernel, signal);
-
-   assertThat(result1).isEqualTo(result2);
-}
 ```
+
+> **See the complete test suite:
+** [ConvolutionTest.java](https://github.com/LiveNathan/overlap-save-demo/blob/main/src/test/java/dev/nathanlively/overlap_save_demo/ConvolutionTest.java)
 
 ### Building Our Own Implementation
 
@@ -91,7 +89,7 @@ y[n]=yn;
 }
 ```
 
-After refactoring with explicit padding and kernel flipping, the algorithm becomes much clearer:
+After refactoring with explicit padding and kernel flipping, the core algorithm becomes much clearer:
 
 ```java
 public double[] with(double[] signal, double[] kernel) {
@@ -103,20 +101,18 @@ public double[] with(double[] signal, double[] kernel) {
    return computeConvolution(paddedSignal, reversedKernel, signal.length);
 }
 
+// Core convolution loop - slide kernel over padded signal
 private double[] computeConvolution(double[] paddedSignal, double[] reversedKernel, int signalLength) {
-   int kernelLength = reversedKernel.length;
-   final int resultLength = signalLength + kernelLength - 1;
-   final double[] result = new double[resultLength];
-   final int padding = kernelLength - 1;
-
+   // ... implementation details ...
    for (int outputPos = 0; outputPos < resultLength; outputPos++) {
-      result[outputPos] = computeWindowConvolution(paddedSignal, reversedKernel,
-              outputPos, padding, kernelLength);
+      result[outputPos] = computeWindowConvolution(paddedSignal, reversedKernel, outputPos, padding, kernelLength);
    }
-
    return result;
 }
 ```
+
+> **See the complete implementation:
+** [TimeDomainAdapter.java](https://github.com/LiveNathan/overlap-save-demo/blob/main/src/main/java/dev/nathanlively/overlap_save_demo/TimeDomainAdapter.java)
 
 This reveals the core concept: convolution is sliding a flipped kernel over a padded signal, computing dot products at
 each position. The padding ensures we handle edge cases correctly, and kernel flipping converts correlation into
@@ -132,29 +128,28 @@ The convolution theorem states that convolution in time equals multiplication in
 problem into O(N log N):
 
 ```java
-public class FrequencyDomainAdapter implements Convolution {
-   @Override
-   public double[] with(double[] signal, double[] kernel) {
-      SignalTransformer.validate(signal, kernel);
+public double[] with(double[] signal, double[] kernel) {
+   SignalTransformer.validate(signal, kernel);
 
-      int resultLength = signal.length + kernel.length - 1;
-      int paddedLength = CommonUtil.nextPowerOfTwo(resultLength);
+   int resultLength = signal.length + kernel.length - 1;
+   int paddedLength = CommonUtil.nextPowerOfTwo(resultLength);
 
-      final double[] paddedSignal = SignalTransformer.pad(signal, paddedLength);
-      final double[] paddedKernel = SignalTransformer.pad(kernel, paddedLength);
-      final Complex[] signalTransform = SignalTransformer.fft(paddedSignal);
-      final Complex[] kernelTransform = SignalTransformer.fft(paddedKernel);
+   // Transform both to frequency domain
+   final Complex[] signalTransform = SignalTransformer.fft(SignalTransformer.pad(signal, paddedLength));
+   final Complex[] kernelTransform = SignalTransformer.fft(SignalTransformer.pad(kernel, paddedLength));
 
-      final Complex[] productTransform = SignalTransformer.multiply(signalTransform, kernelTransform);
-      final double[] convolutionResult = SignalTransformer.ifft(productTransform);
+   // Multiply in frequency domain (equivalent to convolution in time)
+   final Complex[] productTransform = SignalTransformer.multiply(signalTransform, kernelTransform);
+   final double[] convolutionResult = SignalTransformer.ifft(productTransform);
 
-      return extractValidPortion(convolutionResult, resultLength);
-   }
+   return extractValidPortion(convolutionResult, resultLength);
 }
 ```
 
-The steps are straightforward:
+> **See the complete implementation:
+** [FrequencyDomainAdapter.java](https://github.com/LiveNathan/overlap-save-demo/blob/main/src/main/java/dev/nathanlively/overlap_save_demo/FrequencyDomainAdapter.java)
 
+The steps are straightforward:
 1. **Pad both inputs** to the next power of two (FFT requirement)
 2. **Transform to frequency domain** using FFT
 3. **Multiply** the frequency representations (this is where the magic happens)
@@ -186,71 +181,46 @@ that account for this corruption.
 ## Overlap Save: The Real-Time Solution
 
 The overlap save method works by:
-
 1. **Processing overlapping input blocks** (not overlapping outputs like overlap-add)
 2. **Discarding the corrupted samples** from each result
 3. **Keeping only the valid portion** from each block
 
-Here's the complete implementation:
+Here are the key concepts from the implementation:
 
 ```java
-public class OverlapSaveAdapter implements Convolution {
-   @Override
-   public double[] with(double[] signal, double[] kernel) {
-      SignalTransformer.validate(signal, kernel);
+public double[] with(double[] signal, double[] kernel) {
+   // Calculate block processing parameters
+   int fftSize = calculateOptimalFftSize(signal.length, kernel.length);
+   int blockSize = fftSize - kernel.length + 1;  // Valid samples per block
+   int blockStartIndex = kernel.length - 1;      // Where valid data starts
 
-      int kernelLength = kernel.length;
-      int fftSize = calculateOptimalFftSize(signal.length, kernelLength);
-      int blockSize = fftSize - kernelLength + 1;  // Valid samples per block
-      int blockStartIndex = kernelLength - 1;       // Where valid data starts
-      int resultLength = signal.length + kernelLength - 1;
+   // Pre-compute kernel FFT (done once, reused for all blocks)
+   Complex[] kernelTransform = SignalTransformer.fft(SignalTransformer.pad(kernel, fftSize));
 
-      // Pre-compute kernel FFT (done once, reused for all blocks)
-      double[] paddedKernel = SignalTransformer.pad(kernel, fftSize);
-      Complex[] kernelTransform = SignalTransformer.fft(paddedKernel);
+   // Process each overlapping block
+   int totalBlocks = (signal.length + blockSize - 1) / blockSize;
+   for (int blockIndex = 0; blockIndex < totalBlocks; blockIndex++) {
+      // Extract overlapping block, transform, multiply, inverse transform
+      double[] block = extractSignalBlock(paddedSignal, blockIndex * blockSize, fftSize);
+      Complex[] blockTransform = SignalTransformer.fft(block);
+      Complex[] convolutionTransform = SignalTransformer.multiply(blockTransform, kernelTransform);
+      double[] blockResult = SignalTransformer.ifft(convolutionTransform);
 
-      double[] result = new double[resultLength];
-
-      // Pad signal at start for overlap
-      double[] paddedSignal = SignalTransformer.pad(
-              signal,
-              blockStartIndex, // Start padding for overlap
-              resultLength - signal.length - blockStartIndex  // End padding
-      );
-
-      // Process each overlapping block
-      int totalBlocks = (signal.length + blockSize - 1) / blockSize;
-      for (int blockIndex = 0; blockIndex < totalBlocks; blockIndex++) {
-         int nextBlockStartIndex = blockIndex * blockSize;
-
-         // Extract overlapping block
-         double[] block = extractSignalBlock(paddedSignal, nextBlockStartIndex, fftSize);
-
-         // Frequency domain convolution
-         Complex[] blockTransform = SignalTransformer.fft(block);
-         Complex[] convolutionTransform = SignalTransformer.multiply(blockTransform, kernelTransform);
-         double[] blockResult = SignalTransformer.ifft(convolutionTransform);
-
-         // Save only the valid portion (discard aliased samples)
-         int validLength = Math.min(blockSize, resultLength - nextBlockStartIndex);
-
-         if (validLength > 0) {
-            System.arraycopy(
-                    blockResult, blockStartIndex,  // Skip corrupted samples
-                    result, nextBlockStartIndex,   // Place in final result
-                    validLength);
-         }
-      }
-
-      return result;
+      // Save only the valid portion (discard aliased samples)
+      int validLength = Math.min(blockSize, resultLength - blockIndex * blockSize);
+      System.arraycopy(blockResult, blockStartIndex, result, blockIndex * blockSize, validLength);
    }
+
+   return result;
 }
 ```
+
+> **See the complete implementation:
+** [OverlapSaveAdapter.java](https://github.com/LiveNathan/overlap-save-demo/blob/main/src/main/java/dev/nathanlively/overlap_save_demo/OverlapSaveAdapter.java)
 
 ### The Key Insight: Block Sizing
 
 The magic numbers in overlap save:
-
 - **FFT Size**: Must be power of two, determines computational cost per block
 - **Block Size**: `fftSize - kernelLength + 1` valid samples per block
 - **Overlap**: Each block overlaps by `kernelLength - 1` samples with the previous
@@ -260,34 +230,24 @@ overhead) but lower latency. The optimal size depends on your performance requir
 
 ### FFT Size Optimization
 
-My implementation includes adaptive FFT sizing:
+My implementation includes adaptive FFT sizing based on signal and kernel characteristics:
 
 ```java
 int calculateOptimalFftSize(int signalLength, int kernelLength) {
    int minSize = Math.max(2 * kernelLength - 1, 64);
    int optimalSize = CommonUtil.nextPowerOfTwo(minSize);
 
-   // For large signals, consider efficiency trade-offs
+   // For large signals, try larger FFT sizes and pick the most efficient
    if (signalLength > 10 * kernelLength) {
-      // Try larger FFT sizes and pick the most efficient
-      int bestSize = optimalSize;
-      double bestEfficiency = calculateEfficiency(signalLength, kernelLength, optimalSize);
-
-      for (int size = optimalSize * 2; size <= Math.min(optimalSize * 4, signalLength); size *= 2) {
-         double efficiency = calculateEfficiency(signalLength, kernelLength, size);
-         if (efficiency > bestEfficiency) {
-            bestSize = size;
-            bestEfficiency = efficiency;
-         } else {
-            break;
-         }
-      }
-      return bestSize;
+      // Evaluate efficiency trade-offs for different sizes...
    }
 
    return optimalSize;
 }
 ```
+
+> **See the complete optimization logic:
+** [OverlapSaveAdapter.java#calculateOptimalFftSize](https://github.com/LiveNathan/overlap-save-demo/blob/main/src/main/java/dev/nathanlively/overlap_save_demo/OverlapSaveAdapter.java)
 
 ## Performance Comparison
 
@@ -305,20 +265,17 @@ is ~40x faster than time domain convolution.
 ## When to Use Each Method
 
 **Time Domain Convolution:**
-
 - Kernels < 64 samples
 - Offline processing where simplicity matters
 - Educational purposes (easiest to understand)
 - Memory-constrained environments
 
 **Basic Frequency Domain:**
-
 - Medium kernels (64-1024 samples)
 - Offline processing with known signal length
 - One-shot convolutions
 
 **Overlap Save:**
-
 - Real-time processing (any kernel size)
 - Long kernels (> 1024 samples)
 - Streaming applications
@@ -357,7 +314,6 @@ The convolution theorem is the key insight that makes frequency domain processin
 **Frequency Domain:** `FFT(signal) × FFT(kernel) = FFT(result)` (multiplication)
 
 This works because:
-
 1. Convolution is equivalent to correlation with a flipped kernel
 2. FFT naturally handles the kernel flipping through phase relationships
 3. Multiplication in frequency domain preserves the correct phase relationships
@@ -365,12 +321,10 @@ This works because:
 ### Why FFT is Fast
 
 FFT reduces complexity from O(N²) to O(N log N) through divide-and-conquer:
-
 - **Direct DFT**: For each output, compute sum over all inputs = N × N operations
 - **FFT**: Recursively split problem in half = N × log₂(N) operations
 
 For a 8192-point transform:
-
 - **Direct DFT**: 67 million operations
 - **FFT**: 106 thousand operations
 - **Speedup**: ~630x faster
@@ -388,7 +342,6 @@ well, but it's why very small kernels still favor time domain approaches.
 ## Practical Implementation Tips
 
 ### Testing Strategy
-
 I parameterize all tests to run against every implementation:
 
 ```java
@@ -413,25 +366,29 @@ subtle artifacts.
 
 **Kernel Normalization:** Audio applications often need normalized kernels to prevent amplitude changes.
 
+> **See the complete test suite with performance benchmarks:
+** [ConvolutionTest.java](https://github.com/LiveNathan/overlap-save-demo/blob/main/src/test/java/dev/nathanlively/overlap_save_demo/ConvolutionTest.java)
+
 ### Signal Processing Infrastructure
 
 I factor common operations into a utility class:
 
 ```java
 public class SignalTransformer {
-   public static Complex[] fft(double[] signal) { /* FFT implementation */ }
+   public static Complex[] fft(double[] signal) { /* ... */ }
 
-   public static double[] ifft(Complex[] transform) { /* IFFT implementation */ }
+   public static double[] ifft(Complex[] transform) { /* ... */ }
 
-   public static Complex[] multiply(Complex[] a, Complex[] b) { /* Element-wise multiplication */ }
+   public static Complex[] multiply(Complex[] a, Complex[] b) { /* ... */ }
 
-   public static double[] pad(double[] array, int startPad, int endPad) { /* Flexible padding */ }
+   public static double[] pad(double[] array, int startPad, int endPad) { /* ... */ }
 
-   public static void validate(double[] signal, double[] kernel) { /* Input validation */ }
+   public static void validate(double[] signal, double[] kernel) { /* ... */ }
 }
 ```
 
-This keeps the convolution implementations focused on their core algorithms.
+> **See the complete utility implementation:
+** [SignalTransformer.java](https://github.com/LiveNathan/overlap-save-demo/blob/main/src/main/java/dev/nathanlively/overlap_save_demo/SignalTransformer.java)
 
 ## Next Steps: Advanced Topics
 
@@ -457,5 +414,5 @@ For my audio processing project, overlap save delivered the real-time performanc
 flexibility to change impulse responses dynamically. The key was building understanding through working code rather than
 getting lost in mathematical abstractions.
 
-**The code examples in this post are available on GitHub, including the complete test suite and performance benchmarks.
-**
+**All code examples, complete implementations, and performance benchmarks are available in
+the [overlap-save-demo repository](https://github.com/LiveNathan/overlap-save-demo).**

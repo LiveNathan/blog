@@ -89,15 +89,16 @@ original code is elegant but uses academic variable names and defensive boundary
 
 ```java
 // Original Apache implementation (simplified)
-for(int n = 0;
-n<totalLength;n++){
-double yn = 0;
-int k = Math.max(0, n + 1 - xLen);
-int j = n - k;
-        while(k<hLen &&j >=0){
-yn +=x[j--]*h[k++];
+public static double[] convolve(double[] x, double[] h) {
+    for (int n = 0; n < totalLength; n++) {
+        double yn = 0;
+        int k = Math.max(0, n + 1 - xLen);
+        int j = n - k;
+        while (k < hLen && j >= 0) {
+            yn += x[j--] * h[k++];
         }
-y[n]=yn;
+        y[n] = yn;
+    }
 }
 ```
 
@@ -296,7 +297,7 @@ The overlap save advantage becomes more pronounced with different kernel/signal 
 **Time Domain Convolution:**
 
 - Kernels < 64 samples
-- Offline processing where simplicity matters
+- Offline processing where simplicity matters or fine-grained control on a sample-by-sample basis
 - Educational purposes (easiest to understand)
 - Memory-constrained environments
 
@@ -315,67 +316,6 @@ The overlap save advantage becomes more pronounced with different kernel/signal 
 - When you need consistent low-latency performance
 - Best overall performance across different signal/kernel combinations
 
-## The Theory Behind the Magic
-
-Now that we've built working implementations, let's understand why this works.
-
-### Mathematical Foundation
-
-The mathematical definition of convolution looks intimidating:
-
-$(x * h)[n] = \sum_{m=-\infty}^{\infty} x[m] \cdot h[n-m]$
-
-But in code, it's just sliding a flipped kernel over a signal:
-
-```java
-for(int outputPos = 0;
-outputPos<resultLength;outputPos++){
-double sum = 0;
-    for(
-int i = 0;
-i<kernelLength;i++){
-sum +=signal[outputPos +i]*kernel[kernelLength -1-i];  // Note the flip
-        }
-result[outputPos]=sum;
-}
-```
-
-### The Convolution Theorem
-
-The convolution theorem is the key insight that makes frequency domain processing possible:
-
-**Time Domain:** `signal * kernel = result` (convolution)  
-**Frequency Domain:** `FFT(signal) × FFT(kernel) = FFT(result)` (multiplication)
-
-This works because:
-
-1. Convolution is equivalent to correlation with a flipped kernel
-2. FFT naturally handles the kernel flipping through phase relationships
-3. Multiplication in frequency domain preserves the correct phase relationships
-
-### Why FFT is Fast
-
-FFT reduces complexity from O(N²) to O(N log N) through divide-and-conquer:
-
-- **Direct DFT**: For each output, compute sum over all inputs = N × N operations
-- **FFT**: Recursively split problem in half = N × log₂(N) operations
-
-For a 8192-point transform:
-
-- **Direct DFT**: 67 million operations
-- **FFT**: 106 thousand operations
-- **Speedup**: ~630x faster
-
-### Real-World Considerations
-
-**Numerical Precision:** Floating-point arithmetic introduces small errors. My tests verify results match to 1e-15
-precision - excellent for audio applications.
-
-**Memory Access Patterns:** FFT algorithms are memory-intensive with irregular access patterns. Modern CPUs handle this
-well, but it's why very small kernels still favor time domain approaches.
-
-**Cache Efficiency:** Block processing improves CPU cache utilization by reusing the kernel FFT across multiple blocks.
-
 ## Practical Implementation Tips
 
 ### Testing Strategy
@@ -393,7 +333,7 @@ static Stream<Convolution> allImplementations() {
 }
 ```
 
-This ensures behavioral consistency while I optimize for performance.
+This ensures behavioral consistency.
 
 ### Common Pitfalls
 
@@ -404,12 +344,12 @@ subtle artifacts.
 
 **Kernel Normalization:** Audio applications often need normalized kernels to prevent amplitude changes.
 
-> **See the complete test suite with performance benchmarks:
-** [ConvolutionTest.java](https://github.com/LiveNathan/overlap-save-demo/blob/main/src/test/java/dev/nathanlively/overlap_save_demo/ConvolutionTest.java)
+See the complete test suite with performance
+benchmarks: [ConvolutionTest.java](https://github.com/LiveNathan/overlap-save-demo/blob/main/src/test/java/dev/nathanlively/overlap_save_demo/ConvolutionTest.java)
 
 ### Signal Processing Infrastructure
 
-I factor common operations into a utility class:
+I factored common operations into a utility class:
 
 ```java
 public class SignalTransformer {
@@ -425,32 +365,26 @@ public class SignalTransformer {
 }
 ```
 
-> **See the complete utility implementation:
-** [SignalTransformer.java](https://github.com/LiveNathan/overlap-save-demo/blob/main/src/main/java/dev/nathanlively/overlap_save_demo/SignalTransformer.java)
+See the complete utility
+implementation: [SignalTransformer.java](https://github.com/LiveNathan/overlap-save-demo/blob/main/src/main/java/dev/nathanlively/overlap_save_demo/SignalTransformer.java)
 
 ## Next Steps: Advanced Topics
 
 This foundation enables more sophisticated techniques:
 
-**Frequency Domain Crossfading:** Change kernels smoothly during processing by interpolating their frequency
-representations.
-
-**Partitioned Convolution:** Split very long kernels into multiple blocks for even better efficiency.
-
-**Non-Uniform Partitioning:** Use different block sizes for different frequency ranges to optimize CPU vs. latency
+- Frequency Domain Crossfading: Save yourself an extra domain transformation.
+- Partitioned Convolution: Split very long kernels into multiple blocks for even better efficiency.
+- Non-Uniform Partitioning: Use different block sizes for different frequency ranges to optimize CPU vs. latency
 trade-offs.
-
-**GPU Acceleration:** Modern GPUs excel at FFT operations, offering another 10-100x speedup for suitable applications.
+- SIMD processing: Use the Java Vector API to leverage native vector instructions.
 
 ## Conclusion
 
-The overlap save method transforms convolution from an academic curiosity into a practical real-time processing
+The overlap save method transforms convolution from a time consuming academic curiosity into a practical real-time
+processing
 technique. By understanding the progression from time domain through frequency domain to block processing, we can make
 informed decisions about which approach fits our performance requirements.
 
 For my audio processing project, overlap save delivered the real-time performance I needed while maintaining the
 flexibility to change impulse responses dynamically. The key was building understanding through working code rather than
 getting lost in mathematical abstractions.
-
-**All code examples, complete implementations, and performance benchmarks are available in
-the [overlap-save-demo repository](https://github.com/LiveNathan/overlap-save-demo).**

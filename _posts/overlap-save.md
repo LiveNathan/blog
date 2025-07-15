@@ -1,13 +1,15 @@
 # Overlap Save Method for Frequency Domain Convolution: A Developer's Guide
 
-As a sound engineer turned software developer I know a little about audio and a little about signal processing, but not
-enough to say, write a convolution function from scratch. So when I got to the point in my work
-on [GainGuardian](https://www.gainguardian.com/) that I needed to switch from time domain convolutin to frequency domain
-convolution I started looking around for frameworks and examples in Java, I decided to write my own. There are many
-examples for matlab and a few for C and python, but nothing that felt readable and approachable. Most materials were
-either too mathematical or too abstract.
+As a sound engineer turned a software developer, I know a little about audio and a little about signal processing, but
+not enough to, say, write a convolution function from scratch. When I reached the point in my work
+on [GainGuardian](https://www.gainguardian.com/) where I needed to switch from time domain convolution to frequency
+domain convolution, I started looking around for frameworks and examples in Java. Finding nothing that felt readable and
+approachable, I decided to write my own.
 
-> C is great for machines, not for people.
+There are many examples for MATLAB and a few for C and Python, but most materials were either too mathematical or too
+abstract.
+
+> C is great for machines, not for people. — Josh Long
 
 Yes, shots fired indeed.
 
@@ -16,10 +18,10 @@ The overlap save method attracted me for two main reasons:
 1. Efficiency (compared to overlap-add)
 2. Opportunity for crossfading without leaving the frequency domain
 
-This post is my attempt to explain overlap save the way I wish someone had explained it to me: through working code,
-step-by-step implementation, and practical examples. We'll build up from time domain convolution, refactor it into
-frequency domain approaches, and finally implement overlap save—all while maintaining test coverage to verify our
-results.
+This post is my attempt to explain overlap save (and better understand it myself) the way I wish someone had explained
+it to me: through working code, step-by-step implementation, and practical examples. We'll build up from time domain
+convolution, refactor it into frequency domain approaches, and finally implement overlap save—all while maintaining test
+coverage to verify our results.
 
 All the code in this post is available in
 the [overlap-save-demo repository](https://github.com/LiveNathan/overlap-save-demo) with complete implementations and

@@ -1,3 +1,10 @@
+---
+layout: post
+title: "Overlap Save Method for Frequency Domain Convolution: A Developer's Guide"
+date: 2025-07-15 06:00:00 -0000
+categories: [ java, signal-processing, audio, convolution, fft, frequency-domain, performance, real-time ]
+---
+
 # Overlap Save Method for Frequency Domain Convolution: A Developer's Guide
 
 As a sound engineer turned a software developer, I know a little about audio and a little about signal processing, but

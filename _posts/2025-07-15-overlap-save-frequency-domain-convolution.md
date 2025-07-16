@@ -201,6 +201,8 @@ FFT treats this as if the signal repeats:
 The wraparound effect corrupts the first `kernelLength - 1` samples of each block result. The solution? Overlap methods
 that account for this corruption.
 
+![circular-vs-linear-convolution.svg](../assets/images/circular-vs-linear-convolution.svg)
+
 ## Overlap Save
 
 The overlap save method works by:
@@ -238,6 +240,8 @@ public double[] with(double[] signal, double[] kernel) {
     return result;
 }
 ```
+
+![overlap-save-block-processing.svg](../assets/images/overlap-save-block-processing.svg)
 
 See the complete
 implementation: [OverlapSaveAdapter.java](https://github.com/LiveNathan/overlap-save-demo/blob/main/src/main/java/dev/nathanlively/overlap_save_demo/OverlapSaveAdapter.java)

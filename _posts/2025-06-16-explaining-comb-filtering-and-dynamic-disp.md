@@ -1,3 +1,10 @@
+---
+layout: post
+title: "How to Explain Comb Filtering and Dynamic DiSP to Anyone"
+date: 2025-06-16 08:00:00 -0000
+categories: [ audio, signal-processing, comb-filtering, disp, gainguardian, communication, explanation ]
+---
+
 # How to Explain Comb Filtering and Dynamic DiSP
 
 ## How do you explain comb filtering?

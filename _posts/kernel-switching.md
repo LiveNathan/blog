@@ -1,3 +1,116 @@
+Picking up from where we left off on the last blog post, I created a new project and copied in the OverlapSaveAdapter
+and Convolution interface. Then I added a new interface method to handled multiple kernels and an object to carry them:
+
+`double[] with(double[] signal, List<KernelSwitch> kernelSwitches);`
+
+Since I often get nervous about what to do next (AM I DOING IT RIGHT???) I like to follow prescriptions like ZOMBIES.
+Let's use that to TDD ourselves to glory.
+
+We'll start with the zero case that should simply throw an exception and make that pass.
+
+```java
+
+@Test
+void givenEmptyKernelSwitches_whenConvolving_thenThrowsException() {
+    double[] signal = {1, 2, 3};
+    List<KernelSwitch> emptyKernelSwitches = List.of();
+
+    assertThatThrownBy(() -> convolution.with(signal, emptyKernelSwitches))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("kernel switches cannot be empty");
+}
+```
+
+Then we'll do the "one" case, which are almost exactly the same as our previous tests:
+
+```java
+
+@Test
+void givenSingleImpulseKernel_whenConvolvingWithCollection_thenReturnsIdentity() {
+    double[] signal = {1};
+    double[] kernel = {1};
+    KernelSwitch kernelSwitch = new KernelSwitch(0, kernel);
+
+    double[] actual = convolution.with(signal, List.of(kernelSwitch));
+
+    assertThat(actual).isEqualTo(kernel);
+}
+```
+
+Now we get to the meat, the many case:
+
+```java
+
+@Test
+void givenMultipleKernelSwitches_whenConvolving_thenAppliesCorrectKernelAtEachSampleIndex() {
+    double[] signal = {1, 1, 1, 1}; // Simple signal for easy verification
+    double[] kernel1 = {0.5}; // First kernel
+    double[] kernel2 = {2.0}; // Second kernel
+
+    List<KernelSwitch> kernelSwitches = List.of(
+            new KernelSwitch(0, kernel1), // Use kernel1 from the start
+            new KernelSwitch(2, kernel2)  // Switch to kernel2 at sample 2
+    );
+
+    double[] actual = convolution.with(signal, kernelSwitches);
+
+    // Expected: first two samples convolved with kernel1 (0.5), remaining samples with kernel2 (2.0)
+    double[] expected = {0.5, 0.5, 2.0, 2.0};
+    assertThat(actual).usingElementComparator(doubleComparator())
+            .containsExactly(expected);
+}
+```
+
+This one will be a little tricky to get to pass. My first idea is to simply segment the signal based on kernel switch
+points and convolve each segment separately with the appropriate kernel, then combine the results in the end.
+
+```java
+
+@Override
+public double[] with(double[] signal, List<KernelSwitch> kernelSwitches) {
+    if (kernelSwitches.isEmpty()) {
+        throw new IllegalArgumentException("kernel switches cannot be empty");
+    }
+
+    // Sort kernel switches by sample index to handle them in order
+    List<KernelSwitch> sortedSwitches = kernelSwitches.stream()
+            .sorted(Comparator.comparingInt(KernelSwitch::sampleIndex))
+            .toList();
+
+    SignalTransformer.validate(signal, sortedSwitches.getFirst().kernel());
+
+    int resultLength = signal.length + getMaxKernelLength(sortedSwitches) - 1;
+    double[] result = new double[Math.max(resultLength, signal.length)];
+
+    // Process each segment with its corresponding kernel
+    for (int i = 0; i < sortedSwitches.size(); i++) {
+        KernelSwitch currentSwitch = sortedSwitches.get(i);
+        int startIndex = currentSwitch.sampleIndex();
+        int endIndex = (i + 1 < sortedSwitches.size())
+                ? sortedSwitches.get(i + 1).sampleIndex()
+                : signal.length;
+
+        if (startIndex < signal.length && endIndex > startIndex) {
+            // Extract signal segment
+            double[] segment = new double[endIndex - startIndex];
+            System.arraycopy(signal, startIndex, segment, 0, segment.length);
+
+            // Convolve segment with current kernel
+            double[] segmentResult = with(segment, currentSwitch.kernel());
+
+            // Copy result back, handling overlap
+            int copyLength = Math.min(segmentResult.length, result.length - startIndex);
+            System.arraycopy(segmentResult, 0, result, startIndex, copyLength);
+        }
+    }
+
+    return result;
+}
+```
+
+The tests pass! But, that was a little too easy? I get the feeling that we are ignoring the effects of convolution
+around the kernel switch points?
+
 ## 6. Crossfades Between Kernels
 
 One of the most challenging aspects of real-time convolution is handling changes in the impulse response. For

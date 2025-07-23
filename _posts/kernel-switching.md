@@ -62,7 +62,8 @@ void givenMultipleKernelSwitches_whenConvolving_thenAppliesCorrectKernelAtEachSa
 ```
 
 This one will be a little tricky to get to pass. My first idea is to simply segment the signal based on kernel switch
-points and convolve each segment separately with the appropriate kernel, then combine the results in the end.
+points and convolve each segment separately with the appropriate kernel, then combine the results in the end. Let's call
+this the first naive solution.
 
 ```java
 
@@ -109,7 +110,114 @@ public double[] with(double[] signal, List<KernelSwitch> kernelSwitches) {
 ```
 
 The tests pass! But, that was a little too easy? I get the feeling that we are ignoring the effects of convolution
-around the kernel switch points?
+around the kernel transition region. Let's write a test to prove this.
+
+Here's an idea: divide and conquer. Us the OLS method as the default. If the next processing block contains multiple
+kernels, switch to time domain convolution where we have fine grained control over every sample.
+
+```java
+
+@Override
+public double[] with(double[] signal, List<KernelSwitch> kernelSwitches) {
+    if (kernelSwitches.isEmpty()) {
+        throw new IllegalArgumentException("kernel switches cannot be empty");
+    }
+
+    // Validate and sort switches
+    int kernelLength = kernelSwitches.getFirst().kernel().length;
+    for (KernelSwitch ks : kernelSwitches) {
+        if (ks.kernel().length != kernelLength) {
+            throw new IllegalArgumentException("all kernels must have the same length");
+        }
+    }
+
+    List<KernelSwitch> sortedSwitches = kernelSwitches.stream()
+            .sorted(Comparator.comparingInt(KernelSwitch::sampleIndex))
+            .toList();
+
+    SignalTransformer.validate(signal, sortedSwitches.getFirst().kernel());
+
+    // If there's only one kernel, use standard OLS
+    if (sortedSwitches.size() == 1) {
+        return with(signal, sortedSwitches.getFirst().kernel());
+    }
+
+    int resultLength = signal.length + kernelLength - 1;
+    double[] result = new double[resultLength];
+
+    // Pre-compute FFTs of all kernels
+    int fftSize = calculateOptimalFftSize(signal.length, kernelLength);
+    Complex[][] kernelTransforms = new Complex[sortedSwitches.size()][];
+    for (int i = 0; i < sortedSwitches.size(); i++) {
+        double[] paddedKernel = SignalTransformer.pad(sortedSwitches.get(i).kernel(), fftSize);
+        kernelTransforms[i] = SignalTransformer.fft(paddedKernel);
+    }
+
+    // Process using modified OLS that switches kernels
+    int blockSize = fftSize - kernelLength + 1;
+    int blockStartIndex = kernelLength - 1;
+
+    // Pad signal
+    double[] paddedSignal = SignalTransformer.pad(
+            signal,
+            blockStartIndex,
+            resultLength - signal.length - blockStartIndex
+    );
+
+    // Process blocks
+    int totalBlocks = (signal.length + blockSize - 1) / blockSize;
+    for (int blockIndex = 0; blockIndex < totalBlocks; blockIndex++) {
+        int outputStart = blockIndex * blockSize;
+
+        // Extract block
+        double[] block = extractSignalBlock(paddedSignal, outputStart, fftSize);
+        Complex[] blockTransform = SignalTransformer.fft(block);
+
+        // Find which kernels are active in this block's output range
+        int blockOutputEnd = Math.min(outputStart + blockSize, resultLength);
+        boolean multipleKernels = false;
+        int firstKernelIdx = -1;
+
+        for (int n = outputStart; n < blockOutputEnd; n++) {
+            int kernelIdx = findKernelIndex(n, sortedSwitches);
+            if (firstKernelIdx == -1) {
+                firstKernelIdx = kernelIdx;
+            } else if (kernelIdx != firstKernelIdx) {
+                multipleKernels = true;
+                break;
+            }
+        }
+
+        if (!multipleKernels) {
+            // Single kernel for the entire block-use standard OLS
+            Complex[] convolutionTransform = SignalTransformer.multiply(
+                    blockTransform, kernelTransforms[firstKernelIdx]
+            );
+            double[] blockResult = SignalTransformer.ifft(convolutionTransform);
+
+            int validLength = Math.min(blockSize, resultLength - outputStart);
+            System.arraycopy(blockResult, blockStartIndex, result, outputStart, validLength);
+        } else {
+            // Multiple kernels in block - use time domain for this block only
+            for (int n = outputStart; n < blockOutputEnd; n++) {
+                int kernelIdx = findKernelIndex(n, sortedSwitches);
+                double[] kernel = sortedSwitches.get(kernelIdx).kernel();
+
+                double sum = 0.0;
+                for (int k = 0; k < kernelLength; k++) {
+                    int signalIndex = n - k;
+                    if (signalIndex >= 0 && signalIndex < signal.length) {
+                        sum += signal[signalIndex] * kernel[k];
+                    }
+                }
+                result[n] = sum;
+            }
+        }
+    }
+
+    return result;
+}
+```
 
 ## 6. Crossfades Between Kernels
 

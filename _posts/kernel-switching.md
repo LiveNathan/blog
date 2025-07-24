@@ -9,29 +9,26 @@ Let's use that to TDD ourselves to glory.
 We'll start with the zero case that should simply throw an exception and make that pass.
 
 ```java
-
 @Test
-void givenEmptyKernelSwitches_whenConvolving_thenThrowsException() {
+void givenEmptyKernels_whenConvolving_thenThrowsException() {
     double[] signal = {1, 2, 3};
-    List<KernelSwitch> emptyKernelSwitches = List.of();
+    List<double[]> emptyKernels = List.of();
 
-    assertThatThrownBy(() -> convolution.with(signal, emptyKernelSwitches))
+    assertThatThrownBy(() -> convolution.with(signal, emptyKernels, 2))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("kernel switches cannot be empty");
+            .hasMessageContaining("kernels cannot be empty");
 }
 ```
 
 Then we'll do the "one" case, which are almost exactly the same as our previous tests:
 
 ```java
-
 @Test
 void givenSingleImpulseKernel_whenConvolvingWithCollection_thenReturnsIdentity() {
     double[] signal = {1};
     double[] kernel = {1};
-    KernelSwitch kernelSwitch = new KernelSwitch(0, kernel);
 
-    double[] actual = convolution.with(signal, List.of(kernelSwitch));
+    double[] actual = convolution.with(signal, List.of(kernel), 1);
 
     assertThat(actual).isEqualTo(kernel);
 }
@@ -40,19 +37,15 @@ void givenSingleImpulseKernel_whenConvolvingWithCollection_thenReturnsIdentity()
 Now we get to the meat, the many case:
 
 ```java
-
 @Test
-void givenMultipleKernelSwitches_whenConvolving_thenAppliesCorrectKernelAtEachSampleIndex() {
+void givenMultipleKernels_whenConvolving_thenAppliesCorrectKernelAtEachSampleIndex() {
     double[] signal = {1, 1, 1, 1}; // Simple signal for easy verification
     double[] kernel1 = {0.5}; // First kernel
     double[] kernel2 = {2.0}; // Second kernel
 
-    List<KernelSwitch> kernelSwitches = List.of(
-            new KernelSwitch(0, kernel1), // Use kernel1 from the start
-            new KernelSwitch(2, kernel2)  // Switch to kernel2 at sample 2
-    );
+    List<double[]> kernelSwitches = List.of(kernel1, kernel2);
 
-    double[] actual = convolution.with(signal, kernelSwitches);
+    double[] actual = convolution.with(signal, kernelSwitches, 2);
 
     // Expected: first two samples convolved with kernel1 (0.5), remaining samples with kernel2 (2.0)
     double[] expected = {0.5, 0.5, 2.0, 2.0};
@@ -66,38 +59,31 @@ points and convolve each segment separately with the appropriate kernel, then co
 this the first naive solution.
 
 ```java
-
 @Override
-public double[] with(double[] signal, List<KernelSwitch> kernelSwitches) {
-    if (kernelSwitches.isEmpty()) {
-        throw new IllegalArgumentException("kernel switches cannot be empty");
+public double[] with(double[] signal, List<double[]> kernels, int periodSamples) {
+    if (kernels.isEmpty()) {
+        throw new IllegalArgumentException("kernels cannot be empty");
+    }
+    int kernelLength = kernels.getFirst().length;
+    if (kernels.stream().anyMatch(kernel -> kernel.length != kernelLength)) {
+        throw new IllegalArgumentException("all kernels must have the same length");
     }
 
-    // Sort kernel switches by sample index to handle them in order
-    List<KernelSwitch> sortedSwitches = kernelSwitches.stream()
-            .sorted(Comparator.comparingInt(KernelSwitch::sampleIndex))
-            .toList();
-
-    SignalTransformer.validate(signal, sortedSwitches.getFirst().kernel());
-
-    int resultLength = signal.length + getMaxKernelLength(sortedSwitches) - 1;
+    int resultLength = signal.length + kernelLength - 1;
     double[] result = new double[Math.max(resultLength, signal.length)];
 
     // Process each segment with its corresponding kernel
-    for (int i = 0; i < sortedSwitches.size(); i++) {
-        KernelSwitch currentSwitch = sortedSwitches.get(i);
-        int startIndex = currentSwitch.sampleIndex();
-        int endIndex = (i + 1 < sortedSwitches.size())
-                ? sortedSwitches.get(i + 1).sampleIndex()
-                : signal.length;
+    for (int i = 0; i < kernels.size(); i++) {
+        int startIndex = i * periodSamples;
+        int endIndex = Math.min((i + 1) * periodSamples, signal.length);
 
         if (startIndex < signal.length && endIndex > startIndex) {
             // Extract signal segment
             double[] segment = new double[endIndex - startIndex];
             System.arraycopy(signal, startIndex, segment, 0, segment.length);
 
-            // Convolve segment with current kernel
-            double[] segmentResult = with(segment, currentSwitch.kernel());
+            // Convolve a segment with current kernel
+            double[] segmentResult = with(segment, kernels.get(i));
 
             // Copy result back, handling overlap
             int copyLength = Math.min(segmentResult.length, result.length - startIndex);
@@ -111,6 +97,48 @@ public double[] with(double[] signal, List<KernelSwitch> kernelSwitches) {
 
 The tests pass! But, that was a little too easy? I get the feeling that we are ignoring the effects of convolution
 around the kernel transition region. Let's write a test to prove this.
+
+Let's write a failing test to prove this.
+
+```java
+
+@Test
+void givenKernelSwitchAtBoundary_whenConvolving_thenHandlesTransitionProperly() {
+    double[] signal = {1, 1, 1, 1};
+    double[] kernel1 = {1, 1}; // Active for output samples 0-1
+    double[] kernel2 = {2, 2}; // Active for output samples 2+
+    List<double[]> kernels = List.of(kernel1, kernel2);
+
+    double[] actual = convolution.with(signal, kernels, 2);
+
+    /*
+     * output[0]: Use kernel1 (sample 0 → period 0)
+     *   = signal[0] * kernel1[0] + signal[-1] * kernel1[1]
+     *   = 1 * 1 + 0 * 1 = 1
+     *
+     * output[1]: Use kernel1 (sample 1 → period 0)
+     *   = signal[1] * kernel1[0] + signal[0] * kernel1[1]
+     *   = 1 * 1 + 1 * 1 = 2
+     *
+     * output[2]: Use kernel2 (sample 2 → period 1) ← TRANSITION OCCURS HERE
+     *   = signal[2] * kernel2[0] + signal[1] * kernel2[1]
+     *   = 1 * 2 + 1 * 2 = 4
+     *
+     * output[3]: Use kernel2 (sample 3 → period 1)
+     *   = signal[3] * kernel2[0] + signal[2] * kernel2[1]
+     *   = 1 * 2 + 1 * 2 = 4
+     *
+     * output[4]: Use kernel1 (cycles back)
+     *   = signal[4] * 1 + signal[3] * 1
+     *   = 0 * 1 + 1 * 1 = 1
+     */
+
+    double[] expected = {1, 2, 4, 4, 1};
+    assertThat(actual).hasSize(5);
+    assertThat(actual).usingElementComparator(doubleComparator())
+            .containsExactly(expected);
+}
+```
 
 Here's an idea: divide and conquer. Us the OLS method as the default. If the next processing block contains multiple
 kernels, switch to time domain convolution where we have fine grained control over every sample.

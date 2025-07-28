@@ -101,7 +101,6 @@ around the kernel transition region. Let's write a test to prove this.
 Let's write a failing test to prove this.
 
 ```java
-
 @Test
 void givenKernelSwitchAtBoundary_whenConvolving_thenHandlesTransitionProperly() {
     double[] signal = {1, 1, 1, 1};
@@ -137,6 +136,38 @@ void givenKernelSwitchAtBoundary_whenConvolving_thenHandlesTransitionProperly() 
     assertThat(actual).hasSize(5);
     assertThat(actual).usingElementComparator(doubleComparator())
             .containsExactly(expected);
+}
+```
+
+The test fails. Here is an improved solution that properly handles the kernel transition areas.
+
+```java
+private double[] convolveWithKernelSwitching(double[] signal, List<double[]> kernels, int periodSamples) {
+    int kernelLength = kernels.getFirst().length;
+    int fftSize = CommonUtil.nextPowerOfTwo(periodSamples + kernelLength - 1);
+    int resultLength = signal.length + kernelLength - 1;
+    double[] result = new double[Math.max(resultLength, signal.length)];
+
+    List<Complex[]> kernelTransforms = SignalTransformer.precomputeKernelTransforms(kernels, fftSize);
+    double[] paddedSignal = SignalTransformer.pad(signal, kernelLength - 1, fftSize);
+    int totalBlocks = (resultLength + periodSamples - 1) / periodSamples;
+
+    for (int blockIndex = 0; blockIndex < totalBlocks; blockIndex++) {
+        int outputStartIndex = blockIndex * periodSamples;
+        int kernelIndex = (outputStartIndex / periodSamples) % kernels.size();
+        Complex[] kernelTransform = kernelTransforms.get(kernelIndex);
+
+        int inputStartIndex = blockIndex * periodSamples;
+        double[] blockResult = SignalTransformer.processConvolutionBlock(
+                paddedSignal, inputStartIndex, fftSize, kernelTransform);
+
+        int validLength = Math.min(periodSamples, result.length - outputStartIndex);
+        if (validLength > 0) {
+            System.arraycopy(blockResult, kernelLength - 1, result, outputStartIndex, validLength);
+        }
+    }
+
+    return result.length == resultLength ? result : Arrays.copyOf(result, resultLength);
 }
 ```
 

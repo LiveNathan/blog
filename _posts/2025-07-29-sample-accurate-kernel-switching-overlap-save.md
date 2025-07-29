@@ -7,17 +7,20 @@ categories: [ audio, signal-processing, convolution, kernel-switching, overlap-s
 
 # Sample-Accurate Kernel Switching with Overlap-Save Convolution
 
-Digital audio processing often requires changing filter characteristics in real-time - think of a synthesizer's filter
-envelope sweeping from bright to dark, or a DJ transitioning between effects. But naive kernel switching can introduce
-audible clicks and pops that destroy the listening experience. This post explores implementing sample-accurate kernel
+In the last post we looked at creating our own implementation of the overlap save method (OLS). One of the primary
+reasons that we did that intead of calling a library was so that we could make our own custom changes down the road. One
+of those custom changes that I want to make is to be able to change the kernel used in convolution, not just once, but
+at regular periods. The use case I have in mind is noise cancelling headphones.
+I imagine that as they take samples of audio input from outside your head they then transform those into filters. As the
+outside environment is constantly changing, we need those filters to constantly change as well. This post explores
+implementing sample-accurate kernel
 switching using the overlap-save method.
 
 ## The Problem
 
 When processing audio with convolution-based filters, we sometimes need to change the filter characteristics while the
-audio is playing. Simply swapping out kernels at arbitrary sample boundaries doesn't work - convolution inherently
-creates dependencies between input and output samples that span the kernel length. Ignore these dependencies, and you'll
-hear unwanted artifacts.
+audio is playing. Simply swapping out kernels at arbitrary sample boundaries might work with time domain convolution,
+but in real time processing we want to stay in the frequency domain as much as possible.
 
 ## Why Kernel Switching Matters
 

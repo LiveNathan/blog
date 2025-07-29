@@ -1,3 +1,10 @@
+---
+layout: post
+title: "Sample-Accurate Kernel Switching with Overlap-Save Convolution"
+date: 2025-07-29 08:00:00 -0000
+categories: [ audio, signal-processing, convolution, kernel-switching, overlap-save, tdd, dsp ]
+---
+
 # Sample-Accurate Kernel Switching with Overlap-Save Convolution
 
 Digital audio processing often requires changing filter characteristics in real-time - think of a synthesizer's filter

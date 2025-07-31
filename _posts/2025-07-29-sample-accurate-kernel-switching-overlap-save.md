@@ -317,13 +317,19 @@ We've solved the mathematical correctness problem, but introduced a new one: abr
 artifacts in real audio signals. For a clear demo I convolved a speech clip with two very different sounding kernels,
 switching every 2 seconds.
 
-Convolution with a single kernel
+**Convolution with a single kernel**
 
-[convolution-result-single-kernel.wav](../assets/audio/convolution-result-single-kernel.wav)
+<audio controls>
+  <source src="../assets/audio/convolution-result-single-kernel.wav" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
 
-Convolution with kernel switching every 2 seconds
+**Convolution with kernel switching every 2 seconds**
 
-[convolution-result-multiple-kernel.wav](../assets/audio/convolution-result-multiple-kernel.wav)
+<audio controls>
+  <source src="../assets/audio/convolution-result-multiple-kernel.wav" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
 
 Next time, we'll explore crossfading and windowing techniques to make kernel transitions smooth enough for professional
 audio applications.

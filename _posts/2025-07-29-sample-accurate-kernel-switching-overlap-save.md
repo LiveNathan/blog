@@ -8,21 +8,24 @@ categories: [ audio, signal-processing, convolution, kernel-switching, overlap-s
 # Sample-Accurate Kernel Switching with Overlap-Save Convolution
 
 In the last post we looked at creating our own implementation of the overlap save method (OLS). One of the primary
-reasons that we did that intead of calling a library was so that we could make our own custom changes down the road. One
-of those custom changes that I want to make is to be able to change the kernel used in convolution, not just once, but
-at regular periods. The use case I have in mind is noise cancelling headphones.
-I imagine that as they take samples of audio input from outside your head they then transform those into filters. As the
-outside environment is constantly changing, we need those filters to constantly change as well. This post explores
-implementing sample-accurate kernel
-switching using the overlap-save method.
+reasons we built our own instead of calling a library was to enable custom modifications down the road. One modification
+I want to explore is dynamically changing the convolution kernel at regular intervals during processing.
 
-See all of the code on [GitHub](https://github.com/LiveNathan/convolution-kernel-switching-demo).
+The motivation comes from adaptive audio systems like noise-cancelling headphones. These systems use external
+microphones to capture ambient noise, then adapt their filter coefficients in real-time to generate effective anti-phase
+signals. As the acoustic environment changes, the filter characteristics must change as well to maintain optimal
+cancellation. This post explores implementing sample-accurate kernel switching using the overlap-save method.
+
+See all the code on [GitHub](https://github.com/LiveNathan/convolution-kernel-switching-demo).
 
 ## The Problem
 
 When processing audio with convolution-based filters, we sometimes need to change the filter characteristics while the
-audio is playing. Simply swapping out kernels at arbitrary sample boundaries might work with time domain convolution,
-but in real-time processing we want to stay in the frequency domain as much as possible.
+audio is playing. With frequency-domain methods like overlap-save, this creates a challenge: we process the signal in
+blocks, transforming each block to the frequency domain, multiplying with the kernel's frequency response, then
+transforming back. Simply swapping kernels mid-block would break the mathematical integrity of the convolution
+operation. The challenge is achieving sample-accurate kernel switching while preserving both the correctness and
+efficiency benefits of frequency-domain processing.
 
 ## Extending the Interface
 
@@ -250,7 +253,7 @@ You can see that I've refactored the convolution math into the `SignalTransforme
 focuses on orchestrating the signal transformations and block indexing. This separation of concerns makes the code more
 maintainable and testable.
 
-See all of the code on [GitHub](https://github.com/LiveNathan/convolution-kernel-switching-demo).
+See all the code on [GitHub](https://github.com/LiveNathan/convolution-kernel-switching-demo).
 
 ## Additional Test Cases
 

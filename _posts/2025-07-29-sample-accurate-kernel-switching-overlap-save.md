@@ -320,14 +320,14 @@ switching every 2 seconds.
 **Convolution with a single kernel**
 
 <audio controls>
-  <source src="../assets/audio/convolution-result-single-kernel.wav" type="audio/wav">
+  <source src="https://github.com/LiveNathan/blog//assets/audio/convolution-result-single-kernel.wav" type="audio/wav">
   Your browser does not support the audio element.
 </audio>
 
 **Convolution with kernel switching every 2 seconds**
 
 <audio controls>
-  <source src="../assets/audio/convolution-result-multiple-kernel.wav" type="audio/wav">
+  <source src="https://github.com/LiveNathan/blog//assets/audio/convolution-result-multiple-kernel.wav" type="audio/wav">
   Your browser does not support the audio element.
 </audio>
 

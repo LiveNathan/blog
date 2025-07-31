@@ -16,24 +16,13 @@ outside environment is constantly changing, we need those filters to constantly 
 implementing sample-accurate kernel
 switching using the overlap-save method.
 
+See all of the code on [GitHub](https://github.com/LiveNathan/convolution-kernel-switching-demo).
+
 ## The Problem
 
 When processing audio with convolution-based filters, we sometimes need to change the filter characteristics while the
 audio is playing. Simply swapping out kernels at arbitrary sample boundaries might work with time domain convolution,
-but in real time processing we want to stay in the frequency domain as much as possible.
-
-## Why Kernel Switching Matters
-
-Imagine you're building a synthesizer where the filter cutoff follows an envelope. If you simply swap kernels at
-arbitrary points, you'll hear clicks every time the kernel changes. Sample-accurate switching ensures smooth transitions
-while maintaining the precise timing that audio applications demand.
-
-Real-world examples include:
-
-- Envelope-controlled filters in synthesizers
-- Dynamic EQ that responds to input characteristics
-- Crossfading between different impulse responses
-- Time-varying reverb effects
+but in real-time processing we want to stay in the frequency domain as much as possible.
 
 ## Extending the Interface
 
@@ -58,7 +47,7 @@ The `periodSamples` parameter controls how long each kernel stays active before 
 
 Since I often get nervous about what to do next (AM I DOING IT RIGHT???), I like to follow prescriptions like ZOMBIES.
 ZOMBIES (Zero, One, Many, Boundary, Interface, Exception, Simple) gives us a systematic way to think about test cases.
-For kernel switching, the "boundary" case is particularly crucial - that's where the magic (or disasters) happen.
+For kernel switching, the "boundary" case is particularly crucial—that's where the magic (or disasters) happen.
 
 Let's use ZOMBIES to TDD ourselves to glory.
 
@@ -67,6 +56,7 @@ Let's use ZOMBIES to TDD ourselves to glory.
 We'll start with the zero case that should simply throw an exception:
 
 ```java
+
 @Test
 void givenEmptyKernels_whenConvolving_thenThrowsException() {
     double[] signal = {1, 2, 3};
@@ -81,6 +71,7 @@ void givenEmptyKernels_whenConvolving_thenThrowsException() {
 Then we'll do the "one" case, which should behave exactly like our previous single-kernel tests:
 
 ```java
+
 @Test
 void givenSingleImpulseKernel_whenConvolvingWithCollection_thenReturnsIdentity() {
     double[] signal = {1};
@@ -94,9 +85,10 @@ void givenSingleImpulseKernel_whenConvolvingWithCollection_thenReturnsIdentity()
 
 ## The Many Case: Where It Gets Interesting
 
-Now we get to the meat - the many case:
+Now we get to the interesting stuff—the many case:
 
 ```java
+
 @Test
 void givenMultipleKernels_whenConvolving_thenAppliesCorrectKernelAtEachSampleIndex() {
     double[] signal = {1, 1, 1, 1}; // Simple signal for easy verification
@@ -114,13 +106,14 @@ void givenMultipleKernels_whenConvolving_thenAppliesCorrectKernelAtEachSampleInd
 }
 ```
 
-## The Naive Solution (And Why It's Wrong)
+## The Naive Solution
 
 This test will be tricky to get to pass. My first idea is to simply segment the signal based on kernel switch points and
 convolve each segment separately with the appropriate kernel, then combine the results in the end. Let's call this the
 first naive solution:
 
 ```java
+
 @Override
 public double[] with(double[] signal, List<double[]> kernels, int periodSamples) {
     if (kernels.isEmpty()) {
@@ -157,12 +150,12 @@ public double[] with(double[] signal, List<double[]> kernels, int periodSamples)
 }
 ```
 
-## Houston, We Have a Problem
+## That was TOO easy
 
 The tests pass! 🎉 But wait... that was suspiciously easy.
 
-In audio processing, "easy" solutions often hide nasty surprises. The issue is that we're ignoring the effects of
-convolution around the kernel transition region. Think of it like a sliding window - as the kernel changes, we need to
+The issue is that we're ignoring the effects of
+convolution around the kernel transition region. Think of it like a sliding window—as the kernel changes, we need to
 ensure the window's contents are processed with the correct filter, not chopped up mid-calculation.
 
 Let's write a failing test to prove this problem exists.
@@ -170,6 +163,7 @@ Let's write a failing test to prove this problem exists.
 ## Proving the Problem with a Failing Test
 
 ```java
+
 @Test
 void givenKernelSwitchAtBoundary_whenConvolving_thenHandlesTransitionProperly() {
     double[] signal = {1, 1, 1, 1};
@@ -256,6 +250,8 @@ You can see that I've refactored the convolution math into the `SignalTransforme
 focuses on orchestrating the signal transformations and block indexing. This separation of concerns makes the code more
 maintainable and testable.
 
+See all of the code on [GitHub](https://github.com/LiveNathan/convolution-kernel-switching-demo).
+
 ## Additional Test Cases
 
 With the core logic working, I added several more test cases to ensure robustness:
@@ -283,6 +279,7 @@ void givenLongerSignal_whenConvolving_thenCyclesThroughKernelsCorrectly() {
 ```
 
 **Testing with realistic audio filters:**
+
 ```java
 
 @Test
@@ -307,15 +304,23 @@ This exercise reinforced a key principle in audio DSP: **mathematical correctnes
 The naive segmentation approach seemed simpler but violated the fundamental mathematics of convolution. The block-based
 approach respects the mathematical constraints while still achieving our goal of sample-accurate kernel switching.
 
-Another insight: **test-driven development shines brightest at the boundaries**. The failing boundary test immediately
-exposed the flaw in our reasoning and guided us toward the correct solution.
+Another insight: **test-driven development shines light at the boundaries**. The failing boundary test immediately
+exposed the flaw in our reasoning and guided us toward the correct solution. If we have any other doubts in the future,
+all we need to do is add another test.
 
 ## The Plot Thickens
 
 We've solved the mathematical correctness problem, but introduced a new one: abrupt kernel switches will create audible
-artifacts in real audio signals. The human ear is remarkably sensitive to discontinuities, and switching from a lowpass
-to a highpass filter instantaneously will produce audible clicks.
+artifacts in real audio signals. For a clear demo I convolved a speech clip with two very different sounding kernels,
+switching every 2 seconds.
+
+Convolution with a single kernel
+
+[convolution-result-single-kernel.wav](../assets/audio/convolution-result-single-kernel.wav)
+
+Convolution with kernel switching every 2 seconds
+
+[convolution-result-multiple-kernel.wav](../assets/audio/convolution-result-multiple-kernel.wav)
 
 Next time, we'll explore crossfading and windowing techniques to make kernel transitions smooth enough for professional
-audio applications. We'll also discuss the trade-offs between mathematical precision and perceptual quality - sometimes
-the "mathematically correct" solution isn't the best one for human listeners.
+audio applications.

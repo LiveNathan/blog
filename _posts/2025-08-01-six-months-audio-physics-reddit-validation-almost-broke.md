@@ -12,9 +12,13 @@ processing code. Fun times!
 
 ## Quick review of the last 6 months.
 
-In January, I created an ambitious directory website plan. That got cancelled quickly when I showed it to a business
-coach I respect, and he
-said "the world doesn't need another directory." After a brief existential crisis, I pivoted back to what I actually
+In January, I created
+an [ambitious directory website plan](https://nathanlively.substack.com/p/new-personal-blog-and-business-planhtml?r=hhqf8).
+That [got cancelled quickly](https://nathanlively.substack.com/p/big-plans-fail-fast-looking-for-a-new-directionhtml?r=hhqf8)
+when I showed it to a business coach I respect, and he
+said "the world doesn't need another directory." After a brief existential
+crisis, [I pivoted back](https://nathanlively.substack.com/p/leaving-directories-back-to-audio-physicshtml?r=hhqf8) to
+what I actually
 know: audio physics.
 
 [GainGuardian](https://gainguardian.com/) became my obsession. Adam Hill and I partnered up to commercialize his Diffuse

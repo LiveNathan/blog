@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "From Web App to Desktop: AI mixing console assistant with Vaadin and Conveyor"
-date: 2025-09-05 09:00:00 -0000
+date: 2025-09-05 08:00:00 -0000
 categories: [ micro-saas, java, vaadin, desktop-apps, packaging, conveyor, audio, building-in-public ]
 ---
 

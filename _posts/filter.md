@@ -104,63 +104,37 @@ file after download. This is a false positive detection, which commonly occurs w
 similarly to known threats, or when executables are unsigned.
 
 I had to add my Downloads folder to Windows Defender's exclusion list just to test the app. This doesn't feel like the
-right solution—users shouldn't have to configure their antivirus just to use a legitimate tool.
-
-## Why This Happens (And What Could Fix It)
-
-Unsigned executables built from languages like Java, C#, and Go often trigger false positives because antivirus software
-uses heuristic analysis to detect suspicious patterns in code. Code signing certificates don't guarantee that software
-is safe, but they do establish identity and help build reputation with Windows Defender SmartScreen over time.
-
-Extended Validation (EV) code signing certificates can immediately establish reputation with SmartScreen, while standard
-certificates require building trust over time—typically two to eight weeks of the signed application being downloaded
-and used without issues. However, EV certificates cost $250-700 per year and require an active business license, which
-isn't practical for a small open-source utility.
-
-Even with code signing, each new release of the software has a different hash, so antivirus vendors must re-evaluate it.
-This means submitting false positive reports for every release.
-
-The proper long-term solutions would be:
-
-1. **Sign the executable** with a standard code signing certificate and build reputation over time
-2. **Submit false positive reports** to Microsoft through their Security Intelligence portal after each release
-3. **Distribute through the Microsoft Store**, which pre-screens applications
-4. **Build a desktop application** instead, which could be packaged as an installer that's easier to sign and verify
+right solution. The technically correct solution is probably for me to get a code signing certificate, but for small
+tools and demo apps there's probably a better solution than exluding entire folders from Windows Defender.
 
 ## Lessons Learned
 
 Looking back, I underestimated the complexity of building a production-quality CLI tool. I thought GraalVM would make
 everything simple—just compile to native and ship the executable. In reality:
 
-1. **Windows file path handling is genuinely difficult** when building cross-platform CLI tools. The backslash escape
+1. Windows file path handling is genuinely challenging when building cross-platform CLI tools. The backslash escape
    character issue is fundamental to how shells work, not a Spring-specific problem.
-
-2. **Unsigned executables face significant distribution challenges** on Windows. Users won't download tools that Windows
+2. Unsigned executables face significant distribution challenges on Windows. Users won't download tools that Windows
    Defender immediately quarantines.
-
-3. **GraalVM Native Image is powerful but complex.** It's perfect for cloud applications and serverless functions where
-   startup time and memory usage directly impact cost, but for a simple CLI utility, the build complexity may outweigh
-   the benefits.
-
-4. **I should have built this as a web app from the start**, even if it meant requiring internet access. The user
-   experience would be simpler, and I could avoid all the platform-specific issues. Or better yet, integrate it directly
-   into Console Whisperer as a desktop app.
+3. GraalVM Native Image is powerful but not a panacea for distribution.
 
 ## Looking Forward
 
 Despite these challenges, I successfully used the tool in a production setting, and it works. The core idea is sound:
 automating the transfer of EQ settings from CrossLite to R1 removes a significant bottleneck in my workflow.
 
-If there's interest from other sound engineers, I'll likely rebuild this as either:
+If there's interest from other system techs and sound engineers, I'll likely rebuild this as either:
 
-- A feature integrated into Console Whisperer (desktop app)
+- A feature integrated into [Console Whisperer](https://youtu.be/Kpb2Zm6Bd8A)
 - A standalone desktop application with a GUI
 - A web application (accepting the internet connection requirement)
 
 Until then, the command-line version lives
-at [github.com/LiveNathan/crosslite-r1-eq](https://github.com/LiveNathan/crosslite-r1-eq). It works, but use it with the
+at [this github repo](https://github.com/LiveNathan/crosslite-r1-eq). It works, but use it with the
 knowledge that you'll need to configure Windows Defender exceptions and navigate to your file directory before running
 it.
 
-And I still don't have a definitive answer to my original question: how many filters is too many? But now I have a tool
-that makes it easier to experiment and find out.
+Back to my original question: how many filters are too many?
+
+One way to answer it might be an AB listening test. Compare the results of four filters with 24, for example. Until
+then, I'm glad that I now have a workflow that makes it easier to experiment and find out.

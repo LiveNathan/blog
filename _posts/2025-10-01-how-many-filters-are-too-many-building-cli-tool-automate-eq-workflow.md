@@ -1,3 +1,10 @@
+---
+layout: post
+title: "How Many Filters Are Too Many? Building a CLI Tool to Automate EQ Workflow"
+date: 2025-10-01 08:00:00 -0000
+categories: [ audio, cli, java, spring-boot, graalvm, building-in-public, live-sound, eq ]
+---
+
 # How Many Filters Are Too Many? Building a Tool to Find Out
 
 This past week I worked on a medium-sized show where, for the first time, I had access to tools that let me generate

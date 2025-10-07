@@ -63,6 +63,17 @@ The only LLM that I set out to test and was not able to test was Mistral. I kept
 message being in the wrong place. I can see that there's already an issue in spring ai github so I decided to give up on
 it for now. I left it in the test, just commented out, so if you want to try it yourself you can.
 
+OK, I spent some money and time running 5x iterations of LlmToolCallingBenchmarkTest so that you don't have to. Here's
+the results:
+
+Hmm, I wonder if I should talk about what the test does? Maybe just share that each request is either a command that
+should call a tool and some of the requests require that LLM use the chat memory to complete its task.
+
+Now I should probably talk about cache. In the Google and Deepseek pricing there is special pricing for cache, "Context
+caching price". What does it mean? How do I use it?
+
+https://ai.google.dev/gemini-api/docs/caching?hl=en&lang=python
+
 # When AI Agents Forget Their Tools: The Hidden Problem with LLM Chat Memory and Tool Calling
 
 You're building an AI assistant. First request works perfectly—the LLM calls your tools, performs actions, everything is

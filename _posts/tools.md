@@ -1,3 +1,68 @@
+Well, I thought this was going to be a blog post about research I did to find the cheapest LLM api supported by spring
+ai that supports tool calling and chat memory, and it is, but I guess the story starts on shaky ground. I started
+building an AI mixing console assistant for other live sound engineers like myself. At some point along the way I
+discovered while running the app that in a conversation with the assistant that it would only reliably perform tool
+calling once. Any further calls in the conversation would not trigger the tool. The frustrating part is that the
+assistant would still respond to the user with a success message, claiming that it had performed the action. I started
+to suspect that the issue might be connected to chat memory.
+
+The biggest issue with Spring AI right now that it seems like no one is talking about is that chat memory interferrs
+with tool calling. It seems like this would be ruining everyone's projects right now. Maye there's something I'm
+missing, but to me these are the two most important features needed for building with LLMs and they don't work. AI seems
+to always over promise and under deliver.
+
+I built an automated test to prove this. All it did was make multiple calls to the LLM that should require tool calling.
+With chat memory enabled, the tool calls would only be made on the first call. Removing chat memory fixed the issue. I
+checked the Spring AI github repo and found this github issue
+title [Model Tool Calls not persisted in chat memory](https://github.com/spring-projects/spring-ai/issues/2101). Now it
+makes more sense. On the first call to the LLM, the LLM sees that it has tools it can use and no chat history. On
+subsequent calls, the LLM sees that in past messages in the chat memory that the user made a request and all the LLM had
+to do was to respond with a success message, so it infers that tools are not required to satisfy the rquest. Or at least
+that's my theory. By the way have you looked at the number of issues on the Spring AI github repo? 725 open issues!
+popurlar tech i guess.
+
+I had to remove chat memory from my project becuase the tool calling is more important, but of course it makes for a
+shitty user experience, especially when the app did have chat memory and now I have taken it away. The next feature I
+need to work on involves more testing against tool calls so I decided to do this research project to get to the bottom
+of it. What is the cheapest solution for my use case? I also got motivated because I was working on the assumption that
+deepseek was the cheapest solution. I was wrong. Turns out that deepseek had very low promotional pricing for a while,
+but was no longer the cheapest. So I decided to test deepseek, open ai, Mistral, and google genai and groq to see which
+one was the cheapest.
+
+The tl;dr is that google won with its flash 2.0 model. I assumed groq would win since I think it's technically cheaper,
+and it w9ould have won i think if I had only done a single iteration of the test, but once I started doing multiple
+iterations, groq started returning some strange errors. The other surprise was that I didn't have to do anythning to get
+multi-turn tool calling to work with chat memory. I don't know why. At first I thought maybe this was fixed in the newer
+versions of spring ai, but when you log the requests and responses to the LLM you can see that the tool calls are still
+not being persisted. This is where I should go back to my original tests against chat memory but at this point I have
+already put multiple days into these tests and I'm just happy to have a working solution to move forward with.
+
+If I'm honest, it's been a pain to work with these LLMs. Making it such a core part of the applications just makes it
+feel so flaky. There are days when I start up the app and it just doesn't behave as expected. I waste some time trying
+to debug the problem, change nonthing, then the next day I start it up and it works. Maybe these are just the growing
+pains of learning to develop against an LLM, but one of my big takeaways is that when someone makes something look so
+easy in a demo in a video on YT. It's not. Real production uses cases are never that easy. Maybe a good example is the
+SimpleLoggerAdvisor. It's super easy. You just add it to your prompt builder, set
+`logging.level.org.springframework.ai.chat.client.advisor=DEBUG` in your application.properties, and you're done. Makes
+sense at first, until you realize that in most cases where you might want to log and debug requests nd responses to the
+LLM, you actually want to do that during a test, not while running the app, so you try to create an
+application.properties file in the test folder, but it doesn't work. Finally you get it to work by creating a
+logback-test.xml file instead. Maybe that's not the most compelling use case, but it's just a lot of little things like
+that that I can into while trying to build this test.
+
+One final big challenge was that calls to the google genai LLM started to fail and in the same way every time. The
+simple test case that only included three messages would always pass, but the complex test case with six messages would
+fail. The error was, "Unable to submit request because it must include at least one parts field, which describes the
+prompt input." This was initially confusing, but once I got the response logging working I could see that the LLM was
+return multiple messages and one of them was empty, like this `textContent=,`. I was pretty sure this was a Spring AI
+bug so I [created an issue](https://github.com/spring-projects/spring-ai/issues/4556) (number 726) but i don't want to
+wait for the Spring team to fix it. Who knows how long that will take. Luckily there is a way to create your own custom
+advisors, so I asked Claude to write me a EmptyMessageFilterAdvisor and that did the trick.
+
+The only LLM that I set out to test and was not able to test was Mistral. I kept getting the same bug about the system
+message being in the wrong place. I can see that there's already an issue in spring ai github so I decided to give up on
+it for now. I left it in the test, just commented out, so if you want to try it yourself you can.
+
 # When AI Agents Forget Their Tools: The Hidden Problem with LLM Chat Memory and Tool Calling
 
 You're building an AI assistant. First request works perfectly—the LLM calls your tools, performs actions, everything is

@@ -65,55 +65,128 @@ it for now. I left it in the test, just commented out, so if you want to try it 
 
 OK, I spent some money and time running 5x iterations of LlmToolCallingBenchmarkTest so that you don't have to. Here's
 the results:
+Need to format this into a nice markdown table.
+
+========================================
+2025-10-07T09:42:33.147-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    : BENCHMARK REPORT:
+Simple Channel Renaming with Memory
+2025-10-07T09:42:33.147-05:00 INFO --- [           main]
+d.n.c.BenchmarkRunner                    : ========================================
+
+2025-10-07T09:42:33.147-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    : Provider/Model Avg
+Time Success Accuracy Avg Cost Tokens Calls
+2025-10-07T09:42:33.147-05:00 INFO --- [           main]
+d.n.c.BenchmarkRunner                    : ----------------------------------------------------------------------------------------------------
+2025-10-07T09:42:33.152-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    :
+groq/llama-3.1-8b-instant 72708ms 100% 100% $   0.001085      19681        132
+2025-10-07T09:42:33.152-05:00  INFO --- [           main] d.n.c.BenchmarkRunner                    : groq/llama-3.3-70b-versatile             6058ms        80% 100% $
+0.001552 2602 8
+2025-10-07T09:42:33.152-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    :     Errors: Timeout
+after 180 seconds
+2025-10-07T09:42:33.152-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    :
+deepseek/deepseek-chat 36320ms 100% 100% $   0.000739       2576          7
+2025-10-07T09:42:33.153-05:00  INFO --- [           main] d.n.c.BenchmarkRunner                    : deepseek-native/deepseek-chat           33906ms       100% 100% $
+0.000675 2354 7
+2025-10-07T09:42:33.153-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    :
+google-native/gemini-2.0-flash-001 9984ms 100% 100% $   0.000133       1199          7
+2025-10-07T09:42:33.153-05:00  INFO --- [           main] d.n.c.BenchmarkRunner                    : google-native/gemini-2.0-flash-lite-001      8302ms       100% 100% $
+0.000098 1178 6
+2025-10-07T09:42:33.153-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    :
+google-native/gemini-2.5-flash-lite 9744ms 100% 80% $   0.000186       1375         11
+2025-10-07T09:42:33.153-05:00  INFO --- [           main] d.n.c.BenchmarkRunner                    : openai-native/gpt-4o-mini               13944ms       100% 100% $
+0.000165 969 6
+2025-10-07T09:42:33.153-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    :
+openai-native/gpt-4.1-nano 18587ms 100% 100% $   0.000116 996 6
+2025-10-07T09:42:33.154-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    :
+
+========================================
+2025-10-07T10:32:15.719-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    : BENCHMARK REPORT:
+Complex Band Setup with Memory
+2025-10-07T10:32:15.719-05:00 INFO --- [           main]
+d.n.c.BenchmarkRunner                    : ========================================
+
+2025-10-07T10:32:15.719-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    : Provider/Model Avg
+Time Success Accuracy Avg Cost Tokens Calls
+2025-10-07T10:32:15.719-05:00 INFO --- [           main]
+d.n.c.BenchmarkRunner                    : ----------------------------------------------------------------------------------------------------
+2025-10-07T10:32:15.720-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    :
+groq/llama-3.1-8b-instant 26158ms 100% 65% $   0.000089       1744        150
+2025-10-07T10:32:15.720-05:00  INFO --- [           main] d.n.c.BenchmarkRunner                    : groq/llama-3.3-70b-versatile            13200ms        40% 64% $
+0.001417 2362 21
+2025-10-07T10:32:15.720-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    :     Errors: Timeout
+after 180 seconds, 400 - {"error":{"message":"tool call validation failed: attempted to call tool 'setParameter' which
+was not in request.tools","type":"invalid_request_error","code":"tool_use_failed","failed_generation":"
+\u003cfunction=setParameter\u003e{\"apiCall\": {\"path\": \"ch.5.cfg.name\", \"value\":
+\"Guitar\"}}\u003c/function\u003e\n\u003cfunction=setParameter\u003e{\"apiCall\": {\"path\": \"ch.8.cfg.name\",
+\"value\": \"Overheads L\"}}\u003c/function\u003e"}}
+
+2025-10-07T10:32:15.720-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    :
+deepseek/deepseek-chat 69991ms 100% 36% $   0.000720       2530         17
+2025-10-07T10:32:15.720-05:00  INFO --- [           main] d.n.c.BenchmarkRunner                    : deepseek-native/deepseek-chat           76286ms       100% 46% $
+0.000777 2713 19
+2025-10-07T10:32:15.721-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    :
+google-native/gemini-2.0-flash-001 22874ms 100% 85% $   0.000123       1124         22
+2025-10-07T10:32:15.721-05:00  INFO --- [           main] d.n.c.BenchmarkRunner                    : google-native/gemini-2.0-flash-lite-001     16589ms       100% 60% $
+0.000049 595 17
+2025-10-07T10:32:15.721-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    :
+google-native/gemini-2.5-flash-lite 36675ms 100% 64% $   0.000294       2061         55
+2025-10-07T10:32:15.721-05:00  INFO --- [           main] d.n.c.BenchmarkRunner                    : openai-native/gpt-4o-mini               53113ms       100% 64% $
+0.000245 1500 23
+2025-10-07T10:32:15.721-05:00 INFO --- [           main] d.n.c.BenchmarkRunner                    :
+openai-native/gpt-4.1-nano 43944ms 100% 64% $   0.000163 1495 23
+2025-10-07T10:32:15.724-05:00 INFO --- [           main] d.n.c.LlmToolCallingBenchmarkTest        :
+============================================================
+2025-10-07T10:32:15.724-05:00 INFO --- [           main] d.n.c.LlmToolCallingBenchmarkTest        : OVERALL WINNER
+ACROSS ALL SCENARIOS
+2025-10-07T10:32:15.724-05:00 INFO --- [           main]
+d.n.c.LlmToolCallingBenchmarkTest        : ============================================================
+2025-10-07T10:32:15.731-05:00 INFO --- [           main] d.n.c.LlmToolCallingBenchmarkTest        :
+google-native/gemini-2.0-flash-001: 167.79
+2025-10-07T10:32:15.731-05:00 INFO --- [           main] d.n.c.LlmToolCallingBenchmarkTest        :
+google-native/gemini-2.0-flash-lite-001: 160.71
+2025-10-07T10:32:15.731-05:00 INFO --- [           main] d.n.c.LlmToolCallingBenchmarkTest        :
+openai-native/gpt-4o-mini: 160.45
+2025-10-07T10:32:15.731-05:00 INFO --- [           main] d.n.c.LlmToolCallingBenchmarkTest        :
+groq/llama-3.1-8b-instant: 160.42
+2025-10-07T10:32:15.732-05:00 INFO --- [           main] d.n.c.LlmToolCallingBenchmarkTest        :
+openai-native/gpt-4.1-nano: 160.24
+2025-10-07T10:32:15.732-05:00 INFO --- [           main] d.n.c.LlmToolCallingBenchmarkTest        :
+google-native/gemini-2.5-flash-lite: 155.04
+2025-10-07T10:32:15.732-05:00 INFO --- [           main] d.n.c.LlmToolCallingBenchmarkTest        :
+deepseek-native/deepseek-chat: 154.55
+2025-10-07T10:32:15.732-05:00 INFO --- [           main] d.n.c.LlmToolCallingBenchmarkTest        :
+deepseek/deepseek-chat: 151.54
+2025-10-07T10:32:15.732-05:00 INFO --- [           main] d.n.c.LlmToolCallingBenchmarkTest        :
+groq/llama-3.3-70b-versatile: 122.70
+2025-10-07T10:32:15.733-05:00 INFO --- [           main] d.n.c.LlmToolCallingBenchmarkTest        :
+🏆🏆🏆 OVERALL CHEAPEST RELIABLE LLM: google-native/gemini-2.0-flash-001 🏆🏆🏆
 
 Hmm, I wonder if I should talk about what the test does? Maybe just share that each request is either a command that
 should call a tool and some of the requests require that LLM use the chat memory to complete its task.
 
-Now I should probably talk about cache. In the Google and Deepseek pricing there is special pricing for cache, "Context
-caching price". What does it mean? How do I use it?
+I should probably just share a note about caching. Several of the LLMs tested include special pricing related to
+caching. I'm not going to say much about it here because, based on my current understanding, it does not affect this
+test because each new request is new. Well, maybe that's not true because actually, when you inspect each request, most
+of it is repeated because the system message statys the same along with all of the tool calling information, but I
+probably still won't talk about it much because as far as I can tell spring ai only supports caching for Anthropic
+models at this time.
 
-https://ai.google.dev/gemini-api/docs/caching?hl=en&lang=python
+Ultimately this would have been a better story if I could have proven that tool calling never works when using the chat
+memory, but actually I'm happy that it's not true because I can move forward with my real work on Consoel Whisperer. I
+thought I was clear on the problem. Even Spring Ai docs warn about it, "Currently, the intermediate messages exchanged
+with a large-language model when performing tool calls are not stored in the memory. This is a limitation of the current
+implementation and will be addressed in future releases. If you need to store these messages, refer to the instructions
+for the User Controlled Tool Execution." So I figured I would have to make my own custom workaround or wait for them to
+fix it, so I'm surprised and happy that it works, but I'm also a bit confused in the end.
 
-# When AI Agents Forget Their Tools: The Hidden Problem with LLM Chat Memory and Tool Calling
+The Vaadin forum post: https://vaadin.com/forum/t/workaround-for-issues-with-chat-memory-and-llm-tool-calling/178500
 
-You're building an AI assistant. First request works perfectly—the LLM calls your tools, performs actions, everything is
-great. Second request? The LLM just pretends it did the work and lies about it. No tool execution happens. Your users
-are confused. You're confused. Welcome to the tool calling + chat memory problem that's breaking production AI
-applications.
+github repo for this test code: https://github.com/LiveNathan/cheapest-llm-tool-calling
 
-## The Problem: When Memory Becomes Amnesia
+Console Whisperer demo: https://youtu.be/Kpb2Zm6Bd8A
 
-The issue is deceptively simple: when you combine chat memory with tool calling in frameworks like Spring AI and
-LangChain4j, tool calls aren't persisted to the conversation history. Here's what happens in practice:
-
-**First interaction:**
-
-- User: "Change channel 1 name to ProjectX"
-- LLM correctly identifies it needs to call the `changeChannelName` tool
-- Tool executes successfully
-- LLM responds: "Done! Changed channel 1 to ProjectX"
-- **Chat memory stores:** User message + Final AI response only (no tool call)
-
-**Second interaction:**
-
-- User: "Now change channel 2 name to ProjectY"
-- LLM sees previous conversation: user asked for change, LLM responded "done"
-- LLM thinks: "Last time I just responded with text confirmation. I'll do the same."
-- LLM responds: "Done! Changed channel 2 to ProjectY"
-- **Nothing actually happens** - no tool is called
-
-The LLM is learning the wrong pattern from incomplete conversation history.
-
-## Why This Matters
-
-This isn't an edge case—it's fundamental to building conversational AI with actions. Without proper tool call
-persistence:
-
-- Tools only work once per conversation
-- LLMs "hallucinate" having performed actions they never executed
-- Users lose trust when the AI lies about what it did
-- You're forced to choose: chat memory (better UX) OR tool calling (actual functionality)
-- This blocks production deployments of agentic systems
+This stuff now is left over from the outline I started with. I don't know if it's useful, but I'll leave it here for now
+in case any pieces might be useful.
 
 ## Investigating the Issue: Is This Real or Am I Doing Something Wrong?
 
@@ -134,138 +207,3 @@ with their setup. This suggests the problem may be model-specific or configurati
 **LangChain4j**: Similar issues exist. GitHub issue #3133 documents how bulk tool execution can corrupt memory, leading
 to invalid conversation states.
 
-### The DeepSeek Factor
-
-Here's where it gets interesting: **The Spring AI documentation for DeepSeek makes zero mention of tool calling support.
-** Every other model in Spring AI's docs (OpenAI, Anthropic, etc.) has a "Function Calling" section. DeepSeek's
-documentation? Silent on this feature.
-
-Yet DeepSeek's own API documentation clearly states they support function calling compatible with OpenAI's API. So
-what's going on?
-
-Hypothesis: Spring AI's DeepSeek integration may not fully support tool calling, or it's deliberately omitted due to
-known issues. This could explain why I'm seeing this problem specifically with DeepSeek.
-
-## The Experiment: Testing Across Models
-
-To definitively answer whether this is a framework bug, a model limitation, or a DeepSeek-specific issue, I created a
-systematic test across multiple LLMs.
-
-### Test Setup
-
-[Link to GitHub repository with test code]
-
-The test is simple:
-
-1. Create a Spring AI ChatClient with chat memory enabled
-2. Register a simple tool (e.g., `changeChannelName(channelId, newName)`)
-3. Make multiple sequential requests that should trigger tool calls
-4. Verify: Does the LLM call the tool on subsequent requests?
-
-### Models Tested
-
-- **DeepSeek** (deepseek-chat via Spring AI)
-- **OpenAI GPT-4o** (via Spring AI)
-- **Anthropic Claude** (via Spring AI)
-- **Testing with LangChain4j** as comparison
-
-### Results
-
-[You'll fill this in after running your tests]
-
-| Model                  | First Call Works? | Subsequent Calls Work? | Notes                               |
-|------------------------|-------------------|------------------------|-------------------------------------|
-| DeepSeek               | ✓                 | ✗                      | Tool calls stop after first request |
-| GPT-4o                 | ?                 | ?                      | [To be tested]                      |
-| Claude                 | ?                 | ?                      | [To be tested]                      |
-| LangChain4j + DeepSeek | ?                 | ?                      | [To be tested]                      |
-
-## Available Workarounds
-
-While the Spring AI team works on a proper fix, here are the workarounds developers are currently using:
-
-### 1. Manual Tool Execution (User-Controlled)
-
-Instead of letting Spring AI handle tool execution recursively, you manually control when and how tools are called. This
-gives you access to the full conversation history including tool calls.
-
-**Pros:** Full control, guaranteed to work  
-**Cons:** Verbose, you lose framework conveniences
-
-### 2. Custom Chat Memory Advisor
-
-Several developers in the GitHub thread implemented custom memory advisors that manually inject tool call messages into
-history.
-
-**Pros:** Keeps automatic tool execution  
-**Cons:** Hacky, may break with framework updates
-
-### 3. Extract Tool History from ToolContext
-
-The ToolContext provides access to the conversation history up to the tool call. You can manually persist this.
-
-**Pros:** Officially supported by Spring AI  
-**Cons:** Requires code in every tool implementation
-
-### 4. Disable Chat Memory (Current "Solution")
-
-Just turn off chat memory entirely.
-
-**Pros:** Tools work reliably  
-**Cons:** Terrible user experience, defeats the purpose of conversational AI
-
-## The Architectural Decision: What Should I Do?
-
-Given these findings, here's my decision matrix for Console Whisper:
-
-### If DeepSeek tool calling is unsupported in Spring AI:
-
-→ **Switch to OpenAI or Claude** (depending on test results). The cost increase is worth having a functional
-application.
-
-### If this is a Spring AI framework issue affecting all models:
-
-→ **Consider switching to LangChain4j** and reassess.
-
-### If this is solvable with workarounds:
-
-→ **Implement custom memory advisor** for now, plan to migrate to official solution when available.
-
-## Recommendations for the Community
-
-If you're hitting this issue:
-
-1. **Test your specific model** - Don't assume all models behave the same
-2. **Check the Spring AI GitHub issues** - Subscribe to #2101 for updates
-3. **Consider your priorities** - If you need both memory and tools, prepare for workarounds
-4. **Contribute test cases** - Help the maintainers understand the scope
-
-For Spring AI maintainers: This needs to be a documented limitation until fixed. Developers are making architectural
-decisions based on incomplete information.
-
-## Conclusion
-
-The tool calling + chat memory problem is real, under-discussed, and blocking production deployments. Through systematic
-testing, we can identify which models and frameworks handle this correctly and make informed decisions.
-
-**My next steps:**
-
-1. Complete cross-model testing
-2. Implement the best available workaround
-3. Update this post with definitive results
-
-**What about you?** If you're experiencing this issue (or you're not experiencing it and can't figure out why I am),
-drop a comment below. Let's solve this together.
-
----
-
-**Update this post with your findings after running the tests!**
-
----
-
-## Additional Resources
-
-- [Spring AI Issue #2101](https://github.com/spring-projects/spring-ai/issues/2101)
-- [My test repository](link)
-- [Vaadin Forum Discussion](https://vaadin.com/forum/t/workaround-for-issues-with-chat-memory-and-llm-tool-calling/178500)
-- [LangChain4j Memory Documentation](https://docs.langchain4j.dev/tutorials/chat-memory/)

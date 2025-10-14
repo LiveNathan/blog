@@ -1,4 +1,11 @@
-# Project Update:
+---
+layout: post
+title: "Project Update: Convolution, Complexity, and a Part-Time Job"
+date: 2025-10-14 08:00:00 -0000
+categories: [ gain-guardian, console-whisperer, audio, dsp, llm, ai, spring-ai, vaadin, career ]
+---
+
+# Project Update: Convolution, Complexity, and a Part-Time Job
 
 GainGuardian is stuck on a technical challenge, Console Whisperer is slowed by complexity, and I'm now working part-time
 on a day job. But there's actually some interesting stuff happening, so let's dig in.

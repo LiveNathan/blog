@@ -8,20 +8,22 @@ categories: [ spring-ai, llm, java, spring-boot, ollama, docker, testing ]
 # I Tested 20 Local LLMs with Docker and Ollama—0% Worked for Complex Tasks On My 2019 MacBook Pro
 
 A few weeks ago,
-I [benchmarked 9 cloud LLMs](https://nathanlively.substack.com/p/i-benchmarked-9-llms-to-find-cheapest-for-multi-turn-tool-calling-with-spring-ai.html?r=hhqf8)
-for my AI mixing console assistant. Google Gemini 2.0 Flash won with 100% success rate and $0.0001 per conversation.
+I [benchmarked 9 cloud LLMs](https://open.substack.com/pub/nathanlively/p/i-benchmarked-9-llms-to-find-cheapest-for-multi-turn-tool-calling-with-spring-aihtml?r=hhqf8&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false)
+for my [AI mixing console assistant](https://youtu.be/Kpb2Zm6Bd8A). Google Gemini 2.0 Flash won with a 100% success rate
+and $0.0001 per conversation.
 
-Then reality hit: Users want offline mode. Especially users in Australia, where cellular coverage can disappear once you
-leave the cities. Can't use a cloud LLM without internet.
+Then reality hit: Users want an offline mode. Especially users in Australia, or so I gather. Can't use a cloud LLM
+without internet.
 
-So I upgraded my test framework to support local models via Ollama—both containerized through Docker and running
+So I upgraded [my test framework](https://github.com/LiveNathan/cheapest-llm-tool-calling) to support local models via
+Ollama—both containerized through Docker and running
 directly. I tested ~20 different models.
 
 **Spoiler:** None of them came close to cloud performance on my 2019 Intel MacBook Pro.
 
 ## Why Local Models Matter
 
-Console Whisperer needs to work at outdoor venues, temporary installations, and remote locations where internet isn't
+Console Whisperer needs to work at outdoor venues, temporary installations, and on audio networks where internet isn't
 guaranteed. When someone's running sound for an event, they can't wait for connectivity issues to resolve.
 
 The feature requests were clear: offline mode isn't optional.
@@ -56,7 +58,7 @@ The practical solution: Run Ollama as a native app, let Spring AI connect direct
 Both approaches use the same test harness—just different connection configurations. The test framework now supports
 cloud providers (Google, OpenAI, DeepSeek, Groq, Mistral) and local models through a unified interface.
 
-## The Results: Brutal Honesty
+## The Results
 
 I tested ~20 models across two approaches. Here's what actually happened:
 
@@ -94,7 +96,7 @@ I tested ~20 models across two approaches. Here's what actually happened:
 Compare that to cloud models: Gemini 2.0 Flash hits 100% accuracy in 10 seconds on simple tasks, 85% in 23 seconds on
 complex tasks.
 
-**The Timeout Reality:** Many models hit the 300-second (5 minute) timeout on individual test runs. That's not total
+**The Timeout Reality:** Many models hit the 300-second (5-minute) timeout on individual test runs. That's not total
 test time—that's *per iteration*.
 
 ## The Technical Failures
@@ -140,12 +142,12 @@ Local models on my hardware?
 - **Simple tasks (4 prompts):** Best got 80-100%, most got 20-40%
 - **Complex tasks (6 prompts):** Best got 32%, most got 0%
 
-They don't make *wrong* calls—they just make *fewer* calls. Expecting 20 tool invocations? You might get 10-15.
+They don't make *wrong* calls—they just make *fewer* calls. Expecting 20 tool invocations? You might get 10–15.
 
-In practice: You'll send a command, it'll do X and Y but skip Z. You say "You missed Z," it handles it. Annoying, but
+In practice: You'll send a command, it'll do X and Y but skip Z. You say, "You missed Z," it handles it. Annoying, but
 workable—for simple scenarios.
 
-For complex multi-step operations? It falls apart completely.
+For complex multistep operations? It falls apart completely.
 
 ## The Google Models Mystery
 
@@ -163,25 +165,6 @@ My 2019 Intel MacBook Pro isn't built for this. I can run small models, but not 
 The solution: Test on actual user hardware. My customers have different machines—some probably better, some worse. I
 need to see what models work on *their* setups, not mine.
 
-### The Docker Mystery
-
-Why did Docker performance completely collapse compared to direct Ollama?
-
-**Theory 1: Resource Contention**
-Docker Desktop on Mac runs in a VM. That VM has resource limits. Running LLM inference inside a container inside a VM on
-a 2019 Intel laptop? Triple overhead.
-
-**Theory 2: Model Loading**
-Testcontainers pulls models fresh each time. Maybe the models weren't fully loaded or optimized? Direct Ollama keeps
-models in memory between runs.
-
-**Theory 3: I Have No Idea**
-The accuracy dropping to 0% on all models is suspicious. Something fundamental breaks in the containerized setup beyond
-just performance.
-
-I didn't investigate further. Pragmatically: if Docker barely works on dev hardware, it definitely won't work for
-production offline mode.
-
 ## What I'm Shipping Anyway
 
 Based on testing, `qwen2.5:3b-instruct` performed best on simple tasks (100% accuracy, 3.5 minutes). But for real-world
@@ -197,8 +180,6 @@ Console Whisperer now has:
 - Online/offline mode toggle
 - Automatic detection of Ollama availability
 - Llama 3.2 3B as the default local model
-- Warnings when only one mode is available
-- Clear expectations: simple commands work, complex multi-step operations need cloud
 
 It's not perfect. Local mode is explicitly "reduced functionality." But it beats having no offline option.
 
@@ -230,32 +211,26 @@ That last one would be pretty cool. Might build it.
 
 If you're adding local LLM support to Spring AI apps:
 
-1. **Testcontainers works—barely:** Great for CI/CD isolation, terrible for actual performance. Expect 0% accuracy on
+1. Testcontainers works—barely: Great for CI/CD isolation, terrible for actual performance. Expect 0% accuracy on
    anything non-trivial.
-
-2. **Direct Ollama is mandatory:** Skip Docker for real benchmarking. Performance gap is massive.
-
-3. **Simple tasks only:** If your use case involves 1-3 prompts with straightforward tool calls, local models can hit
-   80-100% accuracy. Anything more complex? Forget it.
-
-4. **Set aggressive timeouts:** 300 seconds wasn't enough for some models. Simple 4-prompt tests taking 3-4 minutes is
+2. Direct Ollama is mandatory: Skip Docker for real benchmarking. Performance gap is massive.
+3. Simple tasks only: If your use case involves 1–3 prompts with straightforward tool calls, local models can hit
+   80–100% accuracy. Anything more complex? Forget it.
+4. Set aggressive timeouts: 300 seconds wasn't enough for some models. Simple 4-prompt tests taking 3–4 minutes is
    normal.
-
-5. **Hardware matters more than you think:** My 2019 Intel MacBook Pro clearly wasn't sufficient. Test on your users'
+5. Hardware matters more than I thought: My 2019 Intel MacBook Pro wasn't enough. Test on your users'
    actual hardware.
-
-6. **Best models for tool calling:**
+6. Best models for tool calling:
     - `qwen2.5:3b-instruct` - 100% accuracy on simple tasks (but 3.5 min runtime)
     - `llama3.2:3b-instruct-q4_0` - 80% accuracy (4 min runtime)
     - Anything larger than 3B parameters? Prepare for timeouts.
-
-7. **Complex scenarios need cloud:** Multi-step operations with 6+ prompts? Local models fail completely (0-32%
+7. Complex scenarios need cloud: Multi-step operations with 6+ prompts? Local models fail completely (0–32%
    accuracy). Keep cloud as primary, local as degraded fallback.
 
 The test framework is ready. I can swap models anytime. And more importantly, I can distribute it to users to find what
 actually works on their hardware.
 
-**Production Strategy:**
+Production Strategy:
 
 - Cloud LLM for full functionality
 - Local LLM for reduced offline mode
@@ -265,10 +240,5 @@ actually works on their hardware.
 ## Resources
 
 - [Test Code on GitHub](https://github.com/LiveNathan/cheapest-llm-tool-calling) (now with Ollama support)
-- [Previous Cloud LLM Benchmark](https://nathanlively.substack.com/p/i-benchmarked-9-llms-to-find-cheapest-for-multi-turn-tool-calling-with-spring-ai.html?r=hhqf8)
+- [Previous Cloud LLM Benchmark](https://open.substack.com/pub/nathanlively/p/i-benchmarked-9-llms-to-find-cheapest-for-multi-turn-tool-calling-with-spring-aihtml?r=hhqf8&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false)
 - [Console Whisperer Demo](https://youtu.be/Kpb2Zm6Bd8A)
-
----
-
-Building with AI: where conference demos show flawless "Hello World" examples, and production reality involves 3-hour
-overnight test runs that return 0% accuracy. But hey, at least the Docker cleanup is automated.

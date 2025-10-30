@@ -1,119 +1,313 @@
-Over the last couple of weeks, I've been doing some research into power calculations for production AV needs. All of my
-professional experience is in pro audio, and historically, I've always tried to avoid anything that doesn't have to do
-with whatever my specific focus is. Because I always prefer to go deeper on one subject that I have some familiarity
-with than to have a surface level knowledge of anything else. So I always wanted to go deeper on sound system design and
-calibration, and would ignore learning other parts of the craft, like power and rigging. But of course, those are all
-critical elements to production AV. And with hindsight, I see now that there's not actually a lot of room for hyper
-specialists, or probably the word hyper isn't even necessary there. But just specialists in general in production AV,
-because it's just not a huge industry. So I don't know if you can make some comparison there with the medical industry.
-But one of the things that I took away from reading the checklist manifesto is that medical doctors are very specialized
-now. And that is one of the reasons that it can be so expensive. But I can't remember now how to explain that. I would
-have to go back and reread that section of the checklist manifesto. But maybe there's some connection there between, you
-know, I assume every industry has this, where, you know, as it grows, it becomes more and more specialized. So I think I
-always wanted to be a specialist. And I always wanted to avoid being a generalist. And I think that has to do with me
-wanting to be a special ego, you know, like this and, you know, do something with my personality. Like this is the
-special guy, Nathan, that's really special. And he does this one thing really, really well. And that's what he's known
-for. And I think that's what the world kind of tells us to do is to, you know, hone our craft and get really good at one
-thing. So that then that's the thing that you can help people with really well. And you can deliver a lot of value. And
-then you can charge a lot of money for it. And then you can enjoy doing it. And people will enjoy paying you for it. And
-things are supposed to work that way. But I don't think it ever really worked out for me that way in production AV.
-Because I kept trying to promote myself in those ways of being like really good at this one thing and get better and
-better at this one thing. And I kept getting more and more education around that thing. And it never got me more work.
-It may have gotten me a little bit more work as an educator, but not really. And in terms of production AV work, I don't
-think I ever got more work because I was a specialist in sound system design and calibration. In fact, I think I was
-only ever once hired in my life to do just that job. Maybe twice, you know, in 25 years. So I don't know if there's a
-conclusion that we can draw from that, except that maybe smaller, less developed industries like production AV, where
-you kind of need people who can do a lot of different things or be familiar with many different fields, like not only
-some specialty within audio, but everything that that touches, you know, so the rigging and the power and networking and
-things like that. And so probably the that the industry needs more generalists and less specialists to get the job done.
-And all of that is, I guess, a long way of saying that I never learned that much about power. And I have taken some
-courses in it. I took Scott Adamson's show power course a few years ago, and it was really good. But then I didn't
-really use that information often afterwards. And so I forgot a lot of it. And then a year ago, I was doing research for
-an app I was trying to build for commercial AV integrators. And one person that I interviewed told me that what I should
-really build is some kind of an app that would do power calculations for people. And it would maybe take in all of the
-design elements from Vectorworks or AutoCAD or something and add up everything that's in a rack. And so then you could
-say, OK, this rack has these specifications related to power. And then that's what you need to give to somebody else on
-the team that's handling that. That actually sounded really cool. I couldn't find anybody else of the 50 people that I
-interviewed that wanted that. So I didn't move forward with it. But then a couple of weeks ago, I guess three weeks at
-this point, I started working at Squarewave. And one of the things that I pitched to them is that they should make a
-custom report for Flex that would do some kind of power calculations. And my thinking was that you would want to do that
-in production AV so that you could size a generator or make some specifications for what you would need in terms of
-power from, you know, the hotel ballroom that you were going to rent or something. I know so little about power that I
-don't even really know the right words to use. And, you know, it's especially funny since my dad is an electrical
-engineer. And I remember as a kid, he tried to teach me some things and he gave me some books and we talked about it.
-And then I forgot a lot of that stuff. So, you know, maybe me avoiding learning about power and electricity is, you
-know, one way to know what what the right verb is. And, you know, children always try to do something in spite of their
-parents. You know, children never want to be like their parents. They want to do the opposite. They want to go to the
-other side of the world and do something completely different. So maybe that's one way that that happened for me. So,
-yeah. So it was funny that I pitched that to Square Wave because it was an idea that I got a year ago and I thought,
-hey, this is, you know, one idea. You guys should make this thing. Of course, I didn't consider that now that I work
-there that they would make that my responsibility. So it turns out that that was an idea that somebody else had already
-had at Square Wave related to power. So then they just attached my name to it and said, hey, Nathan, can you do a little
-research on this? That's I think they didn't ask even ask me to do that. They just asked me to fill out the form that
-gets the project started. That's like the description for the product. They probably thought it would take me, you know,
-like 30 minutes. Of course, that's not how I do things. I I go way too far with everything. So I think I at this point
-have called four or five people. I've done some discovery interviews and then I did some research, posted on Reddit and
-some social media places. And so what I think would be fun to do with this next blog post is to document some of the
-stuff that I learned that might be helpful for other people. And I could also share some of the products that I found.
-Like there was that guy that messaged me on LinkedIn who already has built a nice little web app where you can just
-input your stuff. Pretty much the same as like using a spreadsheet. And then somebody on Reddit sent me a demo of the
-kind of spreadsheet that they use at work. So I'll try to list some of my takeaways that I learned from all this
-research. Um, and then you can help me fill in the rest by pulling out the most important stuff from all of the
-research. And that way, even if this doesn't turn into a product or a real custom report that people can buy and use, at
-least some of the research that I did will maybe help other people who might be looking for this information. So I think
-my biggest takeaway in terms of the product and the product design is that, uh, demand is not really in sizing a
-generator. Um, most people don't seem to care about that that much. Uh, nor do people really care so much about
-overloading a distro or a cable or a connector even. Um, what I discovered is that most production AV companies have a
-really small number of distros, maybe one or two or three. And they all know what they are. They have their 100 amp
-distro and their 200 amp distro. And so if it's a small show, they use the small one. And if it's the big show, they use
-the big one. I don't even know if I'm using the right numbers there, but that's just an example. It's just such a coarse
-thing that everyone just knows, I think. And I don't even know if they put those on their quotes in Flex. I'll have to
-take a look or do some closer research. I don't even know if people put that in their inventory. Um, what I immediately
-discovered that people did maybe need some help with, because it's what people are doing currently manually with
-spreadsheets, is balance. Uh, that is balancing the legs on a three-phase power source. And, again, I don't know if I'll
-get all of this correct, so you'll have to be my technical editor and help me fill in some of the missing technical
-details. Um, but the way I understand that typical show power happens is that there's some sort of service that comes,
-let's say, from a hotel, a hotel ballroom. And that is three-phase, probably cam lock. I don't even know if we need to
-talk about that, but three-phase power. And I don't remember why it's three-phase, and I don't remember what the voltage
-is, maybe 220. But the important thing is, is that you connect those three phases to your distro, and then I think that
-means that you have three legs of power to draw on. And then it's your responsibility as the user, then, to make sure
-that you balance out the things that you plug in to that distro, so that they're balanced across the legs. Uh, and it
-took me a while to find out, and I still don't quite understand, but the worst-case scenario, the thing you want to
-avoid, is a situation where you are highly unbalanced, and then that neutral might get unplugged. I think that is the
-thing to avoid. That seems, I've never heard of that happening, that seems really unlikely, but it is possible. So, if
-things are unbalanced, and the neutral gets unplugged, or burned out, or fails, then, all of a sudden, I think you send,
-you can accidentally send way too much voltage to some devices, and destroy devices. So, I don't know if that creates
-unsafe working conditions for humans, but I think it can just destroy equipment. So, what most, so what I, I talked to a
-few of my friends that are lighting technicians, and what they told me is that they're typically just doing that on the
-fly, in the field. So, as we're plugging stuff in, I know my friend Jordan is just sort of doing this in his head, like,
-okay, I'll plug all these things to L1, and then all these things to L2, and that's with a single distro for, like, a
-smaller show. And so, people are building spreadsheets, and little web apps to help them do that, where they just list
-out each device, what is, power draw is, and what, and then they sum all of those per leg, to make sure that they are
-balanced, and not too far off from each other. Now, I don't know how far off, too far is, I was planning to set a
-default of 20%, and so that is the biggest thing that I was planning to do with this report, is to help people do that
-in their quotes, or in their proposals, or in their pool sheets for equipment, is to balance that stuff so that, you
-know, as they're planning their show out within their quote, they can plan that out, and then print this custom report,
-and then make sure, you know, have some confidence that they have kind of a power plan. And a lot of people don't need
-this. It's interesting that, I guess there's like kind of a middle market where they might need this. There are, you
-know, there are very small shows where it probably doesn't matter. There are very big shows where you are going to have
-someone who is doing their lighting, doing the lighting design, and maybe the entire design for the show in Vectorworks.
-And Vectorworks has tools for helping you make that power plan anyway. So then you have someone who's already
-responsible for that, so you don't really need to do that in Flex. So then it's probably a lot of medium-sized shows
-where you're not using Vectorworks to design your show, and it's big enough that you do want to do some due diligence
-around this topic, and that is where it might be helpful to have this kind of support built into Flex, so that you can
-work with it in your quote as you're building your show. So, yeah, I'm not really sure what else to say about it. I
-mean, I guess there's a lot of other takeaways that I could say about power, but maybe it would be good to just focus on
-this idea of balance and maybe try to simplify that understanding for myself and even make some kind of a diagram so I
-could see, you know, like on a medium-sized show, yeah, maybe we'll just follow the use case, like on a medium-sized
-show, what is happening with the power? When you have a single distro and all departments, lighting, video, audio,
-scenic, whatever, are all using it, then what do you need to do and what will happen if you don't do that correctly? So
-if we're going to make this blog post mainly about how to balance what you're plugging into a distro across three-phase
-power, then one of the important, interesting, critical questions is how you get that value. Do you use the max value or
-some other value? So it would probably be good to look at some examples. So I think I mostly did research into audio
-examples of like power amplifiers and stuff, and for that there's this idea of typical draw, which I think is related to
-one-eighth something pink noise, I don't remember, but maybe it would be good to look at a few of those things so I can
-even train myself, like this is the value you should use for an audio amplifier, and this is the value you should use
-for an LED lighting fixture, and this is the value you use for a video projector, and stuff like that. And then I could
-do kind of my own simple calculations to show how that would work. Yeah, so maybe that is their focus and refinement for
-this blog post is this idea of balancing three-phase power, what the motivation is, why you would want to do that, and
-then step-by-step exactly how to do it. Thank you.
+# Balancing Three-Phase Power: A Learning Journey for AV Technicians
+
+*"It blows my mind that we haven't blown a breaker mid-show... I've been waiting for something to happen."*
+
+That's a quote from Jordan, a master electrician with years of experience in live event production. He's good at his
+job—really good. He can calculate loads in his head, distribute equipment across three-phase power on the fly, and has
+successfully powered hundreds of shows. But he's also acutely aware that he's improvising critical safety decisions
+under time pressure, without formal planning documents.
+
+Jordan's candid admission captures something I discovered while researching power distribution for live events: there's
+a huge gap between how production managers think about electrical safety and the reality technicians face on-site.
+
+I'll be honest with you: I've spent most of my career trying to avoid learning about power.
+
+For over 25 years in production AV, I focused almost exclusively on sound system design and calibration. Whenever
+conversations turned to power distribution, rigging, or electrical work, I'd find a reason to excuse myself. It's
+ironic, really—my dad is an electrical engineer, and he tried to teach me this stuff when I was a kid. Maybe that's
+exactly why I avoided it for so long. We all have our ways of differentiating ourselves from our parents.
+
+But here's the thing about production AV: there's not much room for hyper-specialists. The industry needs people who can
+handle multiple disciplines, or at least understand how they all connect. So when I started working at Squarewave and
+pitched the idea of building power calculation tools into their event management software, I realized I couldn't keep
+avoiding this topic. If I was going to help build something useful, I needed to actually understand what I was building.
+
+This blog post is the result of a few weeks of intensive research. I conducted discovery interviews with about four or
+five production professionals—from company owners to master electricians—posted questions on Reddit and social media,
+and did a lot of reading about electrical systems. **I don't have formal training as an electrician**, so if you spot
+errors or oversimplifications in what follows, please let me know. This is as much a learning document for me as it is (
+hopefully) helpful for others.
+
+## What I Discovered: The Gap Between Planning and Practice
+
+My research revealed a striking disconnect in how different people in the production world think about power. I talked
+to Marshall, a co-owner and technical director at a production company, who told me frankly: "power is not that
+complicated." For the many repetitive corporate shows his company does, they don't need to "reinvent the wheel" every
+time. From his perspective—managing quotes and inventory—power is mostly about making sure you have the right size
+generator and not overcharging the client.
+
+But then I talked to Jordan, a master electrician, and heard a completely different story. He described his typical
+workflow: "we don't necessarily plan anything, I just kinda usually figure it out on site... I understand what all of my
+equipment draws... and then just kind of go from there." He's doing mental calculations in the field, trying to
+distribute loads across three-phase power while the show is being set up.
+
+And here's what really stuck with me. Jordan admitted: "it blows my mind that we haven't blown a breaker mid-show," and
+then added something even more sobering: **"I've been waiting for something to happen."**
+
+That's the reality for a lot of technicians. They're bearing the responsibility for improvising safe electrical
+solutions under time pressure, often without formal planning documents.
+
+This disconnect isn't unique to one company. A comment on Facebook captured it perfectly: "I am being asked to provide
+power, but no one can tell me what the draw is on any of the things that we're plugging in." The information gap is
+real, and it's stressful.
+
+## The Hidden Problem: "Normalization of Deviance"
+
+What's happening here is something safety researchers call "normalization of deviance"—when shortcuts become standard
+practice because nothing bad has happened yet. When you successfully power hundreds of shows using on-the-fly
+calculations without a single failure, the perceived risk diminishes. The informal method gets reinforced by repeated
+success, even though it's masking latent safety risks.
+
+The technician successfully figures it out every time, so the project manager can maintain the view that power is
+simple. The complexity gets outsourced down the chain to someone improvising under pressure. It works—until it doesn't.
+
+## It's All About Balance
+
+After all these conversations, here's what surprised me: most production companies aren't particularly worried about
+sizing generators or calculating whether they'll overload a specific distro. As Marshall explained, they typically have
+just a few distros—maybe a 100-amp and a 200-amp—and they know which one to use based on show size.
+
+What people *are* doing manually, often with mental math or spreadsheets, is **balancing loads across three-phase power
+**. This is the practical, day-to-day challenge that kept coming up in my research.
+
+## Why Does Balancing Matter?
+
+Three-phase load balancing helps prevent reduced efficiency, tripped circuit breakers, and shortened equipment life.
+When your power distribution is significantly unbalanced, you're not just being inefficient—you're creating conditions
+that can damage expensive equipment.
+
+Here's what happens: In a three-phase system, you have three "legs" of power (commonly labeled L1, L2, and L3) that are
+120 degrees out of phase with each other. When everything is balanced, the current flowing through these three legs is
+roughly equal, and the neutral conductor carries minimal current.
+
+But when the loads are unbalanced—say you've plugged all your LED fixtures into L1, all your audio gear into L2, and
+left L3 barely loaded—problems start to emerge.
+
+## The Worst-Case Scenario: What Actually Happens
+
+When I asked Jordan what happens if you don't balance the legs properly, he said power goes down the neutral. So I
+asked, "What's the worst-case scenario?" He didn't know—and honestly, neither did I.
+
+Fortunately, I posted this question on Reddit and got an incredibly detailed response from a German production
+technician whose company uses formal load calculations (they're even required for apprentice final exams in Germany). He
+explained there are two main problems when phases aren't evenly balanced:
+
+**First, the neutral conductor overload**: In a balanced system, the currents on the three legs cancel each other out,
+and very little current flows through the shared neutral wire. But with significant imbalance, the difference in current
+must return through that neutral conductor. If the load distribution is very uneven, the neutral can carry more current
+than it's rated for. When that happens, the conductor heats up and can eventually burn out—creating a fire hazard.
+
+**Second, and more catastrophic, is "neutral point shift"**: This is the scenario that really got my attention. If the
+neutral conductor becomes disconnected while the load is unbalanced—for example, from a loose PowerLock connection—it
+causes the voltage reference to be lost. This leads to increased voltage on two of the phases, potentially surging to
+double the nominal voltage and instantly destroying connected equipment.
+
+I've never heard of this actually happening in a production environment, but understanding the physics helps explain why
+we balance loads in the first place. It's not just about efficiency—it's about preventing potentially catastrophic
+equipment damage.
+
+## The More Common Problem: Efficiency and Heat
+
+Even without neutral failure, unbalanced loads cause several practical problems: increased neutral current leading to
+line losses, reduced efficiency in three-phase equipment like motors and transformers, and excessive heating. For
+distribution transformers, every 8°C increase in temperature can reduce service life by half.
+
+## How Much Imbalance Is Acceptable?
+
+This was one of my key questions during research. The industry standard for unbalanced voltage is a maximum difference
+of 3% between phases. For current, I found references suggesting that keeping phase currents within 20% of each other is
+a reasonable target, though perfection isn't required or realistic.
+
+Jordan, the lighting tech I interviewed, told me he typically does this balancing in his head while plugging things in.
+For smaller shows with a single distro, he'll mentally distribute the loads: "These fixtures to L1, those to L2, the
+rest to L3." It works because he knows his equipment and has years of experience.
+
+But for medium-sized shows where you want documentation and confidence in your power plan, having a systematic approach
+makes more sense. You want a record of what you planned, especially if something does go wrong. Plus, as shows get more
+complex, it's harder to hold all those calculations in your head.
+
+## A Practical Example: Medium-Sized Show
+
+Let's walk through a realistic scenario. You're setting up a corporate event in a hotel ballroom. The venue provides
+three-phase power via a cam lock connection—typically 208V in North America. You connect this to your distro, which
+breaks out the three phases into multiple circuits you can plug equipment into.
+
+Now you need to distribute your departments across the legs:
+
+- **Lighting**: LED fixtures, moving lights, hazers
+- **Audio**: Power amplifiers, mixing console, wireless rack
+- **Video**: LED walls, projectors, media servers
+- **Scenic**: Anything else that needs power
+
+The goal is to ensure each leg (L1, L2, L3) carries roughly the same current load.
+
+## The Regulatory Reality: More Than Just Best Practice
+
+Something I discovered during my research: proper power planning isn't just a good idea—it's actually required by
+federal law. OSHA's regulations (29 CFR 1910 Subpart S) mandate that employers use approved equipment, follow safe work
+practices, and have properly trained personnel. The National Electrical Code (NEC) provides the technical
+specifications, particularly Article 590 for temporary installations and Article 520 for theaters and performance areas.
+
+What struck me is that generating a formal power plan isn't just about preventing accidents—it's about documenting due
+diligence. If something does go wrong, having a documented load calculation shows you followed proper procedures.
+Without it, you're exposed to liability, even if nothing bad has happened yet.
+
+This is part of why "normalization of deviance" is so problematic. Companies can run hundreds of successful shows
+without formal planning, but that doesn't change their legal obligation to have documented safety procedures. One safety
+researcher described it as "the gap between regulatory theory and on-site practice"—the rules exist, but many companies
+operate on experience and improvisation instead.
+
+## What Power Values Should You Use?
+
+This was one of the trickiest parts of my research, because equipment manufacturers rate power in different ways, and
+the actual power draw varies dramatically based on how the equipment is being used.
+
+### Audio Amplifiers
+
+For professional power amplifiers, the industry standard is to use "1/8 Power Pink Noise" for typical real-world power
+calculations—this is pink noise at about 9dB below the amplifier's clipping point. This 1/8 power measurement provides a
+good approximation of typical speech and music signals being driven as loud as possible without clipping.
+
+If you see an amplifier rated at 2,000W, don't use 2,000W for your calculations—that's a full-power sine wave rating
+that will never happen in practice. Use the 1/8 power pink noise specification if available, or estimate it at roughly
+20-30% of the rated power for realistic show conditions.
+
+### LED Lighting
+
+LED fixtures typically list their maximum power draw, which is what they pull when at full intensity in all colors. This
+is actually a reasonable value to use for planning, since you'll likely hit maximum draw at various points during a
+show.
+
+### Video Equipment
+
+Projectors and LED walls usually draw relatively consistent power during operation. Use the manufacturer's specified
+operating power consumption, not the "maximum" spec which often includes unrealistic scenarios.
+
+## How to Actually Balance Loads
+
+Here's a simple process:
+
+1. **List all your equipment** with realistic power draw values
+2. **Calculate total power** for each device (Watts)
+3. **Convert to current**: Current (Amps) = Power (Watts) ÷ Voltage (Volts)
+    - For 208V three-phase: Amps = Watts ÷ 208
+    - For 120V single-phase: Amps = Watts ÷ 120
+4. **Assign devices to phases** trying to keep total amps per phase roughly equal
+5. **Check your balance**: Calculate the percentage difference between phases
+6. **Adjust as needed** until all phases are within 20% of each other
+
+## How People Are Solving This Today
+
+Through my research, I discovered several approaches:
+
+**Vectorworks for big shows**: Marshall's company uses Vectorworks for their larger productions. The software can
+calculate power and generate load balance reports, but it's a separate tool from their quoting and inventory system (
+they use Flex). So there's this disconnect—the power planning happens in one place, the business planning in another.
+
+**Spreadsheets everywhere**: The German production company I connected with on Reddit has built a comprehensive Excel
+spreadsheet. It's pre-populated with the electrical data for all their equipment, and they can assign gear to phases and
+see the balance in real time. They've even added voltage drop calculators. But it's completely manual—you have to enter
+everything by hand.
+
+**Mental math on site**: This is probably the most common approach, especially for smaller shows. Jordan's method of
+calculating in his head while plugging things in works when you know your gear and the show isn't too complex.
+
+One user on the Flex community forum summed up the opportunity perfectly when I asked about building this into quoting
+software: "awesome and super useful, **if you can get it to pull the right info**." That's the key—if the power data is
+already in your inventory system, why enter it again?
+
+## A Tool to Help: AmpLogic
+
+While researching this topic, I was contacted on LinkedIn by Dom Trotta, who built a browser-based tool
+called [AmpLogic](https://domtrotta.github.io/AmpLogic) specifically for this purpose. He told me: "whenever I'm PM'ing
+small jobs, I always want to make sure the power is balanced across the right phases. I kept doing the calculations on
+my phone, so I thought—I should just build a small app to make it quicker."
+
+AmpLogic includes features for:
+
+- Building equipment lists with wattage, quantity, and phase assignments
+- Automatic calculation of load per phase
+- Real-time checks for overload conditions
+- Auto-balancing across three phases
+- CSV import/export for documentation
+
+It runs entirely in your browser, requires no installation, and provides a quick way to experiment with different load
+distributions. If you're trying to understand three-phase balancing practically, it's worth playing around with.
+
+Another Reddit user shared their company's spreadsheet approach, which shows the total load for each phase at the bottom
+so you can balance evenly. These DIY solutions show there's real demand for this kind of tool—people are building them
+because they need them.
+
+## The Middle Market Sweet Spot
+
+After all this research, I've concluded that systematic power balancing is most valuable for **medium-sized shows**.
+Here's why:
+
+**Small shows**: The loads are light enough that rough balancing is sufficient. As Marshall said about his routine
+corporate events, there's no need to reinvent the wheel—experienced techs can handle it.
+
+**Large shows**: You likely have a dedicated designer using Vectorworks or similar tools that already handle power
+planning. These productions have the budget and complexity to justify specialized design software and dedicated
+personnel for power planning.
+
+**Medium shows**: This is the gap. You're not using full design software like Vectorworks because it's overkill (and
+disconnected from your quoting workflow). But the show is complex enough that asking a tech to figure it out on-site
+creates real stress and risk. You have gear from multiple departments, significant power draws, and clients who expect
+professionalism—but you're trying to manage everything through your rental management system.
+
+This is where tools integrated into quoting and planning software (like what we're exploring at Squarewave) could be
+genuinely helpful. You can plan your power distribution as you're building your quote, print a balanced power plan, and
+show up to the gig with confidence. The tech isn't scrambling to figure things out under pressure, and the PM has
+documented their due diligence.
+
+One of the video technicians I heard from on social media made a great point: it would be valuable to get a warning when
+the number of devices requiring dedicated circuits approaches the capacity of your planned distro. That's the kind of
+system-level thinking that's hard to do in your head but easy for software.
+
+## What I'm Still Learning
+
+There's still a lot I don't fully understand:
+
+- The exact physics of why neutral loss causes voltage shifts
+- How different distro configurations (wye vs delta) affect balancing strategies
+- Best practices for balancing when you have both 208V and 120V circuits
+- How power factor correction fits into all this
+
+If you have experience with any of these topics, I'd love to hear from you. The production AV community is full of
+people with deep practical knowledge, and I'm hoping this post starts some helpful conversations.
+
+## Final Thoughts: Bridging the Gap
+
+For someone who spent decades avoiding anything electrical, I've found this deep dive into power balancing surprisingly
+interesting. But more importantly, I've gained a real appreciation for the stress that technicians like Jordan carry
+when they're "waiting for something to happen."
+
+The disconnect between the office and the field is real. Project managers can maintain that "power is not that
+complicated" precisely because experienced technicians are handling the complexity on-site, under pressure, often
+without formal documentation. That works—until it doesn't.
+
+What I've learned is that we need better tools integrated into the normal workflow, not separate systems that require
+duplicate data entry. When a Flex user says power calculations would be "awesome and super useful, if you can get it to
+pull the right info," they're pointing to the real solution: leverage the data you already have.
+
+The key takeaways from my research:
+
+1. **Balance matters** for equipment safety, efficiency, and technician peace of mind
+2. **Aim for within 20%** current difference between phases
+3. **Use realistic power values** based on actual operating conditions (1/8 power pink noise for amps, maximum draw for
+   LEDs, operating specs for video)
+4. **Document your plan** rather than relying on field decisions—even if it's just a simple spreadsheet
+5. **Tools exist** to help, but the best tool would be integrated into your existing workflow
+
+Whether you're using a spreadsheet, a purpose-built tool like AmpLogic, or just keeping notes, the important thing is
+moving from improvised solutions to systematic planning. Because as Jordan's comment makes clear, "waiting for something
+to happen" shouldn't be part of anyone's workflow.
+
+---
+
+*Have feedback on this post? Spot a technical error? Want to share your own power balancing strategies? Please reach
+out—I'm still learning, and I welcome constructive input from the community. You can find me on LinkedIn or through
+Squarewave.*
+
+*Special thanks to Marshall, Jordan, and the German production technician on Reddit who were generous with their time
+and knowledge during my research.*

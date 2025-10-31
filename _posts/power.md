@@ -1,6 +1,6 @@
 # Balancing Three-Phase Power: A Learning Journey for AV Technicians
 
-*"It blows my mind that we haven't blown a breaker mid-show... I've been waiting for something to happen."*
+> "It blows my mind that we haven't blown a breaker mid-show... I've been waiting for something to happen."
 
 That's a quote from Jordan, a master electrician with years of experience in live event production. He's good at his
 job—really good. He can calculate loads in his head, distribute equipment across three-phase power on the fly, and has

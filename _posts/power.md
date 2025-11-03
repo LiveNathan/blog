@@ -2,47 +2,47 @@
 
 > "It blows my mind that we haven't blown a breaker mid-show... I've been waiting for something to happen."
 
-That's a quote from Jordan, a master electrician with years of experience in live event production. He's good at his
-job—really good. He can calculate loads in his head, distribute equipment across three-phase power on the fly, and has
-successfully powered hundreds of shows. But he's also acutely aware that he's improvising critical safety decisions
+That's a quote from my friend Marcus (not his real name), a master electrician with years of experience in live event production. He's really good at his
+job. He can calculate loads in his head, distribute equipment across three-phase power on the fly, and has
+successfully powered and lite hundreds of shows. But he's also acutely aware that he's improvising critical safety decisions
 under time pressure, without formal planning documents.
 
-Jordan's candid admission captures something I discovered while researching power distribution for live events: there's
+Marcus's words capture something I discovered while researching power distribution for live events: there's
 a huge gap between how production managers think about electrical safety and the reality technicians face on-site.
 
 I'll be honest with you: I've spent most of my career trying to avoid learning about power.
 
 For over 25 years in production AV, I focused almost exclusively on sound system design and calibration. Whenever
 conversations turned to power distribution, rigging, or electrical work, I'd find a reason to excuse myself. It's
-ironic, really—my dad is an electrical engineer, and he tried to teach me this stuff when I was a kid. Maybe that's
-exactly why I avoided it for so long. We all have our ways of differentiating ourselves from our parents.
+ironic, really—my dad is an electrical engineer, and he tried to teach me some stuff when I was a kid. Maybe that's
+exactly why I avoided it for so long. We all have our ways of rebelling against our parents.
 
 But here's the thing about production AV: there's not much room for hyper-specialists. The industry needs people who can
-handle multiple disciplines, or at least understand how they all connect. So when I started working at Squarewave and
-pitched the idea of building power calculation tools into their event management software, I realized I couldn't keep
-avoiding this topic. If I was going to help build something useful, I needed to actually understand what I was building.
+handle multiple disciplines, or at least understand how they all connect. So when I started working at SquareWave and
+pitched the idea of building a power calculation tool, I realized I couldn't keep
+avoiding this topic. If I was going to help build something useful, I needed to actually understand what I was doing, at least enough to build something useful.
 
-This blog post is the result of a few weeks of intensive research. I conducted discovery interviews with about four or
-five production professionals—from company owners to master electricians—posted questions on Reddit and social media,
-and did a lot of reading about electrical systems. **I don't have formal training as an electrician**, so if you spot
+This blog post is the result of a week of research. I did discovery interviews with four friends, posted questions on Reddit and social media,
+and did some reading about electrical systems. I don't have formal training as an electrician, so if you spot
 errors or oversimplifications in what follows, please let me know. This is as much a learning document for me as it is (
 hopefully) helpful for others.
+
+Tool break: Tools are fun. I've really been enjoying Notebook LLM. My favorite way to learn is through audio, usually podcasts and YT videos. In Notebook LLM you can drop in a bunch of documents and links and generate a hour long audio deep dive.
 
 ## What I Discovered: The Gap Between Planning and Practice
 
 My research revealed a striking disconnect in how different people in the production world think about power. I talked
-to Marshall, a co-owner and technical director at a production company, who told me frankly: "power is not that
+to Derek, a co-owner and technical director at a production company, who told me frankly: "power is not that
 complicated." For the many repetitive corporate shows his company does, they don't need to "reinvent the wheel" every
-time. From his perspective—managing quotes and inventory—power is mostly about making sure you have the right size
-generator and not overcharging the client.
+time. For a lot of people like Derek that I talked to, they've done so many shows and with their specific collection of equipment that you can pretty much do it by feeling. Most production AV companies only have a small number (1-3) of distros so you get the big one for big shows and the small ones for smaller shows. A larger problem, actually, is bring the right number and length of power cables. It also reminds me a lot of something I used to say a lot during my traingings on sound system calibration: If you're not aligning your system, that doesn't mean that it's not aligned. You just don't know where it is. Similarly, a power plan always exists, even if it's not explicitly documented.
 
-But then I talked to Jordan, a master electrician, and heard a completely different story. He described his typical
+It's a different story for the technicians in the field that have to execute this plan. Marcus described his typical
 workflow: "we don't necessarily plan anything, I just kinda usually figure it out on site... I understand what all of my
 equipment draws... and then just kind of go from there." He's doing mental calculations in the field, trying to
 distribute loads across three-phase power while the show is being set up.
 
-And here's what really stuck with me. Jordan admitted: "it blows my mind that we haven't blown a breaker mid-show," and
-then added something even more sobering: **"I've been waiting for something to happen."**
+And here's what really stuck with me. Marcus admitted: "it blows my mind that we haven't blown a breaker mid-show," and
+then added something even more sobering: "I've been waiting for something to happen."
 
 That's the reality for a lot of technicians. They're bearing the responsibility for improvising safe electrical
 solutions under time pressure, often without formal planning documents.
@@ -50,6 +50,8 @@ solutions under time pressure, often without formal planning documents.
 This disconnect isn't unique to one company. A comment on Facebook captured it perfectly: "I am being asked to provide
 power, but no one can tell me what the draw is on any of the things that we're plugging in." The information gap is
 real, and it's stressful.
+
+I should stop for a moment to point out the fact that the most difficult thing to do as a novice on any subject is to understand anything in context. Therefore, I may be overstaing the importance of this topic. It may be that it's not really that big of a deal because safety standards and hardware build in lots of headroom so maybe we're never in real danger. From some sources it seems like this stuff is critical and from others it seems like a minor concern.
 
 ## The Hidden Problem: "Normalization of Deviance"
 
@@ -59,16 +61,15 @@ calculations without a single failure, the perceived risk diminishes. The inform
 success, even though it's masking latent safety risks.
 
 The technician successfully figures it out every time, so the project manager can maintain the view that power is
-simple. The complexity gets outsourced down the chain to someone improvising under pressure. It works—until it doesn't.
+simple. The complexity gets outsourced down the chain to someone improvising under pressure. The show still happens without incident so there's not a lot of motivation for management to change things. It works—until it doesn't.
 
 ## It's All About Balance
 
 After all these conversations, here's what surprised me: most production companies aren't particularly worried about
-sizing generators or calculating whether they'll overload a specific distro. As Marshall explained, they typically have
+sizing generators or calculating whether they'll overload a specific distro. As Derek explained, they typically have
 just a few distros—maybe a 100-amp and a 200-amp—and they know which one to use based on show size.
 
-What people *are* doing manually, often with mental math or spreadsheets, is **balancing loads across three-phase power
-**. This is the practical, day-to-day challenge that kept coming up in my research.
+What people *are* doing manually, often with mental math or spreadsheets, is balancing loads across three-phase power. This is the practical, day-to-day challenge that kept coming up in my research.
 
 ## Why Does Balancing Matter?
 
@@ -85,8 +86,8 @@ left L3 barely loaded—problems start to emerge.
 
 ## The Worst-Case Scenario: What Actually Happens
 
-When I asked Jordan what happens if you don't balance the legs properly, he said power goes down the neutral. So I
-asked, "What's the worst-case scenario?" He didn't know—and honestly, neither did I.
+When I asked Marcus what happens if you don't balance the legs properly, he said power goes down the neutral. So I
+asked, "What's the worst-case scenario?" He didn't know.
 
 Fortunately, I posted this question on Reddit and got an incredibly detailed response from a German production
 technician whose company uses formal load calculations (they're even required for apprentice final exams in Germany). He
@@ -97,8 +98,8 @@ and very little current flows through the shared neutral wire. But with signific
 must return through that neutral conductor. If the load distribution is very uneven, the neutral can carry more current
 than it's rated for. When that happens, the conductor heats up and can eventually burn out—creating a fire hazard.
 
-**Second, and more catastrophic, is "neutral point shift"**: This is the scenario that really got my attention. If the
-neutral conductor becomes disconnected while the load is unbalanced—for example, from a loose PowerLock connection—it
+**Second, and more catastrophic, is neutral point shift**: This is the scenario that really got my attention. If the
+neutral conductor becomes disconnected while the load is unbalanced—for example, from a loose connection—it
 causes the voltage reference to be lost. This leads to increased voltage on two of the phases, potentially surging to
 double the nominal voltage and instantly destroying connected equipment.
 
@@ -118,7 +119,7 @@ This was one of my key questions during research. The industry standard for unba
 of 3% between phases. For current, I found references suggesting that keeping phase currents within 20% of each other is
 a reasonable target, though perfection isn't required or realistic.
 
-Jordan, the lighting tech I interviewed, told me he typically does this balancing in his head while plugging things in.
+Marcus, the lighting tech I interviewed, told me he typically does this balancing in his head while plugging things in.
 For smaller shows with a single distro, he'll mentally distribute the loads: "These fixtures to L1, those to L2, the
 rest to L3." It works because he knows his equipment and has years of experience.
 
@@ -200,7 +201,7 @@ Here's a simple process:
 
 Through my research, I discovered several approaches:
 
-**Vectorworks for big shows**: Marshall's company uses Vectorworks for their larger productions. The software can
+**Vectorworks for big shows**: Derek's company uses Vectorworks for their larger productions. The software can
 calculate power and generate load balance reports, but it's a separate tool from their quoting and inventory system (
 they use Flex). So there's this disconnect—the power planning happens in one place, the business planning in another.
 
@@ -209,7 +210,7 @@ spreadsheet. It's pre-populated with the electrical data for all their equipment
 see the balance in real time. They've even added voltage drop calculators. But it's completely manual—you have to enter
 everything by hand.
 
-**Mental math on site**: This is probably the most common approach, especially for smaller shows. Jordan's method of
+**Mental math on site**: This is probably the most common approach, especially for smaller shows. Marcus's method of
 calculating in his head while plugging things in works when you know your gear and the show isn't too complex.
 
 One user on the Flex community forum summed up the opportunity perfectly when I asked about building this into quoting
@@ -243,7 +244,7 @@ because they need them.
 After all this research, I've concluded that systematic power balancing is most valuable for **medium-sized shows**.
 Here's why:
 
-**Small shows**: The loads are light enough that rough balancing is sufficient. As Marshall said about his routine
+**Small shows**: The loads are light enough that rough balancing is sufficient. As Derek said about his routine
 corporate events, there's no need to reinvent the wheel—experienced techs can handle it.
 
 **Large shows**: You likely have a dedicated designer using Vectorworks or similar tools that already handle power
@@ -279,7 +280,7 @@ people with deep practical knowledge, and I'm hoping this post starts some helpf
 ## Final Thoughts: Bridging the Gap
 
 For someone who spent decades avoiding anything electrical, I've found this deep dive into power balancing surprisingly
-interesting. But more importantly, I've gained a real appreciation for the stress that technicians like Jordan carry
+interesting. But more importantly, I've gained a real appreciation for the stress that technicians like Marcus carry
 when they're "waiting for something to happen."
 
 The disconnect between the office and the field is real. Project managers can maintain that "power is not that
@@ -300,7 +301,7 @@ The key takeaways from my research:
 5. **Tools exist** to help, but the best tool would be integrated into your existing workflow
 
 Whether you're using a spreadsheet, a purpose-built tool like AmpLogic, or just keeping notes, the important thing is
-moving from improvised solutions to systematic planning. Because as Jordan's comment makes clear, "waiting for something
+moving from improvised solutions to systematic planning. Because as Marcus's comment makes clear, "waiting for something
 to happen" shouldn't be part of anyone's workflow.
 
 ---
@@ -309,5 +310,5 @@ to happen" shouldn't be part of anyone's workflow.
 out—I'm still learning, and I welcome constructive input from the community. You can find me on LinkedIn or through
 Squarewave.*
 
-*Special thanks to Marshall, Jordan, and the German production technician on Reddit who were generous with their time
+*Special thanks to Derek, Marcus, and the German production technician on Reddit who were generous with their time
 and knowledge during my research.*

@@ -18,7 +18,7 @@ ironic, really—my dad is an electrical engineer, and he tried to teach me some
 exactly why I avoided it for so long. We all have our ways of rebelling against our parents.
 
 But here's the thing about production AV: there's not much room for hyper-specialists. The industry needs people who can
-handle multiple disciplines, or at least understand how they all connect. So when I started working at SquareWave and
+handle multiple disciplines, or at least understand how they all connect. So when I started working at [SquareWave](https://squarewave.com.au/) and
 pitched the idea of building a power calculation tool, I realized I couldn't keep
 avoiding this topic. If I was going to help build something useful, I needed to actually understand what I was doing, at least enough to build something useful.
 
@@ -138,11 +138,12 @@ Now you need to distribute your departments across the legs:
 - **Lighting**: LED fixtures, moving lights, hazers
 - **Audio**: Power amplifiers, mixing console, wireless rack
 - **Video**: LED walls, projectors, media servers
-- **Scenic**: Anything else that needs power
 
 The goal is to ensure each leg (L1, L2, L3) carries roughly the same current load.
 
 ## The Regulatory Reality: More Than Just Best Practice
+
+-- Here we need to provide links to the regulatory documents so that people can read them for themselves.
 
 Something I discovered during my research: proper power planning isn't just a good idea—it's actually required by
 federal law. OSHA's regulations (29 CFR 1910 Subpart S) mandate that employers use approved equipment, follow safe work
@@ -153,6 +154,8 @@ What struck me is that generating a formal power plan isn't just about preventin
 diligence. If something does go wrong, having a documented load calculation shows you followed proper procedures.
 Without it, you're exposed to liability, even if nothing bad has happened yet.
 
+-- We need link to this quote from the safety researcher
+
 This is part of why "normalization of deviance" is so problematic. Companies can run hundreds of successful shows
 without formal planning, but that doesn't change their legal obligation to have documented safety procedures. One safety
 researcher described it as "the gap between regulatory theory and on-site practice"—the rules exist, but many companies
@@ -160,24 +163,26 @@ operate on experience and improvisation instead.
 
 ## What Power Values Should You Use?
 
-This was one of the trickiest parts of my research, because equipment manufacturers rate power in different ways, and
+This was one of the trickiest parts of my research because equipment manufacturers rate power in different ways, and
 the actual power draw varies dramatically based on how the equipment is being used.
 
 ### Audio Amplifiers
 
+-- We need to link to our source for this industry standard
+
 For professional power amplifiers, the industry standard is to use "1/8 Power Pink Noise" for typical real-world power
-calculations—this is pink noise at about 9dB below the amplifier's clipping point. This 1/8 power measurement provides a
+calculations—this is pink noise at about 9dB below the amplifier's clipping point. This 1/8-power measurement provides a
 good approximation of typical speech and music signals being driven as loud as possible without clipping.
 
-If you see an amplifier rated at 2,000W, don't use 2,000W for your calculations—that's a full-power sine wave rating
-that will never happen in practice. Use the 1/8 power pink noise specification if available, or estimate it at roughly
-20-30% of the rated power for realistic show conditions.
+If you see an amplifier rated at 2,000 W, don't use 2,000 W for your calculations—that's a full-power sine wave rating
+that will never happen in practice. Use the 1/8-power pink noise specification if available, or estimate it at roughly
+20–30% of the rated power for realistic show conditions.
 
 ### LED Lighting
 
 LED fixtures typically list their maximum power draw, which is what they pull when at full intensity in all colors. This
 is actually a reasonable value to use for planning, since you'll likely hit maximum draw at various points during a
-show.
+show. (Lampies, check me on this.)
 
 ### Video Equipment
 
@@ -201,9 +206,8 @@ Here's a simple process:
 
 Through my research, I discovered several approaches:
 
-**Vectorworks for big shows**: Derek's company uses Vectorworks for their larger productions. The software can
-calculate power and generate load balance reports, but it's a separate tool from their quoting and inventory system (
-they use Flex). So there's this disconnect—the power planning happens in one place, the business planning in another.
+**Vectorworks for big shows**: Many (most?) AV companies use Vectorworks for their larger productions. The software can
+calculate power and generate load balance reports, but it's a separate tool from their quoting and inventory system (Flex, D-Tools, Lasso, etc.). So there's this disconnect—the power planning happens in one place, the business planning in another.
 
 **Spreadsheets everywhere**: The German production company I connected with on Reddit has built a comprehensive Excel
 spreadsheet. It's pre-populated with the electrical data for all their equipment, and they can assign gear to phases and
@@ -219,21 +223,15 @@ already in your inventory system, why enter it again?
 
 ## A Tool to Help: AmpLogic
 
-While researching this topic, I was contacted on LinkedIn by Dom Trotta, who built a browser-based tool
-called [AmpLogic](https://domtrotta.github.io/AmpLogic) specifically for this purpose. He told me: "whenever I'm PM'ing
+While researching this topic, I was contacted on LinkedIn by Dom Trotta, who built a web app called [AmpLogic](https://domtrotta.github.io/AmpLogic) specifically for this purpose. He told me: "whenever I'm PM'ing
 small jobs, I always want to make sure the power is balanced across the right phases. I kept doing the calculations on
 my phone, so I thought—I should just build a small app to make it quicker."
 
 AmpLogic includes features for:
 
 - Building equipment lists with wattage, quantity, and phase assignments
-- Automatic calculation of load per phase
 - Real-time checks for overload conditions
-- Auto-balancing across three phases
 - CSV import/export for documentation
-
-It runs entirely in your browser, requires no installation, and provides a quick way to experiment with different load
-distributions. If you're trying to understand three-phase balancing practically, it's worth playing around with.
 
 Another Reddit user shared their company's spreadsheet approach, which shows the total load for each phase at the bottom
 so you can balance evenly. These DIY solutions show there's real demand for this kind of tool—people are building them
@@ -244,7 +242,7 @@ because they need them.
 After all this research, I've concluded that systematic power balancing is most valuable for **medium-sized shows**.
 Here's why:
 
-**Small shows**: The loads are light enough that rough balancing is sufficient. As Derek said about his routine
+**Small shows**: The loads are light enough that rough balancing is enough. As Derek said about his routine
 corporate events, there's no need to reinvent the wheel—experienced techs can handle it.
 
 **Large shows**: You likely have a dedicated designer using Vectorworks or similar tools that already handle power
@@ -256,7 +254,7 @@ disconnected from your quoting workflow). But the show is complex enough that as
 creates real stress and risk. You have gear from multiple departments, significant power draws, and clients who expect
 professionalism—but you're trying to manage everything through your rental management system.
 
-This is where tools integrated into quoting and planning software (like what we're exploring at Squarewave) could be
+This is where tools integrated into quoting and planning software could be
 genuinely helpful. You can plan your power distribution as you're building your quote, print a balanced power plan, and
 show up to the gig with confidence. The tech isn't scrambling to figure things out under pressure, and the PM has
 documented their due diligence.
@@ -271,7 +269,8 @@ There's still a lot I don't fully understand:
 
 - The exact physics of why neutral loss causes voltage shifts
 - How different distro configurations (wye vs delta) affect balancing strategies
-- Best practices for balancing when you have both 208V and 120V circuits
+- Best practices for balancing when you have both 208 V and 120 V circuits
+- What value to use on a spec sheet for any piece of equipment for a power plan
 - How power factor correction fits into all this
 
 If you have experience with any of these topics, I'd love to hear from you. The production AV community is full of
@@ -287,7 +286,7 @@ The disconnect between the office and the field is real. Project managers can ma
 complicated" precisely because experienced technicians are handling the complexity on-site, under pressure, often
 without formal documentation. That works—until it doesn't.
 
-What I've learned is that we need better tools integrated into the normal workflow, not separate systems that require
+What I've learned is that we need better tools integrated into the pre-production workflow, not separate systems that require
 duplicate data entry. When a Flex user says power calculations would be "awesome and super useful, if you can get it to
 pull the right info," they're pointing to the real solution: leverage the data you already have.
 
@@ -307,8 +306,4 @@ to happen" shouldn't be part of anyone's workflow.
 ---
 
 *Have feedback on this post? Spot a technical error? Want to share your own power balancing strategies? Please reach
-out—I'm still learning, and I welcome constructive input from the community. You can find me on LinkedIn or through
-Squarewave.*
-
-*Special thanks to Derek, Marcus, and the German production technician on Reddit who were generous with their time
-and knowledge during my research.*
+out—I'm still learning, and I welcome constructive input from the community.*

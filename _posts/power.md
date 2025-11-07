@@ -110,6 +110,10 @@ The reason $1/8$ power is used comes down to the signal's Crest Factor. Crest Fa
 
 If you see an amplifier rated at $2,000\,\text{W}$, don't use $2,000\,\text{W}$ for your calculations—that's a full-power sine wave rating that will never happen in practice. Use the $1/8$\-power pink noise specification if available, or estimate it at roughly $20–30\%$ of the rated power for realistic show conditions.
 
+Let's look at an example a d&b D40. There's a bunch of information in the user guide about the amplifier's power draw, but the number we want is Noise CF 12 dB. As it say, "This represents the use case of live music or less compressed recorded music." If you are running a single d&b V-SUB, which has a nominal impedance of $8\,\Omega$, you would use the 1350\,\text{W} value for your power plan.
+
+![CleanShot 2025-11-07 at 08.39.52.png](../assets/images/CleanShot%202025-11-07%20at%2008.39.52.png)
+
 ### LED Lighting
 
 LED fixtures typically list their maximum power draw, which is what they pull when at full intensity in all colors. This is actually a reasonable value to use for planning, since you'll likely hit maximum draw at various points during a show. (Lampies, check me on this.)
@@ -123,13 +127,8 @@ Projectors and LED walls usually draw relatively consistent power during operati
 Here's a simple process for single-phase loads (like most AV gear) on a $120/208\,\text{V}$ system:
 
 1. List all your equipment with realistic power draw values (Typical Power Draw in Watts).
-2. Convert to current for each single-phase device:  
-   $$\\text{Current (Amps)} \\= \\frac{\\text{Power (Watts)}}{\\text{Voltage (Volts)}}$$
-
-   Since most devices are connected Line-to-Neutral:  
-   $$\\text{Amps per leg} \\= \\frac{\\text{Watts}}{120\,\text{V}}$$
-
-   This is the current value you need for balancing L1, L2, and L3.
+2. Convert to current for each single-phase device: Current (Amps) = Power (Watts) / Voltage (Volts)
+   Since most devices are connected Line-to-Neutral: Amps per leg = Watts / 120V
 3. Assign devices to phases (L1, L2, L3) trying to keep total amps per phase roughly equal.
 4. Check your balance: Calculate the percentage difference between the highest and lowest loaded phases.
 5. Adjust as needed until all phases are within $20\%$ of each other.

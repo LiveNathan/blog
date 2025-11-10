@@ -1,3 +1,10 @@
+---
+layout: post
+title: "Balancing Three-Phase Power: A Learning Journey for AV Technicians"
+date: 2025-11-10 08:00:00 -0000
+categories: [ power, electrical, av-production, live-events, production-av ]
+---
+
 # Balancing Three-Phase Power: A Learning Journey for AV Technicians
 
 > It blows my mind that we haven't blown a breaker mid-show... I've been waiting for something to happen.

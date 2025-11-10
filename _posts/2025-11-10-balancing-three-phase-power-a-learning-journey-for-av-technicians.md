@@ -119,7 +119,7 @@ If you see an amplifier rated at 2,000 W, don't use 2,000 W for your calculation
 
 Let's look at an example a d&b D40. There's a bunch of information in the user guide about the amplifier's power draw, but the number we want is Noise CF 12 dB. As it say, "This represents the use case of live music or less compressed recorded music." If you are running a single d&b V-SUB, which has a nominal impedance of 8 Ω, you would use the 1350 W value for your power plan.
 
-![CleanShot 2025-11-07 at 08.39.52.png](../assets/images/CleanShot%202025-11-07%20at%2008.39.52.png)
+![CleanShot 2025-11-07 at 08.39.52.png](https://github.com/LiveNathan/blog/blob/7a88fc0fdc94d04cd38fb433ce8e0c52910ca177/assets/images/CleanShot%202025-11-07%20at%2008.39.52.png)
 
 ### LED Lighting
 

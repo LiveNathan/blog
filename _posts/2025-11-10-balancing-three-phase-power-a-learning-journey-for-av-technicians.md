@@ -53,7 +53,7 @@ What people *are* doing manually, often with mental math or spreadsheets, is bal
 
 Three-phase load balancing helps prevent reduced efficiency, tripped circuit breakers, and shortened equipment life. When your power distribution is significantly unbalanced, you're not just being inefficient—you're creating conditions that can damage expensive equipment.
 
-Here's what happens: In a three-phase system (most commonly a Wye configuration in North America), you have three "legs" of power (L1, L2, L3) that are $120$ degrees out of phase with each other. Loads like your amplifiers and projectors are typically connected between one of these legs and the neutral conductor. When everything is balanced, the current flowing through these three legs is roughly equal, and the neutral conductor carries minimal current.
+Here's what happens: In a three-phase system (most commonly a Wye configuration in North America), you have three "legs" of power (L1, L2, L3) that are 120° out of phase with each other. Loads like your amplifiers and projectors are typically connected between one of these legs and the neutral conductor. When everything is balanced, the current flowing through these three legs is roughly equal, and the neutral conductor carries minimal current.
 
 But when the loads are unbalanced—say you've plugged all your LED fixtures into L1, all your audio gear into L2, and left L3 barely loaded—problems start to emerge.
 
@@ -65,17 +65,17 @@ Fortunately, I posted this question on Reddit and got an incredibly detailed res
 
 First, the neutral conductor overload: In a balanced system, the currents on the three legs cancel each other out, and very little current flows through the shared neutral wire. But with significant imbalance, the difference in current must return through that neutral conductor. If the load distribution is very uneven, the neutral can carry more current than it's rated for. When that happens, the conductor heats up and can eventually burn out—creating a fire hazard.
 
-Second, and more catastrophic, is neutral point shift: This is the scenario that really got my attention. If the neutral conductor becomes disconnected (for example, from a loose connection) while the load is unbalanced, it causes the voltage reference to be lost. This leads to increased voltage on the lightly loaded phases, potentially causing a voltage surge that can approach the higher line-to-line voltage (e.g., surging from $120\,\text{V}$ up toward $208\,\text{V}$) and instantly destroying connected equipment.[^1]
+Second, and more catastrophic, is neutral point shift: This is the scenario that really got my attention. If the neutral conductor becomes disconnected (for example, from a loose connection) while the load is unbalanced, it causes the voltage reference to be lost. This leads to increased voltage on the lightly loaded phases, potentially causing a voltage surge that can approach the higher line-to-line voltage (e.g., surging from 120 V up toward 208 V) and instantly destroying connected equipment.[^1]
 
 I've never heard of this actually happening in a production environment, but understanding the physics helps explain why we balance loads in the first place. It's not just about efficiency—it's about preventing potentially catastrophic equipment damage.
 
 ## The More Common Problem: Efficiency and Heat
 
-Even without neutral failure, unbalanced loads cause several practical problems: increased neutral current leading to line losses, reduced efficiency in three-phase equipment like motors and transformers, and excessive heating. For distribution transformers, every $8^{\circ}C$ increase in temperature can reduce service life by half.
+Even without neutral failure, unbalanced loads cause several practical problems: increased neutral current leading to line losses, reduced efficiency in three-phase equipment like motors and transformers, and excessive heating. For distribution transformers, every 8°C increase in temperature can reduce service life by half.
 
 ## How Much Imbalance Is Acceptable?
 
-This was one of my key questions during research. The industry standard for unbalanced voltage is a maximum difference of $3\%$ between phases. For current, I found references suggesting that keeping phase currents within $20\%$ of each other is a reasonable target, though perfection isn't required or realistic.[^2]
+This was one of my key questions during research. The industry standard for unbalanced voltage is a maximum difference of 3% between phases. For current, I found references suggesting that keeping phase currents within 20% of each other is a reasonable target, though perfection isn't required or realistic.[^2]
 
 Marcus, the lighting tech I interviewed, told me he typically does this balancing in his head while plugging things in. For smaller shows with a single distro, he'll mentally distribute the loads: "These fixtures to L1, those to L2, the rest to L3." It works because he knows his equipment and has years of experience.
 
@@ -83,7 +83,7 @@ But for medium-sized shows where you want documentation and confidence in your p
 
 ## A Practical Example: Medium-Sized Show
 
-Let's walk through a realistic scenario. You're setting up a corporate event in a hotel ballroom. The venue provides three-phase power via a cam lock connection—typically $120/208\,\text{V}$ in North America. You connect this to your distro, which breaks out the three phases (L1, L2, L3) and the neutral into multiple $120\,\text{V}$ circuits you can plug equipment into.
+Let's walk through a realistic scenario. You're setting up a corporate event in a hotel ballroom. The venue provides three-phase power via a cam lock connection—typically 120/208 V in North America. You connect this to your distro, which breaks out the three phases (L1, L2, L3) and the neutral into multiple 120 V circuits you can plug equipment into.
 
 Commonly you'll distribute your departments across the legs:
 
@@ -97,7 +97,7 @@ The goal is to ensure each leg (L1, L2, L3) carries roughly the same current loa
 
 Something I discovered during my research: proper power planning isn't just a good idea—it's actually required by federal law. OSHA's regulations (29 CFR 1910 Subpart S) mandate that employers use approved equipment, follow safe work practices, and have properly trained personnel.[^3]
 
-The National Electrical Code (NEC, or NFPA 70\) provides the technical specifications, particularly Article 590 for temporary installations and Article 520 for theaters and performance areas.[^4]
+The National Electrical Code (NEC, or NFPA 70) provides the technical specifications, particularly Article 590 for temporary installations and Article 520 for theaters and performance areas.[^4]
 
 What struck me is that generating a formal power plan isn't just about preventing accidents—it's about documenting due diligence. If something does go wrong, having a documented load calculation shows you followed proper procedures. Without it, you're exposed to liability, even if nothing bad has happened yet.
 
@@ -109,15 +109,15 @@ This was one of the trickiest parts of my research because equipment manufacture
 
 ### Audio Amplifiers
 
-For professional power amplifiers, the industry standard is to use "$1/8$ Power Pink Noise" for typical real-world power calculations—this is pink noise at about $9\,\text{dB}$ below the amplifier's clipping point.[^5] (The conversion: $10 \cdot \log_{10}(1/8) \approx -9.03\,\text{dB}$)
+For professional power amplifiers, the industry standard is to use "1/8 Power Pink Noise" for typical real-world power calculations—this is pink noise at about 9 dB below the amplifier's clipping point.[^5] (The conversion: 10 · log₁₀(1/8) ≈ -9.03 dB)
 
-This $1/8$-power measurement provides a good approximation of typical speech and music signals being driven as loud as possible without clipping.
+This 1/8-power measurement provides a good approximation of typical speech and music signals being driven as loud as possible without clipping.
 
-The reason $1/8$ power is used comes down to the signal's Crest Factor. Crest Factor describes the ratio between the signal's peak energy and its average (RMS) energy. Live music and speech have a high crest factor (around $12\,\text{dB}$), meaning they have large, short peaks but low average power draw. Planning for the full power (like a constant sine wave) would result in a grossly oversized power plan that the client wouldn't need to pay for.
+The reason 1/8 power is used comes down to the signal's Crest Factor. Crest Factor describes the ratio between the signal's peak energy and its average (RMS) energy. Live music and speech have a high crest factor (around 12 dB), meaning they have large, short peaks but low average power draw. Planning for the full power (like a constant sine wave) would result in a grossly oversized power plan that the client wouldn't need to pay for.
 
-If you see an amplifier rated at $2,000\,\text{W}$, don't use $2,000\,\text{W}$ for your calculations—that's a full-power sine wave rating that will never happen in practice. Use the $1/8$\-power pink noise specification if available, or estimate it at roughly $20–30\%$ of the rated power for realistic show conditions.
+If you see an amplifier rated at 2,000 W, don't use 2,000 W for your calculations—that's a full-power sine wave rating that will never happen in practice. Use the 1/8-power pink noise specification if available, or estimate it at roughly 20–30% of the rated power for realistic show conditions.
 
-Let's look at an example a d&b D40. There's a bunch of information in the user guide about the amplifier's power draw, but the number we want is Noise CF 12 dB. As it say, "This represents the use case of live music or less compressed recorded music." If you are running a single d&b V-SUB, which has a nominal impedance of $8\,\Omega$, you would use the 1350\,\text{W} value for your power plan.
+Let's look at an example a d&b D40. There's a bunch of information in the user guide about the amplifier's power draw, but the number we want is Noise CF 12 dB. As it say, "This represents the use case of live music or less compressed recorded music." If you are running a single d&b V-SUB, which has a nominal impedance of 8 Ω, you would use the 1350 W value for your power plan.
 
 ![CleanShot 2025-11-07 at 08.39.52.png](../assets/images/CleanShot%202025-11-07%20at%2008.39.52.png)
 
@@ -131,13 +131,13 @@ Projectors and LED walls usually draw relatively consistent power during operati
 
 ## How to Actually Balance Loads
 
-Here's a simple process for single-phase loads (like most AV gear) on a $120/208\,\text{V}$ system:
+Here's a simple process for single-phase loads (like most AV gear) on a 120/208 V system:
 
 1. List all your equipment with realistic power draw values (Typical power draw in watts).
 2. Convert to current for each single-phase device: Current (Amps) = Power (Watts) / Voltage (Volts)
 3. Assign devices to phases (L1, L2, L3) trying to keep total amps per phase roughly equal.
 4. Check your balance: Calculate the percentage difference between the highest and lowest loaded phases.
-5. Adjust as needed until all phases are within $20\%$ of each other.
+5. Adjust as needed until all phases are within 20% of each other.
 
 ## How People Are Solving This Today
 
@@ -183,7 +183,7 @@ There's still a lot I don't fully understand:
 
 * The exact physics of why neutral loss causes voltage shifts
 * How different distro configurations (Wye vs Delta) affect balancing strategies
-* Best practices for balancing when you have both $208\,\text{V}$ and $120\,\text{V}$ circuits
+* Best practices for balancing when you have both 208 V and 120 V circuits
 * What value to use on a spec sheet for any piece of equipment for a power plan
 * How power factor correction fits into all this
 
@@ -200,8 +200,8 @@ What I've learned is that we need better tools integrated into the pre-productio
 The key takeaways from my research:
 
 1. Balance matters for equipment safety (preventing catastrophic neutral point shift), efficiency, and technician peace of mind.
-2. Aim for within $20\%$ current difference between phases.
-3. Use realistic power values based on actual operating conditions ($1/8$ power pink noise for amps, maximum draw for LEDs, operating specs for video).
+2. Aim for within 20% current difference between phases.
+3. Use realistic power values based on actual operating conditions (1/8 power pink noise for amps, maximum draw for LEDs, operating specs for video).
 4. Document your plan rather than relying on field decisions—even if it's just a simple spreadsheet.
 5. Tools exist to help, but the best tool would be integrated into your existing workflow.
 
@@ -211,10 +211,10 @@ Whether you're using a spreadsheet, a purpose-built tool like AmpLogic, or just 
 
 [^1]: Synthesis of regulatory and practical analysis on the "normalization of deviance," the "gap between regulatory theory and on-site practice," and the neutral point shift worst-case scenario (Source: AV Electrical Safety Code Research & Power Calculator MVP Research Analysis).
 
-[^2]: Industry best practice consensus on acceptable phase current imbalance, with a conservative default threshold set at $20\%$ (Source: Power Calculator MVP Research Analysis, referencing industry thresholds).
+[^2]: Industry best practice consensus on acceptable phase current imbalance, with a conservative default threshold set at 20% (Source: Power Calculator MVP Research Analysis, referencing industry thresholds).
 
 [^3]: U.S. Occupational Safety and Health Administration (OSHA), 29 CFR 1910 Subpart S - Electrical (Source: AV Electrical Safety Code Research).
 
 [^4]: National Fire Protection Association (NFPA), NFPA 70: National Electrical Code (NEC), Articles 520 and 590 (Source: AV Electrical Safety Code Research).
 
-[^5]: Industry standard for audio power calculation, referencing Crest Factor and $1/8$ Power Pink Noise, as outlined in manufacturer specifications (e.g., d\&b D40 amplifier manual) and the Common Amplifier Format (CAF) standard (Source: Event Power Calculator Data Needs).
+[^5]: Industry standard for audio power calculation, referencing Crest Factor and 1/8 Power Pink Noise, as outlined in manufacturer specifications (e.g., d&b D40 amplifier manual) and the Common Amplifier Format (CAF) standard (Source: Event Power Calculator Data Needs).

@@ -126,9 +126,8 @@ Projectors and LED walls usually draw relatively consistent power during operati
 
 Here's a simple process for single-phase loads (like most AV gear) on a $120/208\,\text{V}$ system:
 
-1. List all your equipment with realistic power draw values (Typical Power Draw in Watts).
+1. List all your equipment with realistic power draw values (Typical power draw in watts).
 2. Convert to current for each single-phase device: Current (Amps) = Power (Watts) / Voltage (Volts)
-   Since most devices are connected Line-to-Neutral: Amps per leg = Watts / 120V
 3. Assign devices to phases (L1, L2, L3) trying to keep total amps per phase roughly equal.
 4. Check your balance: Calculate the percentage difference between the highest and lowest loaded phases.
 5. Adjust as needed until all phases are within $20\%$ of each other.
@@ -163,7 +162,7 @@ After all this research, I've concluded that systematic power balancing is most 
 
 Small shows: The loads are light enough that rough balancing is enough. As Derek said about his routine corporate events, there's no need to reinvent the wheel—experienced techs can handle it.
 
-Large shows: You likely have a dedicated designer using Vectorworks or similar tools that already handle power planning. These productions have the budget and complexity to justify specialized design software and dedicated personnel for power planning.
+Large shows: You likely have a dedicated designer using Vectorworks or similar tools that already help with power planning. These productions have the budget and complexity to justify specialized design software and dedicated personnel for power planning.
 
 Medium shows: This is the gap. You're not using full design software like Vectorworks because it's overkill (and disconnected from your quoting workflow). But the show is complex enough that asking a tech to figure it out on-site creates real stress and risk. You have gear from multiple departments, significant power draws, and clients who expect professionalism—but you're trying to manage everything through your rental management system.
 
@@ -199,7 +198,7 @@ The key takeaways from my research:
 4. Document your plan rather than relying on field decisions—even if it's just a simple spreadsheet.
 5. Tools exist to help, but the best tool would be integrated into your existing workflow.
 
-Whether you're using a spreadsheet, a purpose-built tool like AmpLogic, or just keeping notes, the important thing is moving from improvised solutions to systematic planning. Because as Marcus's comment makes clear, "waiting for something to happen" shouldn't be part of anyone's workflow.
+Whether you're using a spreadsheet, a purpose-built tool like AmpLogic, or just keeping notes, the important thing is moving from improvised solutions to systematic planning.
 
 *Have feedback on this post? Spot a technical error? Want to share your own power balancing strategies? Please reach out—I'm still learning, and I welcome constructive input from the community.*
 

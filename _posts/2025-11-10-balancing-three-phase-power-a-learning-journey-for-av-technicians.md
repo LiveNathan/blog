@@ -109,9 +109,11 @@ This was one of the trickiest parts of my research because equipment manufacture
 
 ### Audio Amplifiers
 
-For professional power amplifiers, the industry standard is to use "1/8 Power Pink Noise" for typical real-world power calculations—this is pink noise at about 9 dB below the amplifier's clipping point.[^5] (The conversion: 10 · log₁₀(1/8) ≈ -9.03 dB)
+#### 12dB Crest Factor
 
-This 1/8-power measurement provides a good approximation of typical speech and music signals being driven as loud as possible without clipping.
+For professional power amplifiers, "1/8 Power Pink Noise" has been historically used for typical real-world power calculations—this is pink noise at about 9 dB below the amplifier's clipping point.[^5] (The conversion: 10 · log₁₀(1/8) ≈ -9.03 dB)
+
+This 1/8-power measurement provides a good approximation of typical speech and music signals being driven as loud as possible without clipping. As it says in the d&b D40 Reference Manual, "This represents the use case of live music or less compressed recorded music."
 
 The reason 1/8 power is used comes down to the signal's Crest Factor. Crest Factor describes the ratio between the signal's peak energy and its average (RMS) energy. Live music and speech have a high crest factor (around 12 dB), meaning they have large, short peaks but low average power draw. Planning for the full power (like a constant sine wave) would result in a grossly oversized power plan that the client wouldn't need to pay for.
 
@@ -120,6 +122,22 @@ If you see an amplifier rated at 2,000 W, don't use 2,000 W for your calculation
 Let's look at an example a d&b D40. There's a bunch of information in the user guide about the amplifier's power draw, but the number we want is Noise CF 12 dB. As it say, "This represents the use case of live music or less compressed recorded music." If you are running a single d&b V-SUB, which has a nominal impedance of 8 Ω, you would use the 1350 W value for your power plan.
 
 ![CleanShot 2025-11-07 at 08.39.52.png](https://raw.githubusercontent.com/LiveNathan/blog/58bfbaa2a774624cf945bfed9a8f4e4b4d799295/assets/images/CleanShot%202025-11-07%20at%2008.39.52.png)
+
+#### 18dB Crest Factor
+
+Not every manufacturer still uses a 12dB crest factor for music. Let's look at the example of a Meyer Sound 750-LFC subwoofer by way of the Amperage/BTU Calculator. If we add the 750 to the calculator at 115 V then we see its current draw is 5.4 A. There's a helpful note that say, "The minimum electrical service amperage required is the sum of each loudspeaker’s maximum long-term continuous current." 
+
+How is maximum long-term continuous current measured? 
+
+...eventually link to AES75, which has been adopted by many manufacturers including Meyer Sound, other manufactuer, other manufacturer. 
+
+#### The risk of balance by category
+
+There's a potential risk in simply attempting to balance the loads across all three phases by loudspeaker model. What if we put all of our tops on L1 and the subs on L2? On paper they may be balanced, but now we have exposed ourselves to frequency dependent risk. 
+
+...more explanation...
+
+It's interesting to note that in the operating instructions for the 750-LFC... (I don't know, can we draw some conclusions from this example or maybe not?)
 
 ### LED Lighting
 

@@ -109,35 +109,89 @@ This was one of the trickiest parts of my research because equipment manufacture
 
 ### Audio Amplifiers
 
-#### 12dB Crest Factor
+When planning power for audio amplifiers, the key challenge is determining which power specification to use. The rated maximum power of an amplifier—often prominently displayed in marketing materials—bears little resemblance to its actual power consumption during typical operation.
 
-For professional power amplifiers, "1/8 Power Pink Noise" has been historically used for typical real-world power calculations—this is pink noise at about 9 dB below the amplifier's clipping point.[^5] (The conversion: 10 · log₁₀(1/8) ≈ -9.03 dB)
+#### Understanding Crest Factor
 
-This 1/8-power measurement provides a good approximation of typical speech and music signals being driven as loud as possible without clipping. As it says in the d&b D40 Reference Manual, "This represents the use case of live music or less compressed recorded music."
+The reason for this disparity lies in something called crest factor: the ratio between a signal's peak amplitude and its average (RMS) amplitude.[^6] Music and speech have high crest factors—momentary peaks are much higher than the continuous average level. A constant sine wave (used for traditional amplifier power ratings) has a crest factor of about 3 dB. Real-world audio signals have much higher crest factors:
 
-The reason 1/8 power is used comes down to the signal's Crest Factor. Crest Factor describes the ratio between the signal's peak energy and its average (RMS) energy. Live music and speech have a high crest factor (around 12 dB), meaning they have large, short peaks but low average power draw. Planning for the full power (like a constant sine wave) would result in a grossly oversized power plan that the client wouldn't need to pay for.
+- Speech: typically 12 dB
+- Live music: 12–18 dB depending on genre and compression[^7]
+- Highly compressed modern recordings: may be as low as 6 dB
 
-If you see an amplifier rated at 2,000 W, don't use 2,000 W for your calculations—that's a full-power sine wave rating that will never happen in practice. Use the 1/8-power pink noise specification if available, or estimate it at roughly 20–30% of the rated power for realistic show conditions.
+This matters because power consumption tracks average (RMS) levels, not instantaneous peaks. If you plan for an amplifier's full sine wave power rating, you'll dramatically overestimate the actual electrical load during normal operation.
 
-Let's look at an example a d&b D40. There's a bunch of information in the user guide about the amplifier's power draw, but the number we want is Noise CF 12 dB. As it say, "This represents the use case of live music or less compressed recorded music." If you are running a single d&b V-SUB, which has a nominal impedance of 8 Ω, you would use the 1350 W value for your power plan.
+#### The Traditional Approach: 1/8 Power Pink Noise (12 dB Crest Factor)
 
-![CleanShot 2025-11-07 at 08.39.52.png](https://raw.githubusercontent.com/LiveNathan/blog/58bfbaa2a774624cf945bfed9a8f4e4b4d799295/assets/images/CleanShot%202025-11-07%20at%2008.39.52.png)
+For decades, the professional audio industry has used "1/8 Power Pink Noise" as a realistic proxy for typical operating conditions.[^5] This represents pink noise at about 9 dB below the amplifier's clipping point. (The math: 10 · log₁₀(1/8) ≈ -9.03 dB)
 
-#### 18dB Crest Factor
+This 1/8-power measurement approximates speech and music signals being driven as loud as possible without clipping, with a crest factor of approximately 12 dB. As the d&b D40 Reference Manual explains, "This represents the use case of live music or less compressed recorded music."[^8]
 
-Not every manufacturer still uses a 12dB crest factor for music. Let's look at the example of a Meyer Sound 750-LFC subwoofer by way of the Amperage/BTU Calculator. If we add the 750 to the calculator at 115 V then we see its current draw is 5.4 A. There's a helpful note that say, "The minimum electrical service amperage required is the sum of each loudspeaker’s maximum long-term continuous current." 
+**Example: d&b D40 Amplifier**
 
-How is maximum long-term continuous current measured? 
+The d&b D40 shows different power draws depending on the test signal used. For a single d&b V-SUB (8Ω nominal impedance), the relevant specification is "Noise CF 12 dB" which shows 1350 W—this is the value you'd use for power planning, not the full rated output of 2000 W.[^8]
 
-...eventually link to AES75, which has been adopted by many manufacturers including Meyer Sound, other manufactuer, other manufacturer. 
+#### The Debate: Is 12 dB Crest Factor Still Accurate?
 
-#### The risk of balance by category
+However, there's growing recognition in the industry that 12 dB crest factor may not adequately represent modern music content. As Merlijn van Veen from Meyer Sound notes, "AES75 has shown that the 12 dB crest factor is subject to debate. Music-Noise is 18 dB."[^9]
 
-There's a potential risk in simply attempting to balance the loads across all three phases by loudspeaker model. What if we put all of our tops on L1 and the subs on L2? On paper they may be balanced, but now we have exposed ourselves to frequency dependent risk. 
+This debate led to the development of AES75-2023, "AES standard for acoustics – Measuring loudspeaker maximum linear sound levels using noise."[^10] The standard uses a test signal called Music-Noise (originally M-Noise), which was developed by Meyer Sound through analysis of hundreds of music selections spanning all genres.[^11] Unlike traditional test signals with a fixed 12 dB crest factor, Music-Noise has a frequency-dependent crest factor that varies from 12 dB at low frequencies (below 500 Hz) to as high as 18 dB at higher frequencies—more accurately representing the dynamic characteristics of real music.[^10]
 
-...more explanation...
+#### Meyer Sound's Approach: Maximum Long-Term Continuous Current
 
-It's interesting to note that in the operating instructions for the 750-LFC... (I don't know, can we draw some conclusions from this example or maybe not?)
+Meyer Sound provides detailed current specifications for their loudspeakers, including several different measurements for different time scales:[^12]
+
+- **Idle Current**: Maximum RMS current during idle periods
+- **Maximum Long-Term Continuous Current**: Maximum RMS current during a period of at least 10 seconds
+- **Burst Current**: Maximum RMS current during a period of around 1 second
+- **Maximum Instantaneous Peak Current**: Rating for fast-reacting magnetic breakers
+
+According to their documentation, "The maximum long-term continuous current is used to calculate temperature increases for cables, to ensure that the size and gauge of the cables conform to electrical code standards."[^12] Meyer Sound explicitly recommends using Maximum Long-Term Continuous Current (MLTC) as the departure point for power planning.[^9]
+
+**Example: Meyer Sound 750-LFC Subwoofer**
+
+Looking at the Meyer Sound Amperage/BTU Calculator for a 750-LFC at 115 V:[^13]
+- Idle: 0.39 A RMS
+- Maximum Long-Term Continuous: 5.3 A RMS
+- Burst: 9.2 A RMS
+- Maximum Instantaneous Peak: 15.3 A peak
+
+The calculator specifically notes: "The minimum electrical service amperage required is the sum of each loudspeaker's maximum long-term continuous current."[^13] Therefore, for power planning, you would use 5.3 A (or approximately 609 W at 115 V) per 750-LFC, not the burst or peak values.
+
+This measurement methodology aligns with AES75's approach—recognizing that realistic music content has higher crest factors than traditionally assumed, and that proper power planning should account for sustained operating levels rather than brief transient peaks.
+
+#### Practical Guidelines for Power Planning
+
+When planning power for audio amplifiers:
+
+1. **First choice**: Use the manufacturer's specified power consumption for Music-Noise, M-Noise, AES75, or similar test signals if available
+2. **Second choice**: Use 1/8 power pink noise specifications (12 dB crest factor)
+3. **Third choice**: For Meyer Sound products specifically, use Maximum Long-Term Continuous Current
+4. **Last resort**: Estimate at 20–30% of full rated power for typical show conditions
+
+Never use the maximum sine wave power rating for power planning—this represents a worst-case scenario that will never occur in practice with normal program material.
+
+#### The Frequency-Dependent Risk of Simple Category Balancing
+
+There's an additional consideration that Merlijn van Veen points out: "During a 'Bass drop' the tops are idling, while the subs are doing all of the heavy lifting, which may result in a huge—albeit temporary—increase in neutral current."[^9]
+
+This means you can't simply balance your loads by putting all tops on one phase and all subs on another, even if the calculated average loads appear balanced. The frequency content of the music creates temporal variations in power draw. Bass-heavy moments will cause the subwoofer phase to spike while the top phase drops, potentially creating significant imbalance.
+
+Merlijn's recommendation: "best practice is to balance—both—subs and tops evenly to eliminate the frequency dependency."[^9] In other words, distribute both subwoofers and tops across all three phases to minimize the impact of frequency-dependent power fluctuations.
+
+#### Additional Power Distribution Considerations
+
+Meyer Sound's documentation highlights several other factors critical to proper power distribution:[^9][^12]
+
+- **Inrush currents and power factor**: These affect breaker selection and startup behavior
+- **Voltage drop in feeder cables**: Can cause voltage to sag at the equipment connection point
+- **Regulations on acceptable voltage drop**: For example, Germany limits voltage drop to 5%
+- **Nuisance tripping**: Can be mitigated by choosing specific breaker types (thermal vs. magnetic)
+- **Breaker loading**: UL in the US dictates loading at most 80% of the breaker's rated capacity
+
+As Merlijn notes, "it's also my understanding the neutral is oftentimes the only conductor without overcurrent protection unlike the lives"[^9]—making proper load balancing even more critical for safety.
+
+**Key Takeaway**: The shift from 12 dB to 18 dB crest factor in AES75/Music-Noise represents a more realistic model of modern music content. For power planning, always use manufacturer-specified realistic operating values (Music-Noise/AES75, 1/8 power, or MLTC) rather than maximum ratings, and ensure both tops and subs are distributed across all phases to account for frequency-dependent power fluctuations.
 
 ### LED Lighting
 
@@ -235,4 +289,20 @@ Whether you're using a spreadsheet, a purpose-built tool like AmpLogic, or just 
 
 [^4]: National Fire Protection Association (NFPA), NFPA 70: National Electrical Code (NEC), Articles 520 and 590 (Source: AV Electrical Safety Code Research).
 
-[^5]: Industry standard for audio power calculation, referencing Crest Factor and 1/8 Power Pink Noise, as outlined in manufacturer specifications (e.g., d&b D40 amplifier manual) and the Common Amplifier Format (CAF) standard (Source: Event Power Calculator Data Needs).
+[^5]: Industry standard practice for audio power calculation using 1/8 Power Pink Noise, as outlined in manufacturer specifications and the Common Amplifier Format (CAF) standard. This methodology has been used for decades to approximate realistic operating conditions for professional audio amplifiers.
+
+[^6]: Crest factor is defined as the ratio of peak amplitude to RMS (root mean square) amplitude of a waveform, typically expressed in decibels. For power calculations, this translates to the ratio between peak power and average power. Source: General audio engineering principles.
+
+[^7]: AES75-2023 standard documentation shows that Music-Noise test signals exhibit frequency-dependent crest factors ranging from 12 dB at frequencies below 500 Hz to 18 dB at higher frequencies, representing realistic music program material more accurately than fixed-crest-factor test signals.
+
+[^8]: d&b audiotechnik, "D40 Reference Manual," amplifier specifications showing power consumption under various test conditions including "Noise CF 12 dB" representing live music use cases.
+
+[^9]: Merlijn van Veen, Senior Technical Support and Education Specialist, Meyer Sound. Personal communication, November 2025. Van Veen co-chaired the AES Standards Committee SC-04-03-A Task Group that developed AES75-2023. Quotes include: "AES75 has shown that the 12dB crest factor is subject to debate. Music-Noise is 18dB"; "Yes, we recommend MLTC as departure point"; "During a 'Bass drop' the tops are idling, while the subs are doing all of the heavy lifting, which may result in a huge—albeit temporary—increase in neutral current"; and guidance on neutral conductor protection and power distribution considerations.
+
+[^10]: Audio Engineering Society, "AES75-2023: AES standard for acoustics – Measuring loudspeaker maximum linear sound levels using noise," Published October 2023. Available at: https://www.aes.org/publications/standards/search.cfm?docID=116. The standard was developed by nearly 80 task group members representing automotive, consumer electronics, pro audio, post-production, and cinema industries, co-chaired by Merlijn van Veen (Meyer Sound) and Dr. Roger Schwenke (Meyer Sound).
+
+[^11]: Meyer Sound, "AES75-2022 Announcement," March 2022. Available at: https://meyersound.com/news/aes75/. Describes the development of M-Noise (now Music-Noise) through analysis of hundreds of music selections spanning all genres to create a test signal whose RMS and peak levels as functions of frequency better represent typical program material.
+
+[^12]: Meyer Sound, "750-LFC Operating Instructions," Chapter 2: Power Requirements, pages 13-16. Document PN 01.125.750.01. Available at: https://meyersound.com/documents. Provides detailed specifications for Idle Current, Maximum Long-Term Continuous Current, Burst Current, and Maximum Instantaneous Peak Current, along with explanations of their applications in power planning and cable sizing.
+
+[^13]: Meyer Sound, "Amperage/BTU Calculator," online tool available at Meyer Sound website. Shows Maximum Long-Term Continuous Current values for all Meyer Sound loudspeakers at various operating voltages. For the 750-LFC at 115 V AC, specifications are: Idle 0.39 A RMS, MLTC 5.3 A RMS, Burst 9.2 A RMS, Peak 15.3 A. The calculator notes: "The minimum electrical service amperage required is the sum of each loudspeaker's maximum long-term continuous current."

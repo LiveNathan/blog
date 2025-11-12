@@ -131,11 +131,19 @@ This 1/8-power measurement approximates speech and music signals being driven as
 
 The d&b D40 shows different power draws depending on the test signal used. For a single d&b V-SUB (8Ω nominal impedance), the relevant specification is "Noise CF 12 dB" which shows 1350 W—this is the value you'd use for power planning, not the full rated output of 2000 W.[^8]
 
+![CleanShot 2025-11-07 at 08.39.52.png](https://raw.githubusercontent.com/LiveNathan/blog/58bfbaa2a774624cf945bfed9a8f4e4b4d799295/assets/images/CleanShot%202025-11-07%20at%2008.39.52.png)
+
 #### The Debate: Is 12 dB Crest Factor Still Accurate?
 
-However, there's growing recognition in the industry that 12 dB crest factor may not adequately represent modern music content. As Merlijn van Veen from Meyer Sound notes, "AES75 has shown that the 12 dB crest factor is subject to debate. Music-Noise is 18 dB."[^9]
+However, there's growing recognition in the industry that 12 dB crest factor may be too low to accurately represent
+typical operating conditions with music.
 
-This debate led to the development of AES75-2023, "AES standard for acoustics – Measuring loudspeaker maximum linear sound levels using noise."[^10] The standard uses a test signal called Music-Noise (originally M-Noise), which was developed by Meyer Sound through analysis of hundreds of music selections spanning all genres.[^11] Unlike traditional test signals with a fixed 12 dB crest factor, Music-Noise has a frequency-dependent crest factor that varies from 12 dB at low frequencies (below 500 Hz) to as high as 18 dB at higher frequencies—more accurately representing the dynamic characteristics of real music.[^10]
+This recognition led to the development of AES75-2023, "AES standard for acoustics – Measuring loudspeaker maximum
+linear sound levels using noise."[^10] The standard uses a test signal called Music-Noise (originally M-Noise), which
+was developed by Meyer Sound through analysis of hundreds of music selections spanning all genres.[^11] Unlike
+traditional test signals with a fixed 12 dB crest factor, Music-Noise has a frequency-dependent crest factor that varies
+from 12 dB at low frequencies (below 500 Hz) to as high as 18 dB at higher frequencies—more accurately representing the
+dynamic characteristics of real music.[^10]
 
 #### Meyer Sound's Approach: Maximum Long-Term Continuous Current
 
@@ -296,8 +304,6 @@ Whether you're using a spreadsheet, a purpose-built tool like AmpLogic, or just 
 [^7]: AES75-2023 standard documentation shows that Music-Noise test signals exhibit frequency-dependent crest factors ranging from 12 dB at frequencies below 500 Hz to 18 dB at higher frequencies, representing realistic music program material more accurately than fixed-crest-factor test signals.
 
 [^8]: d&b audiotechnik, "D40 Reference Manual," amplifier specifications showing power consumption under various test conditions including "Noise CF 12 dB" representing live music use cases.
-
-[^9]: Merlijn van Veen, Senior Technical Support and Education Specialist, Meyer Sound. Personal communication, November 2025. Van Veen co-chaired the AES Standards Committee SC-04-03-A Task Group that developed AES75-2023. Quotes include: "AES75 has shown that the 12dB crest factor is subject to debate. Music-Noise is 18dB"; "Yes, we recommend MLTC as departure point"; "During a 'Bass drop' the tops are idling, while the subs are doing all of the heavy lifting, which may result in a huge—albeit temporary—increase in neutral current"; and guidance on neutral conductor protection and power distribution considerations.
 
 [^10]: Audio Engineering Society, "AES75-2023: AES standard for acoustics – Measuring loudspeaker maximum linear sound levels using noise," Published October 2023. Available at: https://www.aes.org/publications/standards/search.cfm?docID=116. The standard was developed by nearly 80 task group members representing automotive, consumer electronics, pro audio, post-production, and cinema industries, co-chaired by Merlijn van Veen (Meyer Sound) and Dr. Roger Schwenke (Meyer Sound).
 

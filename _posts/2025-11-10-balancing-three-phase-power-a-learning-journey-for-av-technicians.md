@@ -135,7 +135,7 @@ The d&b D40 shows different power draws depending on the test signal used. For a
 
 #### The Debate: Is 12 dB Crest Factor Still Accurate?
 
-However, there's growing recognition in the industry that 12 dB crest factor may be too low to accurately represent
+However, there's growing recognition in the industry that a 12 dB crest factor may be too low to accurately represent
 typical operating conditions with music.
 
 This recognition led to the development of AES75-2023, "AES standard for acoustics – Measuring loudspeaker maximum
@@ -147,59 +147,46 @@ dynamic characteristics of real music.[^10]
 
 #### Meyer Sound's Approach: Maximum Long-Term Continuous Current
 
-Meyer Sound provides detailed current specifications for their loudspeakers, including several different measurements for different time scales:[^12]
+> Maximum Long-Term Continuous Current: Maximum RMS current during a period of at least 10 seconds
 
-- **Idle Current**: Maximum RMS current during idle periods
-- **Maximum Long-Term Continuous Current**: Maximum RMS current during a period of at least 10 seconds
-- **Burst Current**: Maximum RMS current during a period of around 1 second
-- **Maximum Instantaneous Peak Current**: Rating for fast-reacting magnetic breakers
-
-According to their documentation, "The maximum long-term continuous current is used to calculate temperature increases for cables, to ensure that the size and gauge of the cables conform to electrical code standards."[^12] Meyer Sound explicitly recommends using Maximum Long-Term Continuous Current (MLTC) as the departure point for power planning.[^9]
+According to their documentation, "The maximum long-term continuous current is used to calculate temperature increases
+for cables, to ensure that the size and gauge of the cables conform to electrical code standards."[^12] Meyer Sound
+explicitly recommends using Maximum Long-Term Continuous Current (MLTC) as the departure point for power planning.
 
 **Example: Meyer Sound 750-LFC Subwoofer**
 
-Looking at the Meyer Sound Amperage/BTU Calculator for a 750-LFC at 115 V:[^13]
-- Idle: 0.39 A RMS
-- Maximum Long-Term Continuous: 5.3 A RMS
-- Burst: 9.2 A RMS
-- Maximum Instantaneous Peak: 15.3 A peak
+Looking at the Meyer Sound [Amperage/BTU Calculator](https://meyersound.com/amperage-btu-calculator/) for a 750-LFC at
+115 V: Maximum Long-Term Continuous: 5.3 A RMS[^13]
 
-The calculator specifically notes: "The minimum electrical service amperage required is the sum of each loudspeaker's maximum long-term continuous current."[^13] Therefore, for power planning, you would use 5.3 A (or approximately 609 W at 115 V) per 750-LFC, not the burst or peak values.
-
-This measurement methodology aligns with AES75's approach—recognizing that realistic music content has higher crest factors than traditionally assumed, and that proper power planning should account for sustained operating levels rather than brief transient peaks.
+Therefore, for power planning, you would use 5.3 Aper 750-LFC, not the burst or peak values.
 
 #### Practical Guidelines for Power Planning
 
 When planning power for audio amplifiers:
 
-1. **First choice**: Use the manufacturer's specified power consumption for Music-Noise, M-Noise, AES75, or similar test signals if available
-2. **Second choice**: Use 1/8 power pink noise specifications (12 dB crest factor)
-3. **Third choice**: For Meyer Sound products specifically, use Maximum Long-Term Continuous Current
-4. **Last resort**: Estimate at 20–30% of full rated power for typical show conditions
+1. First choice: Use the manufacturer's specified power consumption for maximum long-term continuous current
+2. Second choice: Use 1/8 power pink noise specifications (12 dB crest factor)
+3. Last resort: Estimate at 20–30% of full rated power for typical show conditions
 
-Never use the maximum sine wave power rating for power planning—this represents a worst-case scenario that will never occur in practice with normal program material.
+Never use the maximum sine wave power rating for power planning—this represents a worst-case scenario.
 
 #### The Frequency-Dependent Risk of Simple Category Balancing
 
-There's an additional consideration that Merlijn van Veen points out: "During a 'Bass drop' the tops are idling, while the subs are doing all of the heavy lifting, which may result in a huge—albeit temporary—increase in neutral current."[^9]
+There's an additional consideration regarding frequency-dependent power draw: the DJ bass drop. During bass-heavy
+passages in music, the subwoofers draw maximum power while the full-range speakers operate at minimal levels, which can
+create significant—albeit temporary—imbalance in neutral current.[^9]
 
-This means you can't simply balance your loads by putting all tops on one phase and all subs on another, even if the calculated average loads appear balanced. The frequency content of the music creates temporal variations in power draw. Bass-heavy moments will cause the subwoofer phase to spike while the top phase drops, potentially creating significant imbalance.
+This means you can't simply balance your loads by putting all tops on one phase and all subs on another, even if the
+calculated average loads appear balanced. The frequency content of the music creates temporal variations in power draw.
+Bass-heavy moments will cause the subwoofer phase to spike while the top phase drops, potentially creating a significant
+imbalance.
 
-Merlijn's recommendation: "best practice is to balance—both—subs and tops evenly to eliminate the frequency dependency."[^9] In other words, distribute both subwoofers and tops across all three phases to minimize the impact of frequency-dependent power fluctuations.
+The recommended approach is to distribute both subwoofers and full-range speakers evenly across all three phases to
+eliminate this frequency dependency and minimize the impact of frequency-dependent power fluctuations.
 
-#### Additional Power Distribution Considerations
-
-Meyer Sound's documentation highlights several other factors critical to proper power distribution:[^9][^12]
-
-- **Inrush currents and power factor**: These affect breaker selection and startup behavior
-- **Voltage drop in feeder cables**: Can cause voltage to sag at the equipment connection point
-- **Regulations on acceptable voltage drop**: For example, Germany limits voltage drop to 5%
-- **Nuisance tripping**: Can be mitigated by choosing specific breaker types (thermal vs. magnetic)
-- **Breaker loading**: UL in the US dictates loading at most 80% of the breaker's rated capacity
-
-As Merlijn notes, "it's also my understanding the neutral is oftentimes the only conductor without overcurrent protection unlike the lives"[^9]—making proper load balancing even more critical for safety.
-
-**Key Takeaway**: The shift from 12 dB to 18 dB crest factor in AES75/Music-Noise represents a more realistic model of modern music content. For power planning, always use manufacturer-specified realistic operating values (Music-Noise/AES75, 1/8 power, or MLTC) rather than maximum ratings, and ensure both tops and subs are distributed across all phases to account for frequency-dependent power fluctuations.
+**Key Takeaway**: For power planning, always use manufacturer-specified realistic operating values (Music-Noise/AES75,
+1/8 power, or MLTC) rather than maximum ratings, and ensure band-limited devices are distributed across all phases to
+account for frequency-dependent power fluctuations.
 
 ### LED Lighting
 

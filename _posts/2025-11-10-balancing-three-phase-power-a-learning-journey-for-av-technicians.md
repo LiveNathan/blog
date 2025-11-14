@@ -253,7 +253,7 @@ One of the video technicians I heard from on social media made a great point: it
 
 There's still a lot I don't fully understand:
 
-* The exact physics of why neutral loss causes voltage shifts
+* The exact physics of why a disconnected neutral causes voltage shifts
 * How different distro configurations (Wye vs Delta) affect balancing strategies
 * Best practices for balancing when you have both 208 V and 120 V circuits
 * What value to use on a spec sheet for any piece of equipment for a power plan

@@ -57,6 +57,8 @@ Here's what happens: In a three-phase system (most commonly a Wye configuration 
 
 But when the loads are unbalanced—say you've plugged all your LED fixtures into L1, all your audio gear into L2, and left L3 barely loaded—problems start to emerge.
 
+[![neutral-imbalance.png](../assets/images/neutral-imbalance.png)](https://www.stagesmarts.com/protection-against-lost-neutral-connection/)
+
 ## The Worst-Case Scenario: What Actually Happens
 
 When I asked Marcus what happens if you don't balance the legs properly, he said power goes down the neutral. So I asked, "What's the worst-case scenario?" He didn't know.
@@ -68,6 +70,8 @@ First, the neutral conductor overload: In a balanced system, the currents on the
 Second, and more catastrophic, is neutral point shift: This is the scenario that really got my attention. If the neutral conductor becomes disconnected (for example, from a loose connection) while the load is unbalanced, it causes the voltage reference to be lost. This leads to increased voltage on the lightly loaded phases, potentially causing a voltage surge that can approach the higher line-to-line voltage (e.g., surging from 120 V up toward 208 V) and instantly destroying connected equipment.[^1]
 
 I've never heard of this actually happening in a production environment, but understanding the physics helps explain why we balance loads in the first place. It's not just about efficiency—it's about preventing potentially catastrophic equipment damage.
+
+[![neutral-loss.png](../assets/images/neutral-loss.png)](https://www.stagesmarts.com/protection-against-lost-neutral-connection/)
 
 ## The More Common Problem: Efficiency and Heat
 
@@ -131,7 +135,7 @@ This 1/8-power measurement approximates speech and music signals being driven as
 
 The d&b D40 shows different power draws depending on the test signal used. For a single d&b V-SUB (8Ω nominal impedance), the relevant specification is "Noise CF 12 dB" which shows 1350 W—this is the value you'd use for power planning, not the full rated output of 2000 W.[^8]
 
-![CleanShot 2025-11-07 at 08.39.52.png](https://raw.githubusercontent.com/LiveNathan/blog/58bfbaa2a774624cf945bfed9a8f4e4b4d799295/assets/images/CleanShot%202025-11-07%20at%2008.39.52.png)
+![D40 amplifier specifications](../assets/images/CleanShot-2025-11-07-083952.png)
 
 #### The Debate: Is 12 dB Crest Factor Still Accurate?
 
@@ -152,6 +156,8 @@ dynamic characteristics of real music.[^10]
 According to their documentation, "The maximum long-term continuous current is used to calculate temperature increases
 for cables, to ensure that the size and gauge of the cables conform to electrical code standards."[^12] Meyer Sound
 explicitly recommends using Maximum Long-Term Continuous Current (MLTC) as the departure point for power planning.
+
+![Meyer Sound 750-LFC specifications](../assets/images/750.png)
 
 **Example: Meyer Sound 750-LFC Subwoofer**
 
@@ -234,19 +240,15 @@ Another Reddit user shared their company's spreadsheet approach, which shows the
 
 After sharing my blog post with my dad (an electrical engineer), he asked what I think is the most important question of all: "Why don't people attach smart current monitors to the three legs? Or just one on neutral to detect imbalance?"
 
-This stopped me in my tracks. Everything I'd written was about *planning* power distribution—calculating loads in advance and hoping everything works out. But my dad was asking: why aren't we *monitoring* what's actually happening during the show?
-
-It's an excellent question, especially given that we're an industry obsessed with real-time monitoring of everything else. We monitor audio levels, video signals, network traffic, and lighting DMX universes. We have backup systems and redundancy for critical paths. But the actual electrical power feeding all of this equipment? We mostly just plug it in and hope the calculations were right.
+I've spent a lot of time learning about how to measure audio signals in real time, but I never considered that you could do the same for electrical signal. The actual electrical power feeding all of this equipment? We mostly just plug it in and hope the calculations were right.
 
 ### The Technology Exists
 
 Smart current monitors for three-phase power absolutely exist, and they're more sophisticated than I initially realized. During my research, I found several solutions specifically designed for entertainment production:
 
-**StageSmarts** offers power distribution units with comprehensive real-time monitoring built in. Their systems monitor all electrical parameters across every channel, detect imbalances, and alert you to problems before they become critical. Their C24 and C72tv models include real-time monitoring of voltage, current, power factor, and most importantly—they have proprietary Loss of Neutral protection that instantly disconnects if voltage becomes excessive. These units are actively being used on major tours including Radiohead, Depeche Mode, and Roger Waters.
+StageSmarts offers power distribution units with comprehensive real-time monitoring built in. Their systems monitor all electrical parameters across every channel, detect imbalances, and alert you to problems before they become critical. Their C24 and C72tv models include real-time monitoring of voltage, current, power factor, and most importantly—they have proprietary Loss of Neutral protection that instantly disconnects if voltage becomes excessive.
 
-The monitoring capabilities are impressive: you can supervise multiple distros from a single interface, track consumption in real time, and receive warnings before you hit critical thresholds. It's exactly the kind of proactive monitoring that would prevent the scenario Marcus described—"waiting for something to happen."
-
-**Fluke** makes portable three-phase power monitors (like the Fluke 3540 FC) that measure voltage, current, frequency, power factor, and total harmonic distortion across all three phases. These are designed for temporary installation—you can set one up in under an hour, and it weighs just 2.5 pounds. The data streams to cloud-based dashboards for remote monitoring.
+Fluke makes portable three-phase power monitors (like the Fluke 3540 FC) that measure voltage, current, frequency, power factor, and total harmonic distortion across all three phases. These are designed for temporary installation. The data streams to cloud-based dashboards for remote monitoring.
 
 Other manufacturers offer similar solutions: monitored PDUs from companies like Server Technology and CyberPower provide outlet-level monitoring with user-defined alert thresholds. You can monitor not just the incoming three-phase supply, but individual circuits and devices.
 
@@ -256,7 +258,7 @@ My dad's second question—"why not just one on neutral to detect imbalance?"—
 
 This is actually a recognized technique. Neutral current monitoring serves dual purposes: it indicates both load imbalance and excessive harmonic distortion. Some energy meters specifically measure neutral current to detect unbalanced loads and even identify power theft in permanent installations. Current transformers (CTs) or current clamps make this monitoring simple—you just clip them around the neutral conductor without any high-voltage electrical work.
 
-However, monitoring only the neutral tells you *that* there's a problem, not *where* the problem is or how to fix it. You'd still need to measure the individual phase currents to diagnose which leg is overloaded. So while neutral monitoring is useful as a warning indicator, comprehensive monitoring of all three phases plus the neutral gives you the complete picture.
+However, monitoring only the neutral tells you that there's a problem, not where the problem is or how to fix it. You'd still need to measure the individual phase currents to diagnose which leg is overloaded. So while neutral monitoring is useful as a warning indicator, comprehensive monitoring of all three phases plus the neutral gives you the complete picture.
 
 ### So Why Isn't Everyone Using These?
 

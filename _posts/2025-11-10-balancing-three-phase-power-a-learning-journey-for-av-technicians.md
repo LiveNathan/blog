@@ -230,6 +230,87 @@ AmpLogic includes features for:
 
 Another Reddit user shared their company's spreadsheet approach, which shows the total load for each phase at the bottom so you can balance evenly. These DIY solutions show there's real demand for this kind of tool—people are building them because they need them.
 
+## But Why Aren't We Monitoring Power in Real Time?
+
+After sharing my blog post with my dad (an electrical engineer), he asked what I think is the most important question of all: "Why don't people attach smart current monitors to the three legs? Or just one on neutral to detect imbalance?"
+
+This stopped me in my tracks. Everything I'd written was about *planning* power distribution—calculating loads in advance and hoping everything works out. But my dad was asking: why aren't we *monitoring* what's actually happening during the show?
+
+It's an excellent question, especially given that we're an industry obsessed with real-time monitoring of everything else. We monitor audio levels, video signals, network traffic, and lighting DMX universes. We have backup systems and redundancy for critical paths. But the actual electrical power feeding all of this equipment? We mostly just plug it in and hope the calculations were right.
+
+### The Technology Exists
+
+Smart current monitors for three-phase power absolutely exist, and they're more sophisticated than I initially realized. During my research, I found several solutions specifically designed for entertainment production:
+
+**StageSmarts** offers power distribution units with comprehensive real-time monitoring built in. Their systems monitor all electrical parameters across every channel, detect imbalances, and alert you to problems before they become critical. Their C24 and C72tv models include real-time monitoring of voltage, current, power factor, and most importantly—they have proprietary Loss of Neutral protection that instantly disconnects if voltage becomes excessive. These units are actively being used on major tours including Radiohead, Depeche Mode, and Roger Waters.
+
+The monitoring capabilities are impressive: you can supervise multiple distros from a single interface, track consumption in real time, and receive warnings before you hit critical thresholds. It's exactly the kind of proactive monitoring that would prevent the scenario Marcus described—"waiting for something to happen."
+
+**Fluke** makes portable three-phase power monitors (like the Fluke 3540 FC) that measure voltage, current, frequency, power factor, and total harmonic distortion across all three phases. These are designed for temporary installation—you can set one up in under an hour, and it weighs just 2.5 pounds. The data streams to cloud-based dashboards for remote monitoring.
+
+Other manufacturers offer similar solutions: monitored PDUs from companies like Server Technology and CyberPower provide outlet-level monitoring with user-defined alert thresholds. You can monitor not just the incoming three-phase supply, but individual circuits and devices.
+
+### What About Monitoring Just the Neutral?
+
+My dad's second question—"why not just one on neutral to detect imbalance?"—is particularly clever. In a perfectly balanced three-phase system, the neutral current should be nearly zero. If you see significant current on the neutral, you know you have an imbalance problem.
+
+This is actually a recognized technique. Neutral current monitoring serves dual purposes: it indicates both load imbalance and excessive harmonic distortion. Some energy meters specifically measure neutral current to detect unbalanced loads and even identify power theft in permanent installations. Current transformers (CTs) or current clamps make this monitoring simple—you just clip them around the neutral conductor without any high-voltage electrical work.
+
+However, monitoring only the neutral tells you *that* there's a problem, not *where* the problem is or how to fix it. You'd still need to measure the individual phase currents to diagnose which leg is overloaded. So while neutral monitoring is useful as a warning indicator, comprehensive monitoring of all three phases plus the neutral gives you the complete picture.
+
+### So Why Isn't Everyone Using These?
+
+If the technology exists and works well, why isn't real-time power monitoring standard practice in live events? My friend Owen (a production manager with extensive touring experience) nailed the answer:
+
+> "It's an amazing point because nobody wants to pay for an electrical systems person on a show (except very very large shows like Beyoncé). Why pay for a chair that doesn't 'do' anything? Why worry when the PM does head math and says 'probably 150 amps a leg, don't worry'. It's very common for PMs to use head math in the shop, and then double the distros onsite not to worry about it."
+
+This cuts to the heart of it. The industry has normalized a particular way of managing risk: oversize your distro capacity, do rough calculations, and trust experienced technicians to figure it out on-site. It *usually* works, and when it does work, there's no visible value from the monitoring that could have told you everything was fine.
+
+The cost barriers are real too. A StageSmarts C24 system or Fluke power monitor represents a significant investment, especially for small to medium production companies. And unlike speakers or lighting fixtures that you can rent out per show, power monitoring equipment is harder to justify as a rental item—clients don't typically request it because they're not aware they need it.
+
+There's also a cultural dimension. As Owen points out, having someone dedicated to electrical systems monitoring feels like "paying for a chair that doesn't do anything." In the fast-paced world of live events, there's pressure to have every crew member visibly productive. Someone watching dashboards and saying "everything looks good" doesn't feel productive—even though they're preventing potentially catastrophic failures.
+
+### When Does Real-Time Monitoring Make Sense?
+
+Based on my research and conversations, here's when real-time power monitoring moves from "nice to have" to "essential":
+
+**Large-scale tours and festivals**: When you're running multiple 400-amp distros feeding dozens of different systems, the complexity justifies dedicated monitoring. Major tours already use systems like StageSmarts because the cost of a power failure—both in terms of show impact and equipment damage—far exceeds the investment in monitoring.
+
+**LED video walls and high-value equipment**: Modern LED walls and broadcast equipment are both power-hungry and sensitive to power quality issues. The inrush current from LED panels is notorious for tripping breakers, and voltage irregularities can cause expensive equipment damage. StageSmarts specifically markets to this segment because the ROI is clear.
+
+**Multi-day events with evolving power requirements**: If you're setting up for a festival or conference that runs for multiple days with different power needs each day, monitoring lets you verify you have headroom for changes without constantly recalculating from scratch.
+
+**Environments with unreliable or undersized power**: When you're working in venues with questionable electrical infrastructure or running close to capacity, real-time monitoring shifts from luxury to necessity. Knowing exactly where you are relative to your limits is critical.
+
+**Training and documentation**: Having monitoring data helps train newer technicians by showing them real-world power consumption versus theoretical calculations. It also provides documentation if something does go wrong—you can show you were monitoring and within safe parameters.
+
+### The Best Practice Debate
+
+So should we, as live event technicians, be regularly monitoring power load and balance instead of just waiting for a breaker to blow?
+
+The honest answer is: it depends on the scale and risk profile of your events.
+
+For small corporate shows with experienced crew and well-understood gear, the current approach of calculated planning plus field experience probably makes sense. The risk is low, and the additional cost of monitoring hardware doesn't add enough value to justify it.
+
+For medium and large shows—especially those with high-value equipment, critical uptime requirements, or complex power distribution—real-time monitoring absolutely makes sense and represents industry best practice. ANSI standards for entertainment power (like ANSI E1.58-2017) emphasize the importance of continuous monitoring for electrical safety. The Event Safety Alliance and PLASA both recommend comprehensive power management systems for larger productions.
+
+The challenge is that many production companies fall into the middle ground: shows that are large enough to benefit from monitoring but not quite large enough to justify the capital investment in hardware and the additional labor cost of someone to oversee it. This is where Owen's observation about industry culture becomes important—we need to shift from viewing electrical monitoring as an optional luxury to seeing it as a fundamental safety system, similar to how we treat rigging and fall protection.
+
+### Moving Forward: From Reactive to Proactive
+
+Perhaps the most compelling argument for real-time monitoring comes from looking at other industries. Data centers, manufacturing facilities, and commercial buildings all use continuous power monitoring as standard practice. The ROI typically pays back within the first year through prevented downtime, optimized energy usage, and avoided equipment damage.
+
+The live events industry is starting to move in this direction. Intelligent power distribution systems like StageSmarts are becoming more common on large tours. Portable monitoring solutions like the Fluke units make temporary monitoring more accessible. And as younger technicians who grew up with data-driven decision making enter the industry, there's growing comfort with monitoring systems.
+
+Your dad's question—"Why don't people attach smart current monitors?"—deserves a better answer than "Because we've always done it this way." The technology exists. The benefits are clear. What's needed is a cultural shift toward viewing real-time power monitoring not as an unnecessary expense, but as a fundamental component of professional electrical safety.
+
+For now, the path forward probably looks like this:
+- **Small shows**: Calculated planning with documented power plans (spreadsheets, tools like AmpLogic)
+- **Medium shows**: Consider portable monitoring solutions for high-stakes events or unfamiliar venues
+- **Large shows**: Intelligent power distribution systems with integrated real-time monitoring should be standard equipment
+
+The gap between where we are and where we should be is real. But at least now we're asking the right questions.
+
 ## The Middle Market Sweet Spot
 
 After all this research, I've concluded that systematic power balancing is most valuable for medium-sized shows. Here's why:
@@ -271,10 +352,13 @@ The key takeaways from my research:
 3. Use realistic power values based on actual operating conditions (1/8 power pink noise for amps, maximum draw for LEDs, operating specs for video).
 4. Document your plan rather than relying on field decisions—even if it's just a simple spreadsheet.
 5. Tools exist to help, but the best tool would be integrated into your existing workflow.
+6. Real-time power monitoring technology exists and is proven, but adoption is limited by cost and industry culture—we need to shift from reactive to proactive electrical safety practices, especially for medium and large productions.
 
-Whether you're using a spreadsheet, a purpose-built tool like AmpLogic, or just keeping notes, the important thing is moving from improvised solutions to systematic planning.
+Whether you're using a spreadsheet, a purpose-built tool like AmpLogic, real-time monitoring systems for larger shows, or just keeping notes, the important thing is moving from improvised solutions to systematic planning—and for higher-stakes productions, from static planning to active monitoring.
 
-*Have feedback on this post? Spot a technical error? Want to share your own power balancing strategies? Please reach out—I'm still learning, and I welcome constructive input from the community.*
+*Have feedback on this post? Spot a technical error? Want to share your own power balancing or monitoring strategies? Please reach out—I'm still learning, and I welcome constructive input from the community.*
+
+**Update**: After publishing this post, my dad's questions about real-time monitoring led me down another research rabbit hole, which resulted in the new section on monitoring. Thanks, Dad, for asking the question that should have been obvious from the start.
 
 [^1]: Synthesis of regulatory and practical analysis on the "normalization of deviance," the "gap between regulatory theory and on-site practice," and the neutral point shift worst-case scenario (Source: AV Electrical Safety Code Research & Power Calculator MVP Research Analysis).
 

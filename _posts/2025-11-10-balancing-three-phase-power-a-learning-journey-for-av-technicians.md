@@ -7,6 +7,22 @@ categories: [ power, electrical, av-production, live-events, production-av ]
 
 # Balancing Three-Phase Power: A Learning Journey for AV Technicians
 
+**Top 3 Takeaways:**
+
+1. **Unbalanced loads aren't just inefficient—they're dangerous.** In a worst-case scenario where the neutral connection
+   fails, unbalanced loads can cause neutral point shift, potentially surging voltage from 120V up to 208V and instantly
+   destroying connected equipment.
+
+2. **Use realistic power values for planning.** For amplifiers, use manufacturer-specified maximum long-term continuous
+   current (MLTC) or 1/8 power pink noise specs—never full rated power. For LEDs, use maximum draw. For video, use
+   operating specs. And distribute band-limited devices (subs vs. tops) across all three phases to account for
+   frequency-dependent power fluctuations.
+
+3. **The middle market needs better tools.** Small shows can rely on mental math, large shows use Vectorworks, but
+   medium-sized productions need documented power plans integrated into their existing workflow—not separate systems
+   requiring duplicate data entry. For higher-stakes productions, real-time monitoring should be standard practice, not
+   a luxury.
+
 > It blows my mind that we haven't blown a breaker mid-show... I've been waiting for something to happen.
 
 That's a quote from my friend Marcus (not his real name), a master electrician with years of experience in live event production. He's really good at his job. He can calculate loads in his head, distribute equipment across three-phase power on the fly, and has successfully powered and lit hundreds of shows. But he's also acutely aware that he's improvising critical safety decisions under time pressure, without formal planning documents.
@@ -17,7 +33,11 @@ I'll be honest with you: I've spent most of my career trying to avoid learning a
 
 For over 25 years in production AV, I focused almost exclusively on sound system design and calibration. Whenever conversations turned to power distribution, rigging, or electrical work, I'd find a reason to excuse myself. It's ironic, really—my dad is an electrical engineer, and he tried to teach me some stuff when I was a kid. Maybe that's exactly why I avoided it for so long. We all have our ways of rebelling against our parents.
 
-But here's the thing about production AV: there's not much room for hyper-specialists. The industry needs people who can handle multiple disciplines, or at least understand how they all connect. So when I started working at [SquareWave](https://squarewave.com.au/) and pitched the idea of building a power calculation tool, I realized I couldn't keep avoiding this topic. If I was going to help build something useful, I needed to actually understand what I was doing, at least enough to build something useful.
+But here's the thing about production AV: there's not much room for hyper-specialists. The industry needs people who can
+handle multiple disciplines, or at least understand how they all connect. So when I started working
+at [SquareWave](https://squarewave.com.au/) and pitched the idea of building a power calculation tool, I realized I
+couldn't keep avoiding this topic. If I was going to help build something useful, I needed to actually understand what I
+was doing.
 
 This blog post is the result of a week of research. I did discovery interviews with four friends, posted questions on Reddit and social media, and did some reading about electrical systems. I don't have formal training as an electrician, so if you spot errors or oversimplifications in what follows, please let me know. This is as much a learning document for me as it is (hopefully) helpful for others.
 
@@ -25,11 +45,19 @@ Tool break: Tools are fun. I've really been enjoying Notebook LLM. My favorite w
 
 ## What I Discovered: The Gap Between Planning and Practice
 
-My research revealed a striking disconnect in how different people in the production world think about power. I talked to Derek, a co-owner and technical director at a production company, who told me frankly: "power is not that complicated." For the many repetitive corporate shows his company does, they don't need to "reinvent the wheel" every time. For a lot of people like Derek that I talked to, they've done so many shows and with their specific collection of equipment that you can pretty much do it by feeling. Most production AV companies only have a small number (1–3) of distros, so you get the big one for big shows and the small ones for smaller shows. A larger problem, actually, is bringing the right number and length of power cables. 
+My research revealed a striking disconnect in how different people in the production world think about power. I talked
+to Derek, a co-owner and technical director at a production company, who told me frankly: "power is not that
+complicated." For the many repetitive corporate shows his company does, they don't need to "reinvent the wheel" every
+time. For experienced techs working with their specific collection of equipment, power distribution becomes intuitive.
+Most production AV companies only have a small number (1–3) of distros, so you get the big one for big shows and the
+small ones for smaller shows. A larger problem, actually, is bringing the right number and length of power cables.
 
 It also reminds me of something I used to say a lot during my trainings on sound system calibration: If you're not aligning your system, that doesn't mean that it's not aligned. You just don't know where it's aligned. Similarly, a power plan always exists, even if it's not explicitly documented. I think maybe I stole that idea from a Noam Chomsky quote. "If you do not do politics, politics will do you." So maybe I could tighten it up and say, "If you do not do a power plan, a power plan will do you." Too much?
 
-It's a different story for the technicians in the field that have to execute this plan. Marcus described his typical workflow: "we don't necessarily plan anything, I just kinda usually figure it out on site... I understand what all of my equipment draws... and then just kind of go from there." He's doing mental calculations in the field, trying to distribute loads across three-phase power while the show is being set up.
+It's a different story for the technicians in the field who have to execute this plan. Marcus described his typical
+workflow: "we don't necessarily plan anything, I just kinda usually figure it out on site... I understand what all of my
+equipment draws... and then just kind of go from there." He's doing mental calculations in the field, trying to
+distribute loads across three-phase power while the show is being set up.
 
 And here's what really stuck with me. Marcus admitted: "it blows my mind that we haven't blown a breaker mid-show," and then added something even more sobering: "I've been waiting for something to happen."
 
@@ -57,7 +85,7 @@ Here's what happens: In a three-phase system (most commonly a Wye configuration 
 
 But when the loads are unbalanced—say you've plugged all your LED fixtures into L1, all your audio gear into L2, and left L3 barely loaded—problems start to emerge.
 
-[![neutral-imbalance.png](../assets/images/neutral-imbalance.png)](https://www.stagesmarts.com/protection-against-lost-neutral-connection/)
+[![neutral-imbalance.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/neutral-imbalance.png)](https://www.stagesmarts.com/protection-against-lost-neutral-connection/)
 
 ## The Worst-Case Scenario: What Actually Happens
 
@@ -71,7 +99,15 @@ Second, and more catastrophic, is neutral point shift: This is the scenario that
 
 I've never heard of this actually happening in a production environment, but understanding the physics helps explain why we balance loads in the first place. It's not just about efficiency—it's about preventing potentially catastrophic equipment damage.
 
-[![neutral-loss.png](../assts/images/neutral-loss.png)](https://www.stagesmarts.com/protection-against-lost-neutral-connection/)
+> **Why neutral connections fail**
+>
+> Why would a neutral connection be lost? It happens more often than you might think, and for many reasons. For example:
+>
+> - **A rented cable** where a previous user disconnected the neutral
+> - **A poor or loose connection**
+> - **A cable damaged** during setup or run over by a forklift
+>
+> These are real-world examples we've seen time and time again.[^2]
 
 ## The More Common Problem: Efficiency and Heat
 
@@ -79,7 +115,9 @@ Even without neutral failure, unbalanced loads cause several practical problems:
 
 ## How Much Imbalance Is Acceptable?
 
-This was one of my key questions during research. The industry standard for unbalanced voltage is a maximum difference of 3% between phases. For current, I found references suggesting that keeping phase currents within 20% of each other is a reasonable target, though perfection isn't required or realistic.[^2]
+This was one of my key questions during research. The industry standard for unbalanced voltage is a maximum difference
+of 3% between phases. For current, I found references suggesting that keeping phase currents within 20% of each other is
+a reasonable target, though perfection isn't required or realistic.[^3]
 
 Marcus, the lighting tech I interviewed, told me he typically does this balancing in his head while plugging things in. For smaller shows with a single distro, he'll mentally distribute the loads: "These fixtures to L1, those to L2, the rest to L3." It works because he knows his equipment and has years of experience.
 
@@ -99,9 +137,12 @@ The goal is to ensure each leg (L1, L2, L3) carries roughly the same current loa
 
 ## The Regulatory Reality: More Than Just Best Practice
 
-Something I discovered during my research: proper power planning isn't just a good idea—it's actually required by federal law. OSHA's regulations (29 CFR 1910 Subpart S) mandate that employers use approved equipment, follow safe work practices, and have properly trained personnel.[^3]
+Something I discovered during my research: proper power planning isn't just a good idea—it's actually required by
+federal law. OSHA's regulations (29 CFR 1910 Subpart S) mandate that employers use approved equipment, follow safe work
+practices, and have properly trained personnel.[^4]
 
-The National Electrical Code (NEC, or NFPA 70) provides the technical specifications, particularly Article 590 for temporary installations and Article 520 for theaters and performance areas.[^4]
+The National Electrical Code (NEC, or NFPA 70) provides the technical specifications, particularly Article 590 for
+temporary installations and Article 520 for theaters and performance areas.[^5]
 
 What struck me is that generating a formal power plan isn't just about preventing accidents—it's about documenting due diligence. If something does go wrong, having a documented load calculation shows you followed proper procedures. Without it, you're exposed to liability, even if nothing bad has happened yet.
 
@@ -117,25 +158,34 @@ When planning power for audio amplifiers, the key challenge is determining which
 
 #### Understanding Crest Factor
 
-The reason for this disparity lies in something called crest factor: the ratio between a signal's peak amplitude and its average (RMS) amplitude.[^6] Music and speech have high crest factors—momentary peaks are much higher than the continuous average level. A constant sine wave (used for traditional amplifier power ratings) has a crest factor of about 3 dB. Real-world audio signals have much higher crest factors:
+The reason for this disparity lies in something called crest factor: the ratio between a signal's peak amplitude and its
+average (RMS) amplitude.[^7] Music and speech have high crest factors—momentary peaks are much higher than the
+continuous average level. A constant sine wave (used for traditional amplifier power ratings) has a crest factor of
+about 3 dB. Real-world audio signals have much higher crest factors:
 
 - Speech: typically 12 dB
-- Live music: 12–18 dB depending on genre and compression[^7]
+- Live music: 12–18 dB depending on genre and compression[^8]
 - Highly compressed modern recordings: may be as low as 6 dB
 
 This matters because power consumption tracks average (RMS) levels, not instantaneous peaks. If you plan for an amplifier's full sine wave power rating, you'll dramatically overestimate the actual electrical load during normal operation.
 
 #### The Traditional Approach: 1/8 Power Pink Noise (12 dB Crest Factor)
 
-For decades, the professional audio industry has used "1/8 Power Pink Noise" as a realistic proxy for typical operating conditions.[^5] This represents pink noise at about 9 dB below the amplifier's clipping point. (The math: 10 · log₁₀(1/8) ≈ -9.03 dB)
+For decades, the professional audio industry has used "1/8 Power Pink Noise" as a realistic proxy for typical operating
+conditions.[^6] This represents pink noise at about 9 dB below the amplifier's clipping point. (The math: 10 · log₁₀(
+1/8) ≈ -9.03 dB)
 
-This 1/8-power measurement approximates speech and music signals being driven as loud as possible without clipping, with a crest factor of approximately 12 dB. As the d&b D40 Reference Manual explains, "This represents the use case of live music or less compressed recorded music."[^8]
+This 1/8-power measurement approximates speech and music signals being driven as loud as possible without clipping, with
+a crest factor of approximately 12 dB. As the d&b D40 Reference Manual explains, "This represents the use case of live
+music or less compressed recorded music."[^9]
 
 **Example: d&b D40 Amplifier**
 
-The d&b D40 shows different power draws depending on the test signal used. For a single d&b V-SUB (8Ω nominal impedance), the relevant specification is "Noise CF 12 dB" which shows 1350 W—this is the value you'd use for power planning, not the full rated output of 2000 W.[^8]
+The d&b D40 shows different power draws depending on the test signal used. For a single d&b V-SUB (8Ω nominal
+impedance), the relevant specification is "Noise CF 12 dB" which shows 1350 W—this is the value you'd use for power
+planning, not the full rated output of 2000 W.[^9]
 
-![D40 amplifier specifications](../assets/images/CleanShot-2025-11-07-083952.png)
+![D40 amplifier specifications](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/CleanShot%202025-11-07%20at%2008.39.52.png)
 
 #### The Debate: Is 12 dB Crest Factor Still Accurate?
 
@@ -143,28 +193,28 @@ However, there's growing recognition in the industry that a 12 dB crest factor m
 typical operating conditions with music.
 
 This recognition led to the development of AES75-2023, "AES standard for acoustics – Measuring loudspeaker maximum
-linear sound levels using noise."[^10] The standard uses a test signal called Music-Noise (originally M-Noise), which
-was developed by Meyer Sound through analysis of hundreds of music selections spanning all genres.[^11] Unlike
+linear sound levels using noise."[^11] The standard uses a test signal called Music-Noise (originally M-Noise), which
+was developed by Meyer Sound through analysis of hundreds of music selections spanning all genres.[^12] Unlike
 traditional test signals with a fixed 12 dB crest factor, Music-Noise has a frequency-dependent crest factor that varies
 from 12 dB at low frequencies (below 500 Hz) to as high as 18 dB at higher frequencies—more accurately representing the
-dynamic characteristics of real music.[^10]
+dynamic characteristics of real music.[^11]
 
 #### Meyer Sound's Approach: Maximum Long-Term Continuous Current
 
 > Maximum Long-Term Continuous Current: Maximum RMS current during a period of at least 10 seconds
 
 According to their documentation, "The maximum long-term continuous current is used to calculate temperature increases
-for cables, to ensure that the size and gauge of the cables conform to electrical code standards."[^12] Meyer Sound
+for cables, to ensure that the size and gauge of the cables conform to electrical code standards."[^13] Meyer Sound
 explicitly recommends using Maximum Long-Term Continuous Current (MLTC) as the departure point for power planning.
 
-![Meyer Sound 750-LFC specifications](../assets/images/750.png)
+![Meyer Sound 750-LFC specifications](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/750.png)
 
 **Example: Meyer Sound 750-LFC Subwoofer**
 
 Looking at the Meyer Sound [Amperage/BTU Calculator](https://meyersound.com/amperage-btu-calculator/) for a 750-LFC at
-115 V: Maximum Long-Term Continuous: 5.3 A RMS[^13]
+115 V: Maximum Long-Term Continuous: 5.3 A RMS[^14]
 
-Therefore, for power planning, you would use 5.3 Aper 750-LFC, not the burst or peak values.
+Therefore, for power planning, you would use 5.3 A per 750-LFC, not the burst or peak values.
 
 #### Practical Guidelines for Power Planning
 
@@ -180,7 +230,7 @@ Never use the maximum sine wave power rating for power planning—this represent
 
 There's an additional consideration regarding frequency-dependent power draw: the DJ bass drop. During bass-heavy
 passages in music, the subwoofers draw maximum power while the full-range speakers operate at minimal levels, which can
-create significant—albeit temporary—imbalance in neutral current.[^9]
+create significant—albeit temporary—imbalance in neutral current.[^10]
 
 This means you can't simply balance your loads by putting all tops on one phase and all subs on another, even if the
 calculated average loads appear balanced. The frequency content of the music creates temporal variations in power draw.
@@ -270,7 +320,9 @@ friend Owen nailed it:
 > probably 150 amps a leg, don't worry.' It's very common for PMs to use head math in the shop and then double the distros
 > onsite not to worry about it.
 
-This cuts to the heart of it. The industry has normalized a particular way of managing risk: oversize your distro capacity, do rough calculations, and trust experienced technicians to figure it out on-site. It *usually* works, and when it does work, there's no visible value from the monitoring that could have told you everything was fine.
+This cuts to the heart of it. The industry has normalized a particular way of managing risk: oversize your distro
+capacity, do rough calculations, and trust experienced technicians to figure it out on-site. It *usually* works, and
+when it does, there's no visible ROI from monitoring that confirmed everything was fine.
 
 The cost barriers are real too. A StageSmarts C24 system or Fluke power monitor represents a significant investment, especially for small to medium production companies. And unlike speakers or lighting fixtures that you can rent out per show, power monitoring equipment is harder to justify as a rental item—clients don't typically request it because they're not aware they need it.
 
@@ -312,7 +364,7 @@ Perhaps the most compelling argument for real-time monitoring comes from looking
 
 The live events industry is starting to move in this direction. Intelligent power distribution systems like StageSmarts are becoming more common on large tours. Portable monitoring solutions like the Fluke units make temporary monitoring more accessible. And as younger technicians who grew up with data-driven decision making enter the industry, there's growing comfort with monitoring systems.
 
-It reminds of the conversations we were having almost 20 years ago about audio analyzers. They are not a nice to have
+It reminds me of the conversations we were having almost 20 years ago about audio analyzers. They're not a nice-to-have
 toy for geeks, but a critical tool for any audio professional whose ears can only hear at a single location at a time.
 
 Here are some of my takeaways:
@@ -356,14 +408,14 @@ The disconnect between the office and the field is real. Project managers can ma
 
 What I've learned is that we need better tools integrated into the pre-production workflow, not separate systems that require duplicate data entry. When a Flex user says power calculations would be "awesome and super useful, if you can get it to pull the right info," they're pointing to the real solution: leverage the data you already have.
 
-The key takeaways from my research:
+Key takeaways from my research:
 
 1. Balance matters for equipment safety (preventing catastrophic neutral point shift), efficiency, and technician peace of mind.
 2. Aim for within 20% current difference between phases.
-3. Use realistic power values based on actual operating conditions (1/8 power pink noise for amps, maximum draw for LEDs, operating specs for video).
+3. Use realistic power values: manufacturer-specified MLTC or 1/8 power specs for amps, maximum draw for LEDs, operating
+   specs for video. Distribute subs and tops across all phases to handle frequency-dependent power fluctuations.
 4. Document your plan rather than relying on field decisions—even if it's just a simple spreadsheet.
-5. Tools exist to help, but the best tool would be integrated into your existing workflow.
-6. Real-time power monitoring technology exists and is proven, but adoption is limited by cost and industry culture—we need to shift from reactive to proactive electrical safety practices, especially for medium and large productions.
+5. For higher-stakes productions, real-time monitoring should shift from luxury to standard practice.
 
 Whether you're using a spreadsheet, a purpose-built tool like AmpLogic, real-time monitoring systems for larger shows, or just keeping notes, the important thing is moving from improvised solutions to systematic planning—and for higher-stakes productions, from static planning to active monitoring.
 
@@ -373,24 +425,54 @@ Whether you're using a spreadsheet, a purpose-built tool like AmpLogic, real-tim
 
 [^1]: Synthesis of regulatory and practical analysis on the "normalization of deviance," the "gap between regulatory theory and on-site practice," and the neutral point shift worst-case scenario (Source: AV Electrical Safety Code Research & Power Calculator MVP Research Analysis).
 
-[^2]: Industry best practice consensus on acceptable phase current imbalance, with a conservative default threshold set at 20% (Source: Power Calculator MVP Research Analysis, referencing industry thresholds).
+[^2]: StageSmarts, "Protection Against Lost Neutral Connection." Available
+at: https://www.stagesmarts.com/protection-against-lost-neutral-connection/. Discusses common causes of neutral
+connection failures in entertainment power distribution.
 
-[^3]: U.S. Occupational Safety and Health Administration (OSHA), 29 CFR 1910 Subpart S - Electrical (Source: AV Electrical Safety Code Research).
+[^3]: Industry best practice consensus on acceptable phase current imbalance, with a conservative default threshold set
+at 20% (Source: Power Calculator MVP Research Analysis, referencing industry thresholds).
 
-[^4]: National Fire Protection Association (NFPA), NFPA 70: National Electrical Code (NEC), Articles 520 and 590 (Source: AV Electrical Safety Code Research).
+[^4]: U.S. Occupational Safety and Health Administration (OSHA), 29 CFR 1910 Subpart S - Electrical (Source: AV
+Electrical Safety Code Research).
 
-[^5]: Industry standard practice for audio power calculation using 1/8 Power Pink Noise, as outlined in manufacturer specifications and the Common Amplifier Format (CAF) standard. This methodology has been used for decades to approximate realistic operating conditions for professional audio amplifiers.
+[^5]: National Fire Protection Association (NFPA), NFPA 70: National Electrical Code (NEC), Articles 520 and 590 (
+Source: AV Electrical Safety Code Research).
 
-[^6]: Crest factor is defined as the ratio of peak amplitude to RMS (root mean square) amplitude of a waveform, typically expressed in decibels. For power calculations, this translates to the ratio between peak power and average power. Source: General audio engineering principles.
+[^6]: Industry standard practice for audio power calculation using 1/8 Power Pink Noise, as outlined in manufacturer
+specifications and the Common Amplifier Format (CAF) standard. This methodology has been used for decades to approximate
+realistic operating conditions for professional audio amplifiers.
 
-[^7]: AES75-2023 standard documentation shows that Music-Noise test signals exhibit frequency-dependent crest factors ranging from 12 dB at frequencies below 500 Hz to 18 dB at higher frequencies, representing realistic music program material more accurately than fixed-crest-factor test signals.
+[^7]: Crest factor is defined as the ratio of peak amplitude to RMS (root mean square) amplitude of a waveform,
+typically expressed in decibels. For power calculations, this translates to the ratio between peak power and average
+power. Source: General audio engineering principles.
 
-[^8]: d&b audiotechnik, "D40 Reference Manual," amplifier specifications showing power consumption under various test conditions including "Noise CF 12 dB" representing live music use cases.
+[^8]: AES75-2023 standard documentation shows that Music-Noise test signals exhibit frequency-dependent crest factors
+ranging from 12 dB at frequencies below 500 Hz to 18 dB at higher frequencies, representing realistic music program
+material more accurately than fixed-crest-factor test signals.
 
-[^10]: Audio Engineering Society, "AES75-2023: AES standard for acoustics – Measuring loudspeaker maximum linear sound levels using noise," Published October 2023. Available at: https://www.aes.org/publications/standards/search.cfm?docID=116. The standard was developed by nearly 80 task group members representing automotive, consumer electronics, pro audio, post-production, and cinema industries, co-chaired by Merlijn van Veen (Meyer Sound) and Dr. Roger Schwenke (Meyer Sound).
+[^9]: d&b audiotechnik, "D40 Reference Manual," amplifier specifications showing power consumption under various test
+conditions including "Noise CF 12 dB" representing live music use cases.
 
-[^11]: Meyer Sound, "AES75-2022 Announcement," March 2022. Available at: https://meyersound.com/news/aes75/. Describes the development of M-Noise (now Music-Noise) through analysis of hundreds of music selections spanning all genres to create a test signal whose RMS and peak levels as functions of frequency better represent typical program material.
+[^10]: Frequency-dependent power draw consideration for professional audio systems, particularly relevant for subwoofer
+and full-range speaker distribution across three-phase power to minimize temporal imbalances during bass-heavy program
+material.
 
-[^12]: Meyer Sound, "750-LFC Operating Instructions," Chapter 2: Power Requirements, pages 13-16. Document PN 01.125.750.01. Available at: https://meyersound.com/documents. Provides detailed specifications for Idle Current, Maximum Long-Term Continuous Current, Burst Current, and Maximum Instantaneous Peak Current, along with explanations of their applications in power planning and cable sizing.
+[^11]: Audio Engineering Society, "AES75-2023: AES standard for acoustics – Measuring loudspeaker maximum linear sound
+levels using noise," Published October 2023. Available
+at: https://www.aes.org/publications/standards/search.cfm?docID=116. The standard was developed by nearly 80 task group
+members representing automotive, consumer electronics, pro audio, post-production, and cinema industries, co-chaired by
+Merlijn van Veen (Meyer Sound) and Dr. Roger Schwenke (Meyer Sound).
 
-[^13]: Meyer Sound, "Amperage/BTU Calculator," online tool available at Meyer Sound website. Shows Maximum Long-Term Continuous Current values for all Meyer Sound loudspeakers at various operating voltages. For the 750-LFC at 115 V AC, specifications are: Idle 0.39 A RMS, MLTC 5.3 A RMS, Burst 9.2 A RMS, Peak 15.3 A. The calculator notes: "The minimum electrical service amperage required is the sum of each loudspeaker's maximum long-term continuous current."
+[^12]: Meyer Sound, "AES75-2022 Announcement," March 2022. Available at: https://meyersound.com/news/aes75/. Describes
+the development of M-Noise (now Music-Noise) through analysis of hundreds of music selections spanning all genres to
+create a test signal whose RMS and peak levels as functions of frequency better represent typical program material.
+
+[^13]: Meyer Sound, "750-LFC Operating Instructions," Chapter 2: Power Requirements, pages 13-16. Document PN
+01.125.750.01. Available at: https://meyersound.com/documents. Provides detailed specifications for Idle Current,
+Maximum Long-Term Continuous Current, Burst Current, and Maximum Instantaneous Peak Current, along with explanations of
+their applications in power planning and cable sizing.
+
+[^14]: Meyer Sound, "Amperage/BTU Calculator," online tool available at Meyer Sound website. Shows Maximum Long-Term
+Continuous Current values for all Meyer Sound loudspeakers at various operating voltages. For the 750-LFC at 115 V AC,
+specifications are: Idle 0.39 A RMS, MLTC 5.3 A RMS, Burst 9.2 A RMS, Peak 15.3 A. The calculator notes: "The minimum
+electrical service amperage required is the sum of each loudspeaker's maximum long-term continuous current."

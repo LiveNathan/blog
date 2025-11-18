@@ -71,7 +71,7 @@ Second, and more catastrophic, is neutral point shift: This is the scenario that
 
 I've never heard of this actually happening in a production environment, but understanding the physics helps explain why we balance loads in the first place. It's not just about efficiency—it's about preventing potentially catastrophic equipment damage.
 
-[![neutral-loss.png](../assets/images/neutral-loss.png)](https://www.stagesmarts.com/protection-against-lost-neutral-connection/)
+[![neutral-loss.png](../assts/images/neutral-loss.png)](https://www.stagesmarts.com/protection-against-lost-neutral-connection/)
 
 ## The More Common Problem: Efficiency and Heat
 
@@ -262,9 +262,13 @@ However, monitoring only the neutral tells you that there's a problem, not where
 
 ### So Why Isn't Everyone Using These?
 
-If the technology exists and works well, why isn't real-time power monitoring standard practice in live events? My friend Owen (a production manager with extensive touring experience) nailed the answer:
+If the technology exists and works well, why isn't real-time power monitoring standard practice in live events? My
+friend Owen nailed it:
 
-> "It's an amazing point because nobody wants to pay for an electrical systems person on a show (except very very large shows like Beyoncé). Why pay for a chair that doesn't 'do' anything? Why worry when the PM does head math and says 'probably 150 amps a leg, don't worry'. It's very common for PMs to use head math in the shop, and then double the distros onsite not to worry about it."
+> It's an amazing point because nobody wants to pay for an electrical systems person on a show (except very, very large
+> shows like Beyoncé). Why pay for a chair that doesn't 'do' anything? Why worry when the PM does head math and says '
+> probably 150 amps a leg, don't worry.' It's very common for PMs to use head math in the shop and then double the distros
+> onsite not to worry about it.
 
 This cuts to the heart of it. The industry has normalized a particular way of managing risk: oversize your distro capacity, do rough calculations, and trust experienced technicians to figure it out on-site. It *usually* works, and when it does work, there's no visible value from the monitoring that could have told you everything was fine.
 
@@ -290,13 +294,17 @@ Based on my research and conversations, here's when real-time power monitoring m
 
 So should we, as live event technicians, be regularly monitoring power load and balance instead of just waiting for a breaker to blow?
 
-The honest answer is: it depends on the scale and risk profile of your events.
+It depends on the level of risk of your event.
 
 For small corporate shows with experienced crew and well-understood gear, the current approach of calculated planning plus field experience probably makes sense. The risk is low, and the additional cost of monitoring hardware doesn't add enough value to justify it.
 
 For medium and large shows—especially those with high-value equipment, critical uptime requirements, or complex power distribution—real-time monitoring absolutely makes sense and represents industry best practice. ANSI standards for entertainment power (like ANSI E1.58-2017) emphasize the importance of continuous monitoring for electrical safety. The Event Safety Alliance and PLASA both recommend comprehensive power management systems for larger productions.
 
-The challenge is that many production companies fall into the middle ground: shows that are large enough to benefit from monitoring but not quite large enough to justify the capital investment in hardware and the additional labor cost of someone to oversee it. This is where Owen's observation about industry culture becomes important—we need to shift from viewing electrical monitoring as an optional luxury to seeing it as a fundamental safety system, similar to how we treat rigging and fall protection.
+The challenge is that many production companies fall into the middle ground: shows that are large enough to benefit from
+monitoring but not quite large enough to justify the capital investment in hardware and the additional labor cost of
+someone to oversee it. It's my opinion that we need to shift from viewing electrical monitoring as an optional luxury to
+seeing it as a fundamental safety system, similar to how we treat rigging and fall protection. Imagine a unified health
+dashboard with all critical events system systems: power, ambient conditions, audio, video, light.
 
 ### Moving Forward: From Reactive to Proactive
 
@@ -304,14 +312,15 @@ Perhaps the most compelling argument for real-time monitoring comes from looking
 
 The live events industry is starting to move in this direction. Intelligent power distribution systems like StageSmarts are becoming more common on large tours. Portable monitoring solutions like the Fluke units make temporary monitoring more accessible. And as younger technicians who grew up with data-driven decision making enter the industry, there's growing comfort with monitoring systems.
 
-Your dad's question—"Why don't people attach smart current monitors?"—deserves a better answer than "Because we've always done it this way." The technology exists. The benefits are clear. What's needed is a cultural shift toward viewing real-time power monitoring not as an unnecessary expense, but as a fundamental component of professional electrical safety.
+It reminds of the conversations we were having almost 20 years ago about audio analyzers. They are not a nice to have
+toy for geeks, but a critical tool for any audio professional whose ears can only hear at a single location at a time.
 
-For now, the path forward probably looks like this:
-- **Small shows**: Calculated planning with documented power plans (spreadsheets, tools like AmpLogic)
-- **Medium shows**: Consider portable monitoring solutions for high-stakes events or unfamiliar venues
-- **Large shows**: Intelligent power distribution systems with integrated real-time monitoring should be standard equipment
+Here are some of my takeaways:
 
-The gap between where we are and where we should be is real. But at least now we're asking the right questions.
+- Small shows: Calculated planning with documented power plans (spreadsheets, tools like AmpLogic and Meyer Sound's
+  Amperage/BTU Calculator)
+- Medium shows: Consider portable monitoring solutions for high-stakes events or unfamiliar venues
+- Large shows: Intelligent power distribution systems with integrated real-time monitoring should be standard equipment
 
 ## The Middle Market Sweet Spot
 

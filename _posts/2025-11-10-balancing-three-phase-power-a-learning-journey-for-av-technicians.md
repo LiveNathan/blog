@@ -14,7 +14,7 @@ categories: [ power, electrical, av-production, live-events, production-av ]
    destroying connected equipment.
 
 2. **Use realistic power values for planning.** For amplifiers, use manufacturer-specified maximum long-term continuous
-   current (MLTC) or 1/8 power pink noise specs—never full rated power. For LEDs, use maximum draw. For video, use
+   current or 1/8 power pink noise specs—not full rated power. For LEDs, use maximum draw. For video, use
    operating specs. And distribute band-limited devices (subs vs. tops) across all three phases to account for
    frequency-dependent power fluctuations.
 
@@ -52,7 +52,11 @@ time. For experienced techs working with their specific collection of equipment,
 Most production AV companies only have a small number (1–3) of distros, so you get the big one for big shows and the
 small ones for smaller shows. A larger problem, actually, is bringing the right number and length of power cables.
 
-It also reminds me of something I used to say a lot during my trainings on sound system calibration: If you're not aligning your system, that doesn't mean that it's not aligned. You just don't know where it's aligned. Similarly, a power plan always exists, even if it's not explicitly documented. I think maybe I stole that idea from a Noam Chomsky quote. "If you do not do politics, politics will do you." So maybe I could tighten it up and say, "If you do not do a power plan, a power plan will do you." Too much?
+It also reminds me of something I used to say a lot during my workshops on sound system calibration: If you're **not**
+aligning your system, that doesn't mean that it's not aligned. You just don't know **where** it's aligned. Similarly, a
+power plan always exists, even if it's not explicitly documented. I think maybe I stole that idea from a Noam Chomsky
+quote. "If you do not do politics, politics will do you." So maybe I could tighten it up and say, "If you do not do a
+power plan, a power plan will do you." Too much?
 
 It's a different story for the technicians in the field who have to execute this plan. Marcus described his typical
 workflow: "we don't necessarily plan anything, I just kinda usually figure it out on site... I understand what all of my
@@ -300,7 +304,10 @@ StageSmarts offers power distribution units with comprehensive real-time monitor
 
 Fluke makes portable three-phase power monitors (like the Fluke 3540 FC) that measure voltage, current, frequency, power factor, and total harmonic distortion across all three phases. These are designed for temporary installation. The data streams to cloud-based dashboards for remote monitoring.
 
-Other manufacturers offer similar solutions: monitored PDUs from companies like Server Technology and CyberPower provide outlet-level monitoring with user-defined alert thresholds. You can monitor not just the incoming three-phase supply, but individual circuits and devices.
+Other manufacturers offer similar solutions: monitored PDUs from companies like Server Technology and CyberPower provide
+outlet-level monitoring with user-defined alert thresholds. You can monitor not just the incoming three-phase supply,
+but individual circuits and devices. Is anyone making a distro
+with [automatic load balancing](https://iopscience.iop.org/article/10.1088/1742-6596/1810/1/012002/pdf)?
 
 ### What About Monitoring Just the Neutral?
 
@@ -313,7 +320,7 @@ However, monitoring only the neutral tells you that there's a problem, not where
 ### So Why Isn't Everyone Using These?
 
 If the technology exists and works well, why isn't real-time power monitoring standard practice in live events? My
-friend Owen nailed it:
+friend Steve nailed it:
 
 > It's an amazing point because nobody wants to pay for an electrical systems person on a show (except very, very large
 > shows like Beyoncé). Why pay for a chair that doesn't 'do' anything? Why worry when the PM does head math and says '
@@ -326,7 +333,10 @@ when it does, there's no visible ROI from monitoring that confirmed everything w
 
 The cost barriers are real too. A StageSmarts C24 system or Fluke power monitor represents a significant investment, especially for small to medium production companies. And unlike speakers or lighting fixtures that you can rent out per show, power monitoring equipment is harder to justify as a rental item—clients don't typically request it because they're not aware they need it.
 
-There's also a cultural dimension. As Owen points out, having someone dedicated to electrical systems monitoring feels like "paying for a chair that doesn't do anything." In the fast-paced world of live events, there's pressure to have every crew member visibly productive. Someone watching dashboards and saying "everything looks good" doesn't feel productive—even though they're preventing potentially catastrophic failures.
+There's also a cultural dimension. As Steve points out, having someone dedicated to electrical systems monitoring feels
+like "paying for a chair that doesn't do anything." In the fast-paced world of live events, there's pressure to have
+every crew member visibly productive. Someone watching dashboards and saying "everything looks good" doesn't feel
+productive—even though they're preventing potentially catastrophic failures.
 
 ### When Does Real-Time Monitoring Make Sense?
 
@@ -420,8 +430,6 @@ Key takeaways from my research:
 Whether you're using a spreadsheet, a purpose-built tool like AmpLogic, real-time monitoring systems for larger shows, or just keeping notes, the important thing is moving from improvised solutions to systematic planning—and for higher-stakes productions, from static planning to active monitoring.
 
 *Have feedback on this post? Spot a technical error? Want to share your own power balancing or monitoring strategies? Please reach out—I'm still learning, and I welcome constructive input from the community.*
-
-**Update**: After publishing this post, my dad's questions about real-time monitoring led me down another research rabbit hole, which resulted in the new section on monitoring. Thanks, Dad, for asking the question that should have been obvious from the start.
 
 [^1]: Synthesis of regulatory and practical analysis on the "normalization of deviance," the "gap between regulatory theory and on-site practice," and the neutral point shift worst-case scenario (Source: AV Electrical Safety Code Research & Power Calculator MVP Research Analysis).
 

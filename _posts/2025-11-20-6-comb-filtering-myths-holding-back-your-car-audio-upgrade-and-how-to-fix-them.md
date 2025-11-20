@@ -1,9 +1,8 @@
 ---
-title: 6 Comb Filtering Myths Holding Back Your Car Audio Upgrade (And How to Fix Them)
-slug: 6-comb-filtering-myths-holding-back-your-car-audio-upgrade-and-how-to-fix-them
-date: 2025-04-08
-author: Nathan Lively
-tags: [ comb filtering, car audio upgrade ]
+layout: post
+title: "6 Comb Filtering Myths Holding Back Your Car Audio Upgrade (And How to Fix Them)"
+date: 2025-11-20 00:00:00 -0000
+categories: [ audio-physics, dsp, building-in-public ]
 ---
 
 Ever wonder why your expensive car audio upgrade doesn't sound as good as expected? Despite investing in premium
@@ -19,12 +18,19 @@ The science is clear: comb filtering isn't just audiophile paranoia—it's a mea
 music sound hollow, colored, and lacking clarity. When addressed correctly, tackling this invisible enemy can transform
 your car audio upgrade from frustrating to fantastic.
 
+> **UPDATE (November 2025):** This article was originally written several months ago when I was actively developing
+> GainGuardian, a software solution for comb filtering in car audio systems. Since then, GainGuardian development has
+> paused due to technical challenges (primarily around real-time convolution processing). The site remains online, but the
+> product is not in active development. Several community members contributed valuable feedback to this article, so I
+> wanted to share it here on my personal blog. You can read more about the GainGuardian journey
+> in [Project Update: Convolution, Complexity, and a Part-Time Job](https://open.substack.com/pub/nathanlively/p/project-update-convolution-complexity-and-a-part-time-job?r=hhqf8&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false)
+> and [Six Months of Audio Physics, Reddit Validation, and Almost Going Broke](https://open.substack.com/pub/nathanlively/p/six-months-audio-physics-reddit-validation-almost-broke?r=hhqf8&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false).
+
 > *Full disclosure: While I've spent over 20 years as a live sound engineer, system technician, and educator—even
 teaching sound system calibration to car audio installers—I'm not primarily a car audio specialist. My experience lies
 in sound system design and calibration for live events and permanent installations. I'm writing this to connect with car
 audio enthusiasts like you because I believe my work with GainGuardian technology offers solutions to problems that
-plague car
-audio environments.*
+plague car audio environments.*
 
 ## Key Takeaways: Your Car Audio Upgrade Success Guide
 
@@ -128,10 +134,8 @@ problems:
 - **Proper alignment:** When multiple drivers reproduce the same material, they must be precisely matched in level,
   time, and phase for proper summation across their operating bandwidth.
 - **Decorrelation technology:** Solutions
-  like [GainGuardian](#beyond-traditional-solutions-gainguardians-decorrelation-technology-gainguardian-decorrelation-technology)
-  Beyond Traditional Solutions: GainGuardian's Decorrelation Technology) reduce coherence between signals to prevent
-  comb filtering
-  before it occurs—a powerful approach we'll explore further.
+  like [GainGuardian](#beyond-traditional-solutions-gainguardians-decorrelation-technology) reduce coherence between
+  signals to prevent comb filtering before it occurs—a powerful approach we'll explore further.
 
 ---
 
@@ -580,9 +584,10 @@ your car audio upgrade to the next level.
 
 ## Sources
 
-ANSI. (1960). "American Standard Acoustical Terminology." American National Standards Institute, New York. Bücklein,
-R. (1981). "The audibility of frequency response irregularities." Journal of the Audio Engineering Society, 29(3),
-126-131. (Originally published in German, 1962).
+ANSI. (1960). "American Standard Acoustical Terminology." American National Standards Institute, New York.
+
+Bücklein, R. (1981). "The audibility of frequency response irregularities." Journal of the Audio Engineering Society,
+29(3), 126-131. (Originally published in German, 1962).
 
 Hill, A. J., & Moore, J. (2019). "Optimizing Wide-Area Sound Reproduction Using a Single Subwoofer with Dynamic Signal
 Decorrelation." Paper presented at the 146th AES Convention. Paper Number: 10181. Publication Date: 2019-03-06.

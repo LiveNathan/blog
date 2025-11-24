@@ -18,19 +18,23 @@ The science is clear: comb filtering isn't just audiophile paranoia—it's a mea
 music sound hollow, colored, and lacking clarity. When addressed correctly, tackling this invisible enemy can transform
 your car audio upgrade from frustrating to fantastic.
 
+![6-myths-comb-filtering.png](../assets/images/6-myths-comb-filtering.png)
+
 > **UPDATE (November 2025):** This article was originally written several months ago when I was actively developing
 > GainGuardian, a software solution for comb filtering in car audio systems. Since then, GainGuardian development has
-> paused due to technical challenges (primarily around real-time convolution processing). The site remains online, but the
-> product is not in active development. Several community members contributed valuable feedback to this article, so I
-> wanted to share it here on my personal blog. You can read more about the GainGuardian journey
-> in [Project Update: Convolution, Complexity, and a Part-Time Job](https://open.substack.com/pub/nathanlively/p/project-update-convolution-complexity-and-a-part-time-job?r=hhqf8&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false)
-> and [Six Months of Audio Physics, Reddit Validation, and Almost Going Broke](https://open.substack.com/pub/nathanlively/p/six-months-audio-physics-reddit-validation-almost-broke?r=hhqf8&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false).
+> paused due to technical challenges (primarily
+> around [convolution](https://open.substack.com/pub/nathanlively/p/project-update-convolution-complexity-and-a-part-time-job?r=hhqf8&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false)).
+> The site remains online, but the product is not in active development. Several community members contributed valuable
+> feedback to this article, so I wanted to share it here on my personal blog. You can read more about the GainGuardian
+> journey
+> in [Six Months of Audio Physics, Reddit Validation, and Almost Going Broke](https://open.substack.com/pub/nathanlively/p/six-months-audio-physics-reddit-validation-almost-broke?r=hhqf8&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false).
+> Initially I hoped to create a video for each myth. For now each myth has an LLM generated image instead.
 
-> *Full disclosure: While I've spent over 20 years as a live sound engineer, system technician, and educator—even
-teaching sound system calibration to car audio installers—I'm not primarily a car audio specialist. My experience lies
-in sound system design and calibration for live events and permanent installations. I'm writing this to connect with car
-audio enthusiasts like you because I believe my work with GainGuardian technology offers solutions to problems that
-plague car audio environments.*
+> Full disclosure: While I've spent over 20 years as a live sound engineer, system technician, and educator—even
+> teaching sound system calibration to car audio installers—I'm not primarily a car audio specialist. My experience lies
+> in sound system design and calibration for live events and permanent installations. I'm writing this to connect with car
+> audio enthusiasts like you because I believe my work with GainGuardian technology offers solutions to problems that
+> plague car audio environments.
 
 ## Key Takeaways: Your Car Audio Upgrade Success Guide
 
@@ -49,7 +53,7 @@ rather than forum hearsay.
 
 ## Myth #1: "You CAN fix comb filtering with EQ."
 
-![EQ cannot fix comb filtering issues](https://placeholder-image.com/comb-filtering-eq-myth)
+![myth-1.png](../assets/images/myth-1.png)
 
 ### Key Takeaways:
 
@@ -141,7 +145,7 @@ problems:
 
 ## Myth #2: "Comb filtering only affects certain frequencies"
 
-![Comb filtering affects all frequencies](https://placeholder-image.com/comb-filtering-frequency-range)
+![myth-2.png](../assets/images/myth-2.png)
 
 ### Key Takeaways:
 
@@ -214,7 +218,7 @@ With no smoothing on the response, you should see comb filtering starting at 5 k
 
 ## Myth #3: "You can't hear comb filtering."
 
-![Comb filtering is audible and affects sound quality](https://placeholder-image.com/comb-filtering-audibility)
+![myth-3.png](../assets/images/myth-3.png)
 
 ### Key Takeaways:
 
@@ -302,7 +306,7 @@ your equipment can deliver.
 
 ## Myth #4: "Time alignment fixes all comb filtering issues"
 
-![Time alignment helps but doesn't solve all comb filtering](https://placeholder-image.com/time-alignment-limitations)
+![myth-4.png](../assets/images/myth-4.png)
 
 ### Key Takeaways:
 
@@ -356,7 +360,7 @@ head. You should see comb filtering caused by the cabin reflections—an issue t
 
 ## Myth #5: "Better equipment will fix comb filtering and ensure a successful car audio upgrade"
 
-![System design matters more than equipment quality](https://placeholder-image.com/system-design-vs-equipment)
+![myth-5.png](../assets/images/myth-5.png)
 
 ### Key Takeaways:
 
@@ -412,7 +416,7 @@ like low-end build-up and out-of-sync direct sound from speakers that are at dif
 
 ## Myth #6: "Add more speakers to fix comb filtering"
 
-![More speakers often create more comb filtering problems](https://placeholder-image.com/more-speakers-more-problems)
+![myth-6.png](../assets/images/myth-6.png)
 
 ### Key Takeaways:
 

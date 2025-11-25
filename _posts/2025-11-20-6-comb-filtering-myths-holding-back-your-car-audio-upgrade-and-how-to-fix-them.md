@@ -18,8 +18,6 @@ The science is clear: comb filtering isn't just audiophile paranoia—it's a mea
 music sound hollow, colored, and lacking clarity. When addressed correctly, tackling this invisible enemy can transform
 your car audio upgrade from frustrating to fantastic.
 
-![6-myths-comb-filtering.png](../assets/images/6-myths-comb-filtering.png)
-
 > **UPDATE (November 2025):** This article was originally written several months ago when I was actively developing
 > GainGuardian, a software solution for comb filtering in car audio systems. Since then, GainGuardian development has
 > paused due to technical challenges (primarily
@@ -28,7 +26,7 @@ your car audio upgrade from frustrating to fantastic.
 > feedback to this article, so I wanted to share it here on my personal blog. You can read more about the GainGuardian
 > journey
 > in [Six Months of Audio Physics, Reddit Validation, and Almost Going Broke](https://open.substack.com/pub/nathanlively/p/six-months-audio-physics-reddit-validation-almost-broke?r=hhqf8&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false).
-> Initially I hoped to create a video for each myth. For now each myth has an LLM generated image instead.
+> Initially I hoped to create a video for each myth. For now each myth has an LLM-generated image instead.
 
 > Full disclosure: While I've spent over 20 years as a live sound engineer, system technician, and educator—even
 > teaching sound system calibration to car audio installers—I'm not primarily a car audio specialist. My experience lies
@@ -476,7 +474,7 @@ spacious effect. The comb filter isn't gone—there's just more of it at random 
 
 ## Beyond Traditional Solutions: GainGuardian's Decorrelation Technology
 
-![GainGuardian decorrelation technology](https://placeholder-image.com/gainguardian-technology)
+![6-myths-comb-filtering.png](../assets/images/6-myths-comb-filtering.png)
 
 ### Key Takeaways:
 

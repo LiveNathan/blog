@@ -51,7 +51,7 @@ rather than forum hearsay.
 
 ## Myth #1: "You CAN fix comb filtering with EQ."
 
-![myth-1.png](../assets/images/myth-1.png)
+![myth-1.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/myth-1.png)
 
 ### Key Takeaways:
 
@@ -67,9 +67,7 @@ PC-Tool's TuneEQ with 27 bands of EQ at a time. These powerful tools are easy to
 issues.
 
 > "These dips and comb filtering effects caused by delayed input signals cannot be effectively corrected by adjusting
-> the appropriate frequencies on an
->
-equalizer." - [JL Audio](https://jlaudio.zendesk.com/hc/en-us/articles/215686788-FiX-The-Importance-of-Factory-Time-Correction)
+> the appropriate frequencies on an equalizer."[^1]
 
 **Why EQ can't fix comb filtering:** The characteristic pattern of peaks and dips in a comb filter stems from an
 acoustic phenomenon caused by coherent (fixed phase relationship) sound arriving at slightly different times—usually
@@ -82,8 +80,7 @@ significant boosts in certain frequencies, forcing your amplifier to work harder
 cancellation.
 
 > "You can try to EQ it but you'll only increase the mechanical throw of the woofer to no avail so you'll damage the
-> speaker or increase distortion before you'll get a flat response." -ErinH
-> on [diy mobile audio](https://www.diymobileaudio.com/posts/2081417/)
+> speaker or increase distortion before you'll get a flat response."[^2]
 
 Even more problematic is comb filtering's spatial instability. The specific frequencies affected change dramatically
 based on your position in the car, making EQ (a global, position-independent solution) fundamentally mismatched to the
@@ -91,7 +88,7 @@ problem. What "fixes" the response for the driver's position could worsen it for
 
 The fundamental difference lies in the domain in which each operates:
 
-- Comb filtering occurs in the time domain results from phase interference due to arrival time differences
+- Comb filtering occurs in the time domain and results from phase interference due to arrival time differences
 - EQ occurs in the frequency domain and manipulates the combined response
 - Adjusting amplitude does not change the arrival time of sound waves
 
@@ -99,11 +96,12 @@ The fundamental difference lies in the domain in which each operates:
 
 Use an audio analyzer like REW or CrossLite with a measurement microphone positioned equidistant from two matched
 speakers. To minimize reflections, conduct this test outdoors with the microphone positioned close to the speakers.
-Remember that high-frequency wavelengths are tiny—at 10 kHz; we're talking about just 34 mm.
+Remember that high-frequency wavelengths are tiny—at 10 kHz, we're talking about just 34 mm.
 
 Move the microphone slightly and observe how dramatically the response changes. Try the same experiment by moving your
-head slightly while listening to steady noise (pink/white). You'll notice that comb filtering becomes most apparent when
-position changes—this spatial instability is why EQ fails as a solution.
+head slightly while listening to steady noise (pink or white). You'll notice that comb filtering becomes most apparent
+when
+your position changes—this spatial instability is why EQ fails as a solution.
 
 ### What about all-pass filters?
 
@@ -143,7 +141,7 @@ problems:
 
 ## Myth #2: "Comb filtering only affects certain frequencies"
 
-![myth-2.png](../assets/images/myth-2.png)
+![myth-2.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/myth-2.png)
 
 ### Key Takeaways:
 
@@ -161,10 +159,7 @@ shorter delays primarily affect higher frequencies.
 
 > "For a 1ms delay, the lowest cancellation point is at 500 Hz, with additional cancellation points at 1.5 kHz, 2.5 kHz,
 > 3.5 kHz, etc. For a 10 ms delay, the lowest cancellation point is at 50Hz, with additional cancellation points at
-> 150Hz,
-> 250Hz, 350Hz,
->
-etc." - [ASR Forum](https://www.audiosciencereview.com/forum/index.php?threads/comb-filter-effects.25432/#post-2064062)
+> 150Hz, 250Hz, 350Hz, etc."[^3]
 
 This frequency dependence is directly related to the wavelength of sound. When a path length difference equals half a
 wavelength (or an odd multiple), destructive interference occurs, creating a dip in frequency response. When it equals a
@@ -207,7 +202,7 @@ With no smoothing on the response, you should see comb filtering starting at 5 k
 ### Real solutions:
 
 - System design that carefully controls source-to-source and source-to-cabin interactions to increase direct sound and
-  reduce late-arriving energetic reflections
+  reduce late-arriving, energetic reflections
 - Strategic speaker placement to minimize significant path length differences
 - Proper crossover alignment to equalize path length differences and phase incompatibilities (even though comb filtering
   is less audible in high frequencies, it still requires proper alignment)
@@ -216,7 +211,7 @@ With no smoothing on the response, you should see comb filtering starting at 5 k
 
 ## Myth #3: "You can't hear comb filtering."
 
-![myth-3.png](../assets/images/myth-3.png)
+![myth-3.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/myth-3.png)
 
 ### Key Takeaways:
 
@@ -232,9 +227,9 @@ actually hear.
 Comb filtering manifests differently at different frequencies, but its effects are definitely audible—especially in
 critical listening environments like your car audio system.
 
-As [David Mellor from Audio Masterclass](https://www.audiomasterclass.com/blog/what-is-comb-filtering-what-does-it-sound-like)
-puts it: "Comb filtering happens when a sound mixes with its own delayed reflection, or a signal is mixed with a delayed
-version of itself. It can sound subtly bad; it can sound absolutely dreadful. The one thing it never sounds is good."
+As David Mellor puts it: "Comb filtering happens when a sound mixes with its own delayed reflection, or a signal is
+mixed with a delayed version of itself. It can sound subtly bad; it can sound absolutely dreadful. The one thing it
+never sounds is good."[^4]
 
 **How it actually sounds:** Comb filtering can manifest in several perceptible ways, creating:
 
@@ -264,13 +259,13 @@ significantly with frequency and notch characteristics:
   detectability for human hearing
 
 While the inverse square law does create a level difference between direct and delayed sounds, it's often not enough to
-prevent audible comb filtering. Studies show that spectral dips of one octave width become audible at around 5dB depth,
+prevent audible comb filtering. Studies show that spectral dips of one octave width become audible at around 5 dB depth,
 and peaks are generally more detectable than dips of the same magnitude.
 
 Research provides these useful thresholds:
 
 - Notches with a width ratio of 0.2 approach the limit of detectability across frequencies
-- For Q values higher than 10, notches below 125Hz become essentially inaudible
+- For Q values higher than 10, notches below 125 Hz become essentially inaudible
 - Notches with Q values of 30 are practically undetectable regardless of frequency
 
 In practice, this means even modest speaker placement differences during your car audio upgrade can create audible comb
@@ -288,7 +283,7 @@ Also compare listening to the change in delay in real time versus simply bypassi
 notice that changing the delay in real time is much easier to hear, whereas if you simply listen to a fixed comb filter,
 you'll likely adapt to it over time.
 
-![The apparent pitch of comb filters can be demonstrated in this video](https://youtu.be/pvfJJgVnFXM).
+[The apparent pitch of comb filters can be demonstrated in this video](https://youtu.be/pvfJJgVnFXM).
 
 ### Real solutions:
 
@@ -304,7 +299,7 @@ your equipment can deliver.
 
 ## Myth #4: "Time alignment fixes all comb filtering issues"
 
-![myth-4.png](../assets/images/myth-4.png)
+![myth-4.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/myth-4.png)
 
 ### Key Takeaways:
 
@@ -320,8 +315,7 @@ it cannot address comb filtering caused by reflections within the vehicle.
 
 > "If the comb is caused by a reflection, no amount of EQ or delay will improve it. Why? The reflection is caused by the
 > sound from the speaker. We can't affect that relationship – we can't put a signal processor in between the speaker and
-> the reflection caused by the sound of the
-> speaker." – [Andy Wehmeyer from Audiofrog](https://www.audiofrog.com/time-alignment-part-2/)
+> the reflection caused by the sound of the speaker."[^5]
 
 Time alignment primarily addresses comb filtering caused by **differences in path lengths between speakers and the
 listener**. However, it does nothing to fix comb filtering from **reflections off surfaces** within the car cabin. When
@@ -333,11 +327,12 @@ comprehensive solution.
 
 ### Test it yourself:
 
-Try to select a speaker that you expect to have an energetic late-arriving reflection. This might be challenging with a
-subwoofer. Due to its long wavelengths and omnidirectional behavior, you're almost never listening to or measuring
-direct sound, so it will be challenging to observe a clean comb filter.
+Try to select a speaker that you expect to have an energetic, late-arriving reflection. This might be challenging with a
+subwoofer—due to its long wavelengths and omnidirectional behavior, you're almost never listening to or measuring
+direct sound, so it will be difficult to observe a clean comb filter.
 
-If possible, remove the speaker from the car and measure it outdoors in the nearfield (~<1 m). It will behave quite
+If possible, remove the speaker from the car and measure it outdoors in the nearfield (~1 m or closer). It will behave
+quite
 differently than it did inside an enclosure in the car, but the goal is to observe its performance free of reflections.
 If that's not possible, measure close to the speaker inside the car, then measure that same speaker solo at the driver's
 head. You should see comb filtering caused by the cabin reflections—an issue that time alignment alone cannot fix.
@@ -358,7 +353,7 @@ head. You should see comb filtering caused by the cabin reflections—an issue t
 
 ## Myth #5: "Better equipment will fix comb filtering and ensure a successful car audio upgrade"
 
-![myth-5.png](../assets/images/myth-5.png)
+![myth-5.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/myth-5.png)
 
 ### Key Takeaways:
 
@@ -377,7 +372,7 @@ provides a better foundation, it cannot overcome poor installation practices or 
 Assembling the world's best car parts – Ferrari engine, Volvo body, Porsche brakes, BMW suspension – doesn't craft the
 greatest car.
 
-> "What we get, of course, is nothing close to a great car; we get a pile of very expensive junk." — Atul Gawande
+> "What we get, of course, is nothing close to a great car; we get a pile of very expensive junk."[^6]
 
 Installation technique often matters more than equipment quality.
 
@@ -404,7 +399,7 @@ like low-end build-up and out-of-sync direct sound from speakers that are at dif
   and unwanted reflections
     - > "If you are working with a car stereo shop to design an audio system upgrade for your car or truck, it's not
       difficult to minimize the effects of comb filtering by having your speakers mounted as flush as possible with the
-      vehicle." – [Best Car Audio](https://www.bestcaraudio.com/should-your-car-audio-speakers-be-mounted-in-pods/)
+      vehicle."[^7]
 - Ignore claims that special cables will fix comb filtering
 - Invest in quality tools with a minimum amount of parametric EQ and delay for every speaker in your system
 - Consider the installer's expertise as important as (or more important than) the equipment quality
@@ -414,7 +409,7 @@ like low-end build-up and out-of-sync direct sound from speakers that are at dif
 
 ## Myth #6: "Add more speakers to fix comb filtering"
 
-![myth-6.png](../assets/images/myth-6.png)
+![myth-6.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/myth-6.png)
 
 ### Key Takeaways:
 
@@ -429,8 +424,7 @@ Some enthusiasts believe using more speakers is always better for reducing comb 
 recommendation is so common is that it might actually sound better to you subjectively, despite worsening the acoustic
 phenomenon.
 
-> "Any time you send the same signal to multiple speakers, you run the risk of causing comb
-> filtering." – [Audio University](https://audiouniversityonline.com/comb-filtering-explained/)
+> "Any time you send the same signal to multiple speakers, you run the risk of causing comb filtering."[^8]
 
 When multiple speakers play the same frequencies, their sound waves interfere with each other, especially when they
 arrive at the listener's ears at slightly different times.
@@ -439,9 +433,9 @@ What typically happens is that adding more speakers just makes comb filtering mo
 noticeable—but not better. One big null at 2 kHz is obvious. Five of them densely packed around 200 Hz might be less
 obvious, but the underlying acoustic problem remains.
 
-Once when I was a kid I discovered that I enjoyed the sound of two radios playing at once. The latency from one being
-farther away
-created a kind of fun spaciousness. I experimented by turning on as many radios as I could, some hanging from the
+Once when I was a kid, I discovered that I enjoyed the sound of two radios playing at once. The latency from one being
+farther away created a kind of fun spaciousness. I experimented by turning on as many radios as I could, some hanging
+from the
 ceiling. Later, after moving to NYC, I experienced a 5.1 surround system that added spaciousness by sending stereo
 content through a reverb effect to the rear speakers. In both cases, what I was enjoying wasn't better fidelity—it was
 the pleasing effect of diffuse, decorrelated sound.
@@ -458,8 +452,8 @@ speakers across the horizontal plane, you may reduce the overall stereo width th
 ### Test it yourself:
 
 Set up a DAW with 16 tracks, each containing the exact same content. Turn tracks 2-16 down 10 dB. Listen to the first
-track soloed. Add the next
-track with a delay of 1ms—that doesn't sound very nice. Keep adding more tracks at random delay values of 1–15 ms. If
+track soloed. Add the next track with a delay of 1 ms—that doesn't sound very nice. Keep adding more tracks at random
+delay values of 1–15 ms. If
 you were to solo any two of them together, you would hear a comb filter, but all of them together creates a kind of
 spacious effect. The comb filter isn't gone—there's just more of it at random intervals producing a more diffuse sound.
 
@@ -474,7 +468,7 @@ spacious effect. The comb filter isn't gone—there's just more of it at random 
 
 ## Beyond Traditional Solutions: GainGuardian's Decorrelation Technology
 
-![6-myths-comb-filtering.png](../assets/images/6-myths-comb-filtering.png)
+![6-myths-comb-filtering.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/6-myths-comb-filtering.png)
 
 ### Key Takeaways:
 
@@ -503,7 +497,7 @@ control.
 
 High inter-channel coherence between signals from multiple loudspeakers causes undesirable acoustic effects, including
 the position-dependent frequency response variation we've been discussing. GainGuardian's dynamic diffuse signal
-processing (dynamic DiSP) technology reduces a discrete source's correlation with itself over short timeframes, which
+processing (DiSP) technology reduces a discrete source's correlation with itself over short timeframes, which
 helps mitigate comb filtering from both direct source interactions and reflections.
 
 By applying controlled phase manipulation to audio signals, GainGuardian significantly reduces the coherence not only
@@ -584,7 +578,32 @@ your car audio upgrade to the next level.
 
 ---
 
-## Sources
+## References
+
+[^1]: JL Audio. "FiX: The Importance of Factory Time
+Correction." [https://jlaudio.zendesk.com/hc/en-us/articles/215686788-FiX-The-Importance-of-Factory-Time-Correction](https://jlaudio.zendesk.com/hc/en-us/articles/215686788-FiX-The-Importance-of-Factory-Time-Correction)
+
+[^2]: ErinH. "Discussion on EQing Comb Filters." diy mobile audio
+forum. [https://www.diymobileaudio.com/posts/2081417/](https://www.diymobileaudio.com/posts/2081417/)
+
+[^3]: ASR Forum. "Comb Filter Effects." Audio Science
+Review. [https://www.audiosciencereview.com/forum/index.php?threads/comb-filter-effects.25432/#post-2064062](https://www.audiosciencereview.com/forum/index.php?threads/comb-filter-effects.25432/#post-2064062)
+
+[^4]: Mellor, David. "What Is Comb Filtering? What Does It Sound Like?" Audio
+Masterclass. [https://www.audiomasterclass.com/blog/what-is-comb-filtering-what-does-it-sound-like](https://www.audiomasterclass.com/blog/what-is-comb-filtering-what-does-it-sound-like)
+
+[^5]: Wehmeyer, Andy. "Time Alignment Part 2."
+Audiofrog. [https://www.audiofrog.com/time-alignment-part-2/](https://www.audiofrog.com/time-alignment-part-2/)
+
+[^6]: Gawande, Atul. "The Checklist Manifesto: How to Get Things Right." Metropolitan Books, 2009.
+
+[^7]: "Should Your Car Audio Speakers Be Mounted in Pods?" Best Car
+Audio. [https://www.bestcaraudio.com/should-your-car-audio-speakers-be-mounted-in-pods/](https://www.bestcaraudio.com/should-your-car-audio-speakers-be-mounted-in-pods/)
+
+[^8]: "Comb Filtering Explained." Audio
+University. [https://audiouniversityonline.com/comb-filtering-explained/](https://audiouniversityonline.com/comb-filtering-explained/)
+
+### Academic Sources
 
 ANSI. (1960). "American Standard Acoustical Terminology." American National Standards Institute, New York.
 

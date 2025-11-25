@@ -51,7 +51,7 @@ rather than forum hearsay.
 
 ## Myth #1: "You CAN fix comb filtering with EQ."
 
-![myth-1.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/myth-1.png)
+![myth-1.png](https://raw.githubusercontent.com/LiveNathan/blog/refs/heads/main/assets/images/myth-1.png)
 
 ### Key Takeaways:
 
@@ -141,7 +141,7 @@ problems:
 
 ## Myth #2: "Comb filtering only affects certain frequencies"
 
-![myth-2.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/myth-2.png)
+![myth-2.png](https://raw.githubusercontent.com/LiveNathan/blog/refs/heads/main/assets/images/myth-2.png)
 
 ### Key Takeaways:
 
@@ -211,7 +211,7 @@ With no smoothing on the response, you should see comb filtering starting at 5 k
 
 ## Myth #3: "You can't hear comb filtering."
 
-![myth-3.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/myth-3.png)
+![myth-3.png](https://raw.githubusercontent.com/LiveNathan/blog/refs/heads/main/assets/images/myth-3.png)
 
 ### Key Takeaways:
 
@@ -299,7 +299,7 @@ your equipment can deliver.
 
 ## Myth #4: "Time alignment fixes all comb filtering issues"
 
-![myth-4.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/myth-4.png)
+![myth-4.png](https://raw.githubusercontent.com/LiveNathan/blog/refs/heads/main/assets/images/myth-4.png)
 
 ### Key Takeaways:
 
@@ -353,7 +353,7 @@ head. You should see comb filtering caused by the cabin reflections—an issue t
 
 ## Myth #5: "Better equipment will fix comb filtering and ensure a successful car audio upgrade"
 
-![myth-5.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/myth-5.png)
+![myth-5.png](https://raw.githubusercontent.com/LiveNathan/blog/refs/heads/main/assets/images/myth-5.png)
 
 ### Key Takeaways:
 
@@ -409,7 +409,7 @@ like low-end build-up and out-of-sync direct sound from speakers that are at dif
 
 ## Myth #6: "Add more speakers to fix comb filtering"
 
-![myth-6.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/myth-6.png)
+![myth-6.png](https://raw.githubusercontent.com/LiveNathan/blog/refs/heads/main/assets/images/myth-6.png)
 
 ### Key Takeaways:
 
@@ -468,7 +468,7 @@ spacious effect. The comb filter isn't gone—there's just more of it at random 
 
 ## Beyond Traditional Solutions: GainGuardian's Decorrelation Technology
 
-![6-myths-comb-filtering.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/6-myths-comb-filtering.png)
+![6-myths-comb-filtering.png](https://raw.githubusercontent.com/LiveNathan/blog/refs/heads/main/assets/images/6-myths-comb-filtering.png)
 
 ### Key Takeaways:
 

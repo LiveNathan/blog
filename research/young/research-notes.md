@@ -382,3 +382,431 @@ Building a supermarket checkout pricer from scratch. Pure kata/exercise format. 
 - Side-by-side layout: test on left, production code on right
 
 ---
+
+## Refactoring Test Code: Creating Test Data Builders
+
+**Video URL:** https://www.youtube.com/watch?v=OJhHdLdDE-o
+**Relevance:** VERY HIGH - Concrete refactoring technique for test setup
+**Guest:** Solo (Ted only)
+
+### Feature/App Context
+Live refactoring session extracting test data builders from existing test code. Demonstrates how to make test setup less verbose and more focused on what matters for each test. Working on member/huddle registration code.
+
+### Problem Being Solved
+- Test setup is verbose and repetitive
+- Tests create multiple repositories unintentionally
+- Hard to tell what's important vs required boilerplate
+- Constructor parameters pollute tests with irrelevant details
+
+### Test Data Builder Pattern
+
+**Goal:** Hide irrelevant setup details, expose only what matters for each test
+
+**Before:**
+```java
+MemberRepository repository = new InMemoryMemberRepository();
+Member member = MemberFactory.create(repository, "John", "john@example.com", 
+    "johngithub", List.of(Role.USER, Role.MEMBER));
+MemberService service = new MemberService(repository);
+```
+
+**After:**
+```java
+Member member = new MemberBuilder()
+    .withEmail("john@example.com")
+    .build();
+```
+
+### Refactoring Steps
+
+1. **Start with existing factory method**
+   - Identify verbose setup code
+   - Look for duplication across tests
+
+2. **Create builder class**
+   - Extract to `MemberBuilder` class
+   - Add fluent `with*()` methods
+   - Return `this` from each method
+
+3. **Add defaults for common cases**
+   - Auto-create repository if not specified
+   - Generate IDs automatically
+   - Use default roles if not specified
+
+4. **Extract method by method**
+   ```java
+   public MemberBuilder withFirstName(String firstName) {
+       this.firstName = firstName;
+       return this;
+   }
+   ```
+
+5. **Build method creates actual object**
+   ```java
+   public Member build() {
+       Member member = new Member(repository, firstName, email, githubUsername, roles);
+       return member;
+   }
+   ```
+
+6. **Share repositories across builders**
+   - Builder holds repository reference
+   - Prevents accidentally creating multiple disconnected repos
+   - Can query builder for its repository
+
+### Key Principles
+
+**1. Realistic Objects Over Mocks**
+> "I'm creating full-fledged member objects... I prefer realistic objects that are executing the real object code than than mocks"
+
+- Build real domain objects, not mocks
+- Use in-memory implementations for ports
+- Test with actual behavior, not stubbed behavior
+
+**2. Show What's Important**
+> "Now it's showing what's important which is i do need the first name because that gets specified here and i need the email because that gets specified there"
+
+- Only specify what the test cares about
+- Hide required-but-irrelevant details
+- Make tests self-documenting
+
+**3. Defaults for Common Cases**
+```java
+// Default: member has email
+new MemberBuilder().build()
+
+// Explicit: member has no email
+new MemberBuilder().withNoEmail().build()
+```
+
+**4. Shared State Management**
+- Builder can hold services (MemberService)
+- Builder can hold repositories
+- Prevents duplication and disconnected objects
+
+### Code Patterns Observed
+
+**Fluent interface:**
+```java
+Member member = new MemberBuilder()
+    .withFirstName("John")
+    .withGithubUsername("johndoe")
+    .withEmail("john@example.com")
+    .build();
+```
+
+**Default repository:**
+```java
+private final MemberRepository repository = new InMemoryMemberRepository();
+```
+
+**Optional override:**
+```java
+public MemberBuilder withRepository(MemberRepository repository) {
+    this.repository = repository;
+    return this;
+}
+```
+
+**Service creation:**
+```java
+public MemberService buildService() {
+    build(); // Creates member first
+    return new MemberService(repository);
+}
+```
+
+### Benefits Demonstrated
+
+**Before refactoring:**
+- 10+ lines of setup
+- Multiple repository instances created unintentionally
+- Unclear what's important to each test
+
+**After refactoring:**
+- 1-3 lines of setup
+- Single repository shared correctly
+- Crystal clear what each test cares about
+
+**Quote:**
+> "The typical main benefit of a builder is you don't have to specify everything if you don't care about it even though the underlying objects need the github username need identifiers um need the roles uh for this test those aren't important"
+
+### When to Use Test Data Builders
+
+1. **Complex object graphs**
+   - Many constructor parameters
+   - Objects with required dependencies
+
+2. **Repetitive setup across tests**
+   - Same patterns appear in multiple tests
+   - Only 1-2 values change between tests
+
+3. **Accidental coupling**
+   - Tests unintentionally share state
+   - Multiple instances of same collaborator
+
+### Implementation Tips
+
+**Location:**
+- In test source tree, not production
+- Green background tab in IntelliJ indicates test code
+
+**Naming:**
+- `MemberBuilder`, `HuddleBuilder`
+- Methods: `withX()`, `withNoX()`, `build()`
+
+**Scope:**
+- One builder per domain concept
+- Can compose multiple builders
+
+**Evolution:**
+- Start simple, add methods as needed
+- "Eventually I'll assemble multiple test data builders"
+
+### Testing Philosophy
+
+**Real objects preferred:**
+> "A lot of the core domain stuff are real objects and that's why they're actually a little bit painful to set up... I'm almost always creating a real huddle"
+
+**What to fake:**
+- Ports (repository interfaces)
+- External services
+- NOT domain objects
+
+**Repository pattern:**
+- Use in-memory implementations for tests
+- Test actual repository implementation separately
+- "I don't have a lot of custom queries yet... I'll write tests against the directly against the repository"
+
+### Refactoring Safety
+
+- Ran tests after each change
+- "We're relying on the tests to continue to pass to let us know that we've done the right thing"
+- Committed after all tests green
+
+### Notes
+- Live refactoring session - shows thinking process
+- Addressed chat questions throughout
+- Very practical, immediately applicable pattern
+- Solves real pain point (multiple disconnected repositories)
+- Makes tests more maintainable and readable
+
+---
+
+## Creating Ensembler - Episode 5: "Register Participant"
+
+**Video URL:** https://www.youtube.com/watch?v=_UVD4fZzOFw
+**Relevance:** HIGH - Service layer TDD, repository patterns, outside-in workflow
+**Guest:** Solo (Ted only)
+
+### Feature/App Context
+Building participant registration for mob programming huddles. Shows complete outside-in flow from controller → service → domain. Demonstrates service layer testing and repository usage patterns.
+
+### Workflow Observed - Outside-In Progression
+
+#### Starting Point
+- **Layer:** Controller (web adapter)
+- **Approach:** "Wing it" at controller to discover service needs
+- **Then:** Write tests for service layer
+
+#### Progression
+1. **Controller (no test)** → Sketch what the service should look like
+   - Trigger: "I'm going to sort of put this on pause so I can actually write some tests for it"
+   - Pattern: Create method signature, then write tests
+   - Decision: Skip controller test due to security complexity
+
+2. **Service test** → Tests `registerParticipant(huddleId, name, githubUsername)`
+   - Trigger: "Now I know what this now I know what the [service needs]"
+   - Test: Registers participant, then verifies huddle contains that participant
+   - Pattern: "This is more almost more of a sanity test than than anything really driving"
+
+3. **Domain method** → `huddle.register(participant)`
+   - Already tested from previous episode
+   - Service delegates to domain object
+
+### Testing Philosophy - Service Layer
+
+**Delegation Tests:**
+> "I don't feel a strong need to to test this but I'll I'll write a test anyway... these are mostly just delegation right"
+
+- Service tests are often delegation to domain + repository
+- Not test-driven in strict sense - more "sanity tests"
+- Real value is in domain tests, not service tests
+
+**What the service does:**
+1. Repository lookup (find huddle by ID)
+2. Call domain method (huddle.register)
+3. Repository save
+
+**Test structure:**
+```java
+@Test
+void registerParticipantAddsParticipantToHuddle() {
+    // Setup
+    long huddleId = repository.save(new Huddle(...));
+    
+    // Execute
+    huddleService.registerParticipant(huddleId, "John", "johngithub");
+    
+    // Verify
+    Huddle huddle = repository.findById(huddleId);
+    assertThat(huddle.participants()).containsExactly(new Participant("John", "johngithub"));
+}
+```
+
+### Repository Patterns
+
+**In-memory for tests:**
+- Uses `InMemoryHuddleRepository`
+- Saves and retrieves without database
+- Fast, no I/O
+
+**ID generation:**
+> "I need the ID so I need to put this directly in the repository"
+
+- Repository returns ID after save
+- Tests use real IDs from repository
+- Not mocking IDs
+
+**Repository methods:**
+```java
+repository.save(huddle);           // Persist
+repository.findById(id);           // Retrieve
+repository.findById(id).orElseThrow(); // Retrieve or fail
+```
+
+**Exception handling:**
+```java
+repository.findById(huddleId)
+    .orElseThrow(() -> new HuddleNotFoundException(huddleId));
+```
+
+### Outside-In Discovery Process
+
+**Quote:**
+> "What I'm doing is sort of this outside in development I'm trying to figure out what is the what is the web UI need from from the service and then now I can start uh testing driving"
+
+**Process:**
+1. Start at controller
+2. Sketch what service method should look like
+3. Pause controller work
+4. Drop down to service layer
+5. Write service tests
+6. Service delegates to domain
+7. Domain already tested
+
+**Why sketch first:**
+- Discover API shape
+- Understand what parameters needed
+- Then write proper tests
+
+### Prediction (or lack thereof)
+
+**Forgot to predict:**
+> "Oh I forgot to to predict see I'm out of practice"
+
+Shows even experienced TDD practitioners slip:
+- Ran test without predicting
+- Caught himself
+- Shows importance of prediction discipline
+
+### Application Initialization Pattern
+
+**@Component ApplicationRunner:**
+```java
+@Component
+class DataLoader implements ApplicationRunner {
+    @Override
+    public void run(ApplicationArguments args) {
+        huddleRepository.save(new Huddle(...));
+    }
+}
+```
+
+**Purpose:**
+- Pre-load data for manual testing
+- Runs on application startup
+- Avoids recreating test data manually
+
+### Naming Consistency
+
+**Struggled with naming:**
+- `participant.name` vs `participant.fullName`
+- `participant.githubUsername` (all lowercase) vs `participant.gitHubUsername` (camelCase)
+- Refactored several times for consistency
+
+**Quote:**
+> "Clearly I am inconsistent"
+
+Shows real refactoring - names matter, even when technically correct
+
+### DTOs for Web Layer
+
+**RegistrationForm:**
+```java
+class RegistrationForm {
+    private String name;
+    private String githubUsername;
+    
+    // Getters/setters required (not a record)
+}
+```
+
+**Why not record:**
+> "Records were fine but pushing information in seemed to not work not sure why"
+
+- Spring form binding needs mutability
+- Records are immutable
+- Use regular class for form DTOs
+
+### Domain Boundaries
+
+**User vs Participant:**
+- User = OAuth2 authenticated user (from GitHub)
+- Participant = domain concept (person in huddle)
+- One-to-many relationship
+- Kept separate to avoid coupling to auth implementation
+
+**Quote about domain boundary:**
+> "I tend not to like abstract classes for stuff that links to things that are not in my control"
+
+### Service Layer Placement
+
+**In domain package:**
+> "The service is in the domain... speaks in sort of domain terms"
+
+- Service translates from web concepts to domain
+- Controller handles conversion from HTTP to domain types
+- Service only deals with domain objects
+
+**Example:**
+```java
+// Controller does conversion
+ZonedDateTime scheduleTime = ZonedDateTime.parse(scheduleTimeString);
+
+// Service takes domain types
+huddleService.schedule(scheduleTime, name);
+```
+
+**Why:**
+> "This information is coming from the browser and so the controller is responsible for translating... this service specifically is speaking in the language of the domain"
+
+### Value Objects Discussion
+
+**Not yet created:**
+> "These are definitely things that could be replaced with value objects um and eventually I'll I'll do that"
+
+- Knows they should be value objects
+- Using primitives for now
+- Will refactor when needed
+- Pragmatic approach
+
+### Notes
+- Solo stream with chat interaction
+- Addressed questions while coding
+- Showed real struggles (naming, prediction)
+- Very pragmatic: skip tests when expedient (security), write "sanity tests" when unsure
+- Application Runner for manual testing
+- Outside-in but not strictly test-first at every layer
+
+---

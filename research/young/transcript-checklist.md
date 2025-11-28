@@ -2,10 +2,10 @@
 
 Generated: 2025-11-28 17:38:00
 Total transcripts: 84
-Processed: 4
-Remaining: 80
+Processed: 7
+Remaining: 77
 
-**Strategy Note:** Song Themes Eps 1-2 provide core workflow. Sampling other episodes for unique patterns.
+**Strategy Note:** Processed 7 high-value episodes covering: outside-in web flow, pure domain TDD, test categorization, test data builders, service/repository patterns.
 
 ## Status Key
 - [ ] Not started
@@ -61,7 +61,7 @@ Remaining: 80
 | 41 | Creating_Ensembler_-_Episode_2_Huddle_Details_(Java,_Spring,_TDD,_Hexagonal_Architecture).md | [ ] | | |
 | 42 | Creating_Ensembler_-_Episode_3_Scheduling_(Java,_Spring,_TDD,_Hexagonal_Architecture).md | [ ] | | |
 | 43 | Creating_Ensembler_-_Episode_4_Registration_(Java,_Spring,_TDD,_Hexagonal_Architecture).md | [ ] | | |
-| 44 | Creating_Ensembler_-_Episode_5_Register_Participant_(Java,_Spring,_TDD,_Hexagonal_Architecture).md | [ ] | | |
+| 44 | Creating_Ensembler_-_Episode_5_Register_Participant_(Java,_Spring,_TDD,_Hexagonal_Architecture).md | [x] | High | Service layer TDD, repository patterns, outside-in flow |
 | 45 | JitterTed's_TDD_Game_Online_-_Episode_1_Where_to_Start_(Java,_Spring,_Hexagonal_Architecture).md | [ ] | | |
 | 46 | JitterTed's_TDD_Game_Online_-_Episode_2_Planning_Rewrite_(Java,_Spring,_Hexagonal_Architecture).md | [ ] | | |
 | 47 | JitterTed's_TDD_Game_Online_-_Episode_3_Front-End_(Java,_Spring,_Hexagonal_Architecture).md | [ ] | | |
@@ -83,9 +83,9 @@ Remaining: 80
 | 63 | TDD_&_Hexagonal_Architecture_Exercise_Supermarket_Checkout_Pricer_-_Part_4.md | [ ] | | |
 | 64 | TDD_&_Hexagonal_Architecture_Exercise_Supermarket_Checkout_Pricer_-_Part_5.md | [ ] | | |
 | 65 | JitterTed's_TDD_Game_-_Walk_Through_(Recorded_live_on_Dec_13,_2021).md | [ ] | | |
-| 66 | More_Testable_Code_with_the_Hexagonal_Architecture.md | [ ] | | |
+| 66 | More_Testable_Code_with_the_Hexagonal_Architecture.md | [-] | Medium | Webinar - theory/concepts, test doubles, adapter testing |
 | 67 | Event-Sourcing_from_Scratch_in_Java.md | [ ] | | |
-| 68 | Refactoring_Test_Code_Creating_Test_Data_Builders.md | [ ] | | |
+| 68 | Refactoring_Test_Code_Creating_Test_Data_Builders.md | [x] | VERY HIGH | Test data builders, refactoring tests, realistic objects vs mocks |
 | 69 | More_Tutorial_Writing_Spring_Boot,_WebSockets,_and_HTMX.md | [ ] | | |
 | 70 | Tutorial_writing_on_HTMX,_Spring_Boot,_and_WebSockets.md | [ ] | | |
 | 71 | Writing_the_Spring_Boot,_HTMX,_WebSocket,_etc._Tutorial.md | [ ] | | |

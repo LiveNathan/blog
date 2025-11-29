@@ -39,16 +39,16 @@ When you're stuck and need to know "what's next?", use this:
 
 **Starting a new feature:**
 
-1. Write E2E test (Playwright) for endpoint accessibility → Should FAIL
-2. Create Next.js page file → E2E test PASSES. Refactor step omitted for brevity.
-3. Write E2E test for UI interaction → Should FAIL
-4. Add minimal UI component → E2E test PASSES
-5. Write E2E test for form submission → Should FAIL (no API endpoint)
-6. **Drop down:** Write API route test (Jest) → Should FAIL
+1. Write IO-Based test (Playwright) for endpoint accessibility → Should FAIL
+2. Create Next.js page file → IO test PASSES. Refactor step omitted for brevity.
+3. Write IO-Based test for UI interaction → Should FAIL
+4. Add minimal UI component → IO test PASSES
+5. Write IO-Based test for form submission → Should FAIL (no API endpoint)
+6. **Drop down:** Write API route test (Jest, IO-Based) → Should FAIL
 7. Create API route handler → API test PASSES
-8. **Drop down:** Write service/util test (Jest) → Should FAIL
+8. **Drop down:** Write service/util test (Jest, IO-Free) → Should FAIL
 9. Implement service logic → Service test PASSES
-10. **Back up:** E2E form submission test → Should PASS now
+10. **Back up:** IO-Based form submission test → Should PASS now
 11. Refactor, commit, repeat for next increment
 
 **When tests are green at current layer:** Move up one layer.
@@ -65,14 +65,21 @@ you need to know:
 
 **Testing Tools Available:**
 
-- **Playwright** - E2E tests (like Selenium, but better). This is your "MVC test" equivalent.
-- **Jest** - Unit tests for API routes, utilities, and components. This is your JUnit equivalent.
+- **Playwright** - IO-Based tests. Tests actual HTTP endpoints and full page rendering. This is your "MVC test"
+  equivalent.
+- **Jest** - Both IO-Free and IO-Based tests. This is your JUnit equivalent.
 - **React Testing Library** - Component testing (optional, we'll mostly use Playwright for UI)
 
 **Test Categorization (Ted's IO-Free vs IO-Based):**
 
-- **IO-Free tests (Jest):** Business logic, transformations, pure functions
-- **IO-Based tests (Playwright):** Full HTTP requests, database calls, file uploads
+> "Note that I have not used the term unit and integration test. Those terms are terrible. Every time somebody says
+> unit, I say what do you mean what is a unit? Right? And you can get into a debate for that gets you nowhere. Not
+> important. What's important is it use IO or not. To me, that's all that matters." - Ted M. Young
+
+- **IO-Free tests (Jest):** Pure business logic, transformations, calculations. No framework, no database, no HTTP, no
+  file system. These run in microseconds and have **no mocks or test doubles**.
+- **IO-Based tests (Jest + Playwright):** Tests that touch IO - HTTP requests, database calls, file uploads, the Next.js
+  framework itself. These are slower but necessary for adapter layers.
 
 ### Setting Up Your Test Environment
 
@@ -138,13 +145,13 @@ export default defineConfig({
 
 ### Key Differences from Java/Spring
 
-| Java/Spring Pattern         | Next.js Equivalent             | Notes                                     |
-|-----------------------------|--------------------------------|-------------------------------------------|
-| `@WebMvcTest` with MockMvc  | Playwright E2E test            | Tests actual HTTP endpoint                |
-| Direct controller test      | Jest test of API route handler | Import and call function directly         |
-| Domain service test         | Jest test of utility function  | Pure functions in `utils/` or `services/` |
-| `@Tag("io")` for slow tests | Separate test commands         | `npx playwright test` vs `pnpm test`      |
-| TestContainers              | Test mode configuration        | Use in-memory alternatives or mock APIs   |
+| Java/Spring Pattern         | Next.js Equivalent             | Test Type | Notes                                     |
+|-----------------------------|--------------------------------|-----------|-------------------------------------------|
+| `@WebMvcTest` with MockMvc  | Playwright test                | IO-Based  | Tests actual HTTP endpoint                |
+| Direct controller test      | Jest test of API route handler | IO-Based  | Import and call function directly         |
+| Domain service test         | Jest test of utility function  | IO-Free   | Pure functions in `utils/` or `services/` |
+| `@Tag("io")` for slow tests | Separate test commands         | -         | `npx playwright test` vs `pnpm test`      |
+| TestContainers              | Test mode configuration        | IO-Based  | Use in-memory alternatives or mock APIs   |
 
 ### Questions Answered
 
@@ -164,6 +171,12 @@ A: Playwright can log in once and reuse session. Jest tests can mock `getSession
 **Q: Can we do outside-in TDD?**
 A: Absolutely. Start with Playwright (edge), drop to Jest (internals), work your way back up.
 
+**Q: Do IO-Free tests use mocks?**
+A: No. IO-Free tests have **no mocks, no test doubles, no stubbing**. They test pure functions with real inputs and real
+outputs. If you need a mock, it's an IO-Based test. From Ted's transcript: "you shouldn't see test doubles, mocks,
+anything like that here. Not at all. It don't exist at this level because there's no need. You just instantiate an
+object."
+
 ---
 
 ## The Outside-In Workflow
@@ -172,7 +185,7 @@ Ted's workflow adapted for Next.js:
 
 ```
 ┌─────────────────────────────────────────────┐
-│  Layer 1: E2E (Playwright)                  │
+│  Layer 1: Playwright (IO-Based)             │
 │  • Page accessibility                       │
 │  • UI rendering                             │
 │  • Form submission                          │
@@ -181,11 +194,12 @@ Ted's workflow adapted for Next.js:
 │  Test: tests/e2e/csv-import.spec.ts        │
 │  Tool: Playwright                           │
 │  Speed: Slow (seconds)                      │
+│  IO: HTTP, server, framework, database      │
 │  When: Start here, return here             │
 └─────────────────────────────────────────────┘
                     ↓ (test fails, need API)
 ┌─────────────────────────────────────────────┐
-│  Layer 2: API Routes (Jest)                 │
+│  Layer 2: API Routes (Jest, IO-Based)       │
 │  • Request parsing                          │
 │  • Validation                               │
 │  • Response formatting                      │
@@ -194,11 +208,12 @@ Ted's workflow adapted for Next.js:
 │  Test: pages/api/import/__tests__/         │
 │  Tool: Jest                                 │
 │  Speed: Fast (milliseconds)                 │
-│  When: E2E test needs backend               │
+│  IO: Next.js framework, possibly database   │
+│  When: Playwright test needs backend        │
 └─────────────────────────────────────────────┘
                     ↓ (test fails, need logic)
 ┌─────────────────────────────────────────────┐
-│  Layer 3: Services/Utils (Jest)             │
+│  Layer 3: Services/Utils (Jest, IO-Free)    │
 │  • Business logic                           │
 │  • Transformations                          │
 │  • Pure functions                           │
@@ -207,17 +222,19 @@ Ted's workflow adapted for Next.js:
 │  Test: src/utils/csvImport/__tests__/      │
 │  Tool: Jest                                 │
 │  Speed: Very fast (microseconds)            │
+│  IO: NONE - no mocks, no test doubles      │
 │  When: API test needs logic                 │
 └─────────────────────────────────────────────┘
 ```
 
 **Test Organization:** This guide uses **co-located tests** with `__tests__` folders next to the code being tested. This
-keeps tests close to implementation and makes them easier to find. For E2E tests, use a dedicated `tests/e2e/` directory
-since they test across multiple files.
+keeps tests close to implementation and makes them easier to find. For IO-Based Playwright tests, use a dedicated
+`tests/` directory
+since they test across multiple files and layers.
 
 **The Flow:**
 
-1. Start at the edge (Playwright E2E test)
+1. Start at the edge (Playwright IO-Based test)
 2. Test fails because feature doesn't exist
 3. Add minimal code to make it pass
 4. When you need logic that doesn't exist, drop down a layer
@@ -226,6 +243,17 @@ since they test across multiple files.
 
 > "What I'm doing is sort of this outside in development. I'm trying to figure out what the web UI needs from the
 > service and then I can start test driving." - Ted M. Young
+
+**Important Distinction: Automated vs Manual Testing**
+
+Ted's approach uses **automated tests for slices** of the application (IO-Free domain logic, IO-Based adapters) but
+often relies on **manual testing for full end-to-end flows**. From his transcripts: "I don't find end-to-end tests being
+all that useful to automate... manually running stuff that's a test it's just not an automated test."
+
+In this guide, we're using Playwright to automate IO-Based tests at the edge, which is a pragmatic adaptation for
+Next.js development. These aren't true "end-to-end" tests in Ted's sense (spinning up the entire production stack), but
+rather **focused IO-Based tests** of specific user flows. You'll still want to manually test the complete application
+flow in a browser periodically.
 
 ---
 
@@ -260,7 +288,7 @@ DEF456,10,Fragile
 
 ## Step-by-Step
 
-### Phase 1: Page Accessibility (E2E Layer)
+### Phase 1: Page Accessibility (IO-Based Layer)
 
 **Goal:** Confirm authenticated users can reach the page.
 
@@ -371,13 +399,13 @@ There is an important refactor step that happens here as part of the TDD loop. I
 
 ---
 
-### Phase 2: File Upload UI (E2E Layer)
+### Phase 2: File Upload UI (IO-Based Layer)
 
 **Goal:** User can select a CSV file and see it in the UI.
 
 **What Ted Would Do:**
-Continue at E2E layer testing the UI interaction. In Java/Spring with Thymeleaf, he'd use MockMvc to check model
-attributes. In React/Next.js, we test the rendered DOM.
+Continue at IO-Based layer testing the UI interaction. In Java/Spring with Thymeleaf, he'd use MockMvc to check model
+attributes. In React/Next.js, we test the rendered DOM with Playwright.
 
 **Test:**
 
@@ -544,15 +572,16 @@ git commit -m "Add CSV file upload with validation"
 
 ---
 
-### Phase 3: Form Submission (E2E Layer → API Layer)
+### Phase 3: Form Submission (IO-Based Layer → API Layer)
 
 **Goal:** User can submit the form with CSV file and order number.
 
 **What Ted Would Do:**
-Write E2E test for POST submission. Test will fail because API endpoint doesn't exist. This is the signal to **drop down
+Write IO-Based test for POST submission. Test will fail because API endpoint doesn't exist. This is the signal to **drop
+down
 to API layer**.
 
-**E2E Test:**
+**IO-Based Test (Playwright):**
 
 ```typescript
 // tests/e2e/csv-import/form-submission.spec.ts
@@ -606,11 +635,11 @@ npx playwright test tests/e2e/csv-import/form-submission.spec.ts
 
 ---
 
-### Phase 4: API Route (Jest Layer)
+### Phase 4: API Route (IO-Based, Jest)
 
 **Goal:** API endpoint accepts CSV file and order number, returns success/error.
 
-**What Ted Would Do (Direct Controller Test):**
+**What Ted Would Do (Direct Controller Test, IO-Based):**
 
 ```java
 class ImportControllerTest {
@@ -635,7 +664,7 @@ import { createMocks } from 'node-mocks-http';
 import handler from '../process';
 import formidable from 'formidable';
 
-// Mock formidable for unit tests
+// Mock formidable for this IO-Based test
 jest.mock('formidable');
 
 describe('POST /api/import/process', () => {
@@ -787,11 +816,11 @@ pnpm test pages/api/import/__tests__/process.test.ts
 
 ---
 
-### Phase 5: Service/Util Layer (Jest Layer)
+### Phase 5: Service/Util Layer (IO-Free, Jest)
 
 **Goal:** Parse CSV, validate data, match barcodes to inventory.
 
-**What Ted Would Do (Domain/Service Tests):**
+**What Ted Would Do (IO-Free Domain/Service Tests):**
 
 ```java
 class ImportServiceTest {
@@ -862,6 +891,9 @@ pnpm test src/utils/csvImport/__tests__/parseCSV.test.ts
 **Expected result:** ❌ FAIL (function doesn't exist)
 
 **Make it pass:**
+
+> **Note:** This is an **IO-Free test**. It takes a string as input and returns parsed data. No file system access, no
+> database, no HTTP. Pure transformation logic. These tests run in microseconds and require no mocks or test doubles.
 
 ```typescript
 // src/utils/csvImport/parseCSV.ts
@@ -1033,7 +1065,7 @@ pnpm test pages/api/import/__tests__/process.test.ts
 
 ---
 
-### Phase 7: Complete the E2E Flow (Back Up to E2E Layer)
+### Phase 7: Complete the Flow (Back Up to IO-Based Layer)
 
 **Goal:** Wire up the frontend to call the API.
 
@@ -1154,7 +1186,7 @@ const CSVUpload = () => {
 export default CSVUpload;
 ```
 
-**Run E2E tests:**
+**Run IO-Based tests:**
 
 ```bash
 npx playwright test tests/e2e/csv-import/form-submission.spec.ts
@@ -1165,8 +1197,8 @@ npx playwright test tests/e2e/csv-import/form-submission.spec.ts
 **Run all tests:**
 
 ```bash
-npx playwright test tests/e2e/csv-import/
-pnpm test
+npx playwright test tests/e2e/csv-import/  # All IO-Based Playwright tests
+pnpm test                                    # All Jest tests (IO-Free + IO-Based)
 ```
 
 **Expected result:** All green ✅
@@ -1184,12 +1216,12 @@ git commit -m "Complete CSV import form submission flow"
 
 **Now repeat the cycle for the next feature increment:**
 
-1. **E2E test:** "Matched barcodes create line items in order"
+1. **IO-Based test (Playwright):** "Matched barcodes create line items in order"
 2. **Fails** → Need barcode matching logic
-3. **Drop to service layer:** Write test for barcode lookup
-4. **Implement** barcode lookup util
-5. **Back to API layer:** Wire it up
-6. **Back to E2E:** Test passes
+3. **Drop to IO-Free layer (Jest):** Write test for barcode lookup
+4. **Implement** barcode lookup util (IO-Free)
+5. **Back to API layer (Jest, IO-Based):** Wire it up
+6. **Back to Playwright (IO-Based):** Test passes
 
 This is the rhythm. **Red → Green → Refactor.** Outside-in. Let the tests pull the design into existence.
 
@@ -1206,7 +1238,7 @@ This is the rhythm. **Red → Green → Refactor.** Outside-in. Let the tests pu
 | `@PostMapping`                            | `if (req.method === 'POST')`            | Same pattern                          |
 | `@Service`                                | `src/utils/` or `src/services/`         | No annotation, just export functions  |
 | Domain objects in `domain/` package       | TypeScript interfaces + pure functions  | Keep business logic framework-free    |
-| `@WebMvcTest`                             | Playwright E2E test                     | Tests full HTTP request               |
+| `@WebMvcTest`                             | Playwright (IO-Based test)              | Tests full HTTP request               |
 | Direct controller test (new Controller()) | Jest test (`node-mocks-http`)           | Import and call handler directly      |
 | Service test (new Service())              | Jest test of util function              | Just call the function                |
 | `@Tag("io")` for slow tests               | Separate test commands                  | `playwright test` vs `pnpm test`      |
@@ -1216,13 +1248,16 @@ This is the rhythm. **Red → Green → Refactor.** Outside-in. Let the tests pu
 
 ### Testing Tool Mapping
 
-| Ted's Test Type            | Java Tool                        | Next.js Tool                     | When to Use                     |
-|----------------------------|----------------------------------|----------------------------------|---------------------------------|
-| MVC Test (IO-based)        | MockMvc with `@WebMvcTest`       | Playwright E2E                   | Test full HTTP request/response |
-| Direct Controller Test     | JUnit, instantiate controller    | Jest with `node-mocks-http`      | Test handler logic without HTTP |
-| Service Test (IO-free)     | JUnit, instantiate service       | Jest                             | Test pure business logic        |
-| Domain Test (IO-free)      | JUnit                            | Jest                             | Test domain rules/calculations  |
-| Repository Test (IO-based) | `@DataJpaTest` or TestContainers | Jest with test database or mocks | Test actual database queries    |
+| Ted's Test Type        | Java Tool                        | Next.js Tool                     | IO Type  | When to Use                     |
+|------------------------|----------------------------------|----------------------------------|----------|---------------------------------|
+| MVC Test               | MockMvc with `@WebMvcTest`       | Playwright                       | IO-Based | Test full HTTP request/response |
+| Direct Controller Test | JUnit, instantiate controller    | Jest with `node-mocks-http`      | IO-Based | Test handler logic without HTTP |
+| Service Test           | JUnit, instantiate service       | Jest                             | IO-Free  | Test pure business logic        |
+| Domain Test            | JUnit                            | Jest                             | IO-Free  | Test domain rules/calculations  |
+| Repository Test        | `@DataJpaTest` or TestContainers | Jest with test database or mocks | IO-Based | Test actual database queries    |
+
+**Key Point:** Ted's taxonomy doesn't use "unit" or "integration" - only **IO-Free** (no external dependencies, no mocks
+needed) and **IO-Based** (touches framework, database, HTTP, etc.).
 
 ### Test Data Builders in TypeScript
 
@@ -1294,6 +1329,29 @@ src/
 
 > "Adding domain to me does these magical things one is it all of a sudden says no code here can reference anything
 > hardware io outside world related" - Ted M. Young
+
+### About Mocking and Test Doubles
+
+**IO-Free tests:** No mocks. No test doubles. No stubbing. Just pure functions.
+
+From Ted's transcript:
+> "When you're testing out the application layer, you still don't want to use IO yet. So, you plug in a mock a test
+> double and so now you can test at the app layer tests are running fast but now you need to substitute now you need to
+> mention this idea of I've got this thing that I want to simulate but it's not really there."
+
+**The distinction:**
+
+- **Domain/Service layer (IO-Free):** Just instantiate objects. No framework, no IO, no mocks needed.
+- **Application layer (IO-Based):** This is where you might use test doubles to simulate external dependencies (
+  databases, APIs).
+
+In Next.js terms:
+
+- **IO-Free (utils/services):** `parseCSV(csvString)` - just pass in a string, check the output
+- **IO-Based (API routes):** May need to mock database calls or external APIs
+
+Ted writes "98% of my tests don't use any kind of mocking framework because I don't need to." The architecture itself -
+separating IO from logic - eliminates the need for most mocking.
 
 ---
 
@@ -1425,8 +1483,8 @@ git stash pop  # Restore work if you want it
 You can absolutely do TDD in Next.js. The principles Ted teaches—prediction, outside-in, IO-Free vs IO-Based—are
 universal. The tools are different, but the workflow translates.
 
-**Start small.** One E2E test. One API test. One util test. Build the muscle memory. The TypeScript syntax will become
-familiar as you write more tests.
+**Start small.** One IO-Based Playwright test. One IO-Based API route test. One IO-Free util test. Build the muscle
+memory. The TypeScript syntax will become familiar as you write more tests.
 
 **Trust the process.** When a test fails and you're not sure why, that's *information*. When you can't make a test pass
 without dropping down a layer, that's the *design emerging*.

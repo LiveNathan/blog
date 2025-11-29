@@ -643,8 +643,8 @@ Building participant registration for mob programming huddles. Shows complete ou
 @Test
 void registerParticipantAddsParticipantToHuddle() {
     // Setup
-    long huddleId = repository.save(new Huddle(...));
-    
+    long huddleId = repository.save(new Huddle(...))
+
     // Execute
     huddleService.registerParticipant(huddleId, "John", "johngithub");
     
@@ -718,7 +718,7 @@ Shows even experienced TDD practitioners slip:
 class DataLoader implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
-        huddleRepository.save(new Huddle(...));
+        huddleRepository.save(new Huddle(...))
     }
 }
 ```
@@ -808,5 +808,363 @@ huddleService.schedule(scheduleTime, name);
 - Very pragmatic: skip tests when expedient (security), write "sanity tests" when unsure
 - Application Runner for manual testing
 - Outside-in but not strictly test-first at every layer
+
+---
+
+## Testable Architecture Keep 'em Separated (Conference Talk)
+
+**Video URL:** Not provided (transcript only)
+**Relevance:** HIGH - Architectural philosophy and principles, not live coding
+**Format:** Conference presentation
+
+### Feature/App Context
+
+Not a coding session - this is Ted's conference talk explaining the philosophy behind hexagonal architecture and
+testable architecture. Demonstrates refactoring untestable code into testable code with code examples but not live TDD.
+
+### Presentation Context
+
+Condensed version of Ted's 4-day course on testable architecture. Focuses on WHY we separate concerns and HOW to
+organize code for testability. Uses a sales tax calculator example to show refactoring from mixed concerns to separated
+concerns.
+
+### Key Architectural Principles
+
+#### Definition of I/O
+
+> "IO is anything that runs outside of the current process you're in... anything that's outside the JVM is IO because in
+> order to communicate with that, you have to do IO."
+
+**Includes:**
+
+- Hardware (system clock, random numbers)
+- Local files
+- Remote services over HTTP
+- Databases (even in-memory ones like H2, SQLite)
+- Frameworks (Spring, Quarkus, etc.)
+
+**Why this matters:**
+
+- I/O is slow and unpredictable
+- I/O makes testing difficult
+- Business doesn't care about I/O details (CSV vs database)
+- Business DOES care about logic/rules
+
+#### Separation Principle
+
+> "SCOINT - Separating Concerns of IO and Non-IO for Testability"
+
+**Goal:** Split code into two pieces:
+
+1. **I/O stuff** - system.in, system.out, HTTP, databases, frameworks
+2. **Business logic** - rules, calculations, domain concerns
+
+**Benefits:**
+
+- Easy to test business logic directly
+- Reusable across different I/O mechanisms (CLI → web → events)
+- Can change I/O without touching logic
+- Fast feedback loops
+
+### Hexagonal Architecture Philosophy
+
+#### Coburn's Original Goals
+
+> "Allow an application to be equally driven by users, programs, and automated tests"
+
+**Key insight:**
+
+- User interactions and test interactions should use SAME code
+- No if-statements for "if test, do this; if user, do that"
+- Tests are first-class citizens
+
+#### Inside vs Outside
+
+- **Inside (hexagon):** Important business domain logic, no connection to I/O
+- **Outside:** All the "other crap" to make it work and integrate
+
+#### Inbound vs Outbound (not Driving/Driven)
+
+> "Driving and driven is the original terminology... I don't like it because it's very confusing... I prefer inbound and
+> outbound"
+
+- **Inbound (left side):** Triggers, inputs, requests
+- **Outbound (right side):** Outputs, events, side effects
+
+#### Three Layers (Ted's modification)
+
+**1. Domain Layer:**
+> "Domain has no idea that the world exists... thinking about things like tickets and concerts"
+
+- Pure platonic ideal
+- No knowledge of I/O
+- No concept that external systems exist
+- Business terminology and rules only
+
+**2. Application Layer:**
+> "Application layer says, 'Oh, well, there's some things out there like persistence and I have to notify things'"
+
+- Coordinates domain objects
+- Has CONCEPT of I/O but no concrete references
+- Knows "notification" exists, not SMTP vs POP vs text
+- Orchestration logic
+
+**3. Adapters:**
+
+- Plug into the hexagon (ports)
+- Transform external data to domain types
+- Validate and translate
+- Examples: UI, message queues, REST controllers
+
+**Dependencies must flow inward:**
+> "The dependencies must flow inward... domain cannot know IO, not allowed, no can do"
+
+### Testing Approach
+
+#### Test Categories (not Unit/Integration)
+
+> "Those terms are terrible. Every time somebody says unit, I say what do you mean what is a unit?... What's important
+> is it use IO or not."
+
+**I/O Free Tests:**
+
+- Against domain layer
+- No mocks, no test doubles needed
+- Just instantiate objects
+- Fast, comprehensive
+- Most of your tests
+
+**I/O-Based Tests:**
+
+- Against adapters
+- Use test doubles for ports
+- Check: did it call the right thing at the right time?
+- Fewer of these, just enough to verify integration
+
+**Application Layer Tests:**
+
+- Plug in test doubles for ports
+- Test orchestration logic
+- Still I/O-free (using in-memory implementations)
+
+### Code Example - Sales Tax Calculator
+
+#### Before (Mixed Concerns):
+
+```java
+// Display menu (I/O)
+Scanner scanner = new Scanner(System.in);
+int choice = scanner.nextInt();
+
+// Business logic mixed in
+switch(choice){
+        case 1->amount *0.08;
+        case 2->amount *0.10;
+        case 3->amount *0.05;
+        }
+
+// Display result (I/O)
+        System.out.
+
+println(receipt);
+```
+
+**Problem:** Testing requires hijacking System.out/System.in - "like trying to turn on a light switch with a 10-ft pole"
+
+#### After (Separated):
+
+**I/O Code:**
+
+```java
+// Handle terminal interaction
+int choice = getChoiceFromUser();
+String receipt = computeReceipt(choice);
+
+displayReceipt(receipt);
+```
+
+**Business Logic:**
+
+```java
+String computeReceipt(int choice) {
+    // Pure calculation, easy to test
+    return switch (choice) {
+        case 1 -> calculateWithTax(0.08);
+        // ...
+    };
+}
+```
+
+**Test becomes trivial:**
+
+```java
+
+@Test
+void computeReceiptForChoiceOne() {
+    String receipt = computeReceipt(1);
+    assertThat(receipt).contains("...");
+}
+```
+
+### Reusability Benefit
+
+**CLI → Web API:**
+
+```java
+
+@PostMapping("/receipt")
+String createReceipt(@RequestParam("choice") String choiceStr) {
+    int choice = Integer.parseInt(choiceStr);
+    return computeReceipt(choice);  // Same logic!
+}
+```
+
+**Web → Kafka:**
+> "If you separated it out, easy peasy"
+
+Didn't have to change domain logic, just add new adapter
+
+### Example Application - Ensembler
+
+Ted's mob programming ensemble management app (open source)
+
+**Ports/Adapters:**
+
+- SendGrid emailer (notification port)
+- Zoom scheduler (scheduling port)
+
+**Test Types Shown:**
+
+**Domain tests:**
+
+```java
+// No mocks, just objects
+Ensemble ensemble = new Ensemble();
+ensemble.
+
+addMember(member);
+
+assertThat(ensemble.members()).
+
+contains(member);
+```
+
+**Application layer tests:**
+
+```java
+// Plug in test double
+EnsembleService service = new EnsembleService(testRepository);
+service.
+
+cancelMeeting(meetingId);
+
+verify(testRepository).
+
+delete(meetingId);  // Or use spy pattern
+```
+
+**Adapter tests:**
+
+```java
+// Did it send to Zoom correctly?
+ZoomAdapter adapter = new ZoomAdapter(testZoomApi);
+adapter.
+
+schedule(meeting);
+
+verify(testZoomApi).
+
+createMeeting(/* ... */);
+```
+
+### Testing Philosophy Summary
+
+**Fast feedback is critical:**
+> "If I run a test and it takes less than a second, I'm going to be running that pretty frequently... the second I make
+> a mistake, I will find out"
+
+**Separation makes tests easier:**
+> "If you find code that has lots of mixture of these concerns and it's hard to test without doing lots of mocking...
+> refactor"
+
+**I hate mocking frameworks:**
+> "I'm on the record as saying I hate them. They have their use but I hate them because they lead people to do things
+> like not separate concerns"
+
+**Testing in isolation:**
+> "I can test that domain logic in isolation. And I can also isolate other parts"
+
+### Related Architecture Patterns
+
+All these are "the same thing except for the details":
+
+- Clean Architecture (Uncle Bob)
+- **Hexagonal Architecture** (Alistair Cockburn) - Ted's favorite
+- Onion Architecture
+- Imperative Shell, Functional Core
+- Boundary Controller Entity (BCE)
+- A-Frame (James Shore)
+
+**Common goal:** Important business/domain logic separated from I/O
+
+### Trade-offs
+
+**Increase testability → Lose simplicity:**
+> "It's not all in one big file. I'm okay with that"
+
+**Continuum:**
+
+- Some teams stuff more into domain
+- Some teams break into more pieces
+- It's all trade-offs
+- Pick what works for your team
+
+**Ted's position:**
+> "If you want your code to be easier to test, keep them separated"
+
+### Key Terminology
+
+- **Hexagon:** The boundary of pure domain + application layers
+- **Ports:** Interfaces the hexagon exposes
+- **Adapters:** Implementations that plug into ports
+- **I/O:** Anything outside the current process (hardware, files, network, frameworks)
+- **Domain:** Business logic with no knowledge of outside world
+- **Application Layer:** Coordination logic, knows I/O exists conceptually
+- **Inbound/Outbound:** Triggers vs side effects (better than driving/driven)
+
+### What This Transcript DOESN'T Cover
+
+**Not workflow-focused:**
+
+- No step-by-step TDD process
+- No "start here, then drop down to service layer"
+- No red-green-refactor cycle demonstration
+- No live coding or test-first discipline
+
+**This is philosophy/principles:**
+
+- WHY separate concerns
+- WHAT hexagonal architecture is
+- HOW to think about I/O vs domain
+- Test categorization (I/O-free vs I/O-based)
+
+### Workflow Implications
+
+While not a workflow transcript, this provides the FOUNDATION for Ted's workflow:
+
+1. **Domain-first when possible** - Pure logic, no I/O
+2. **Application layer for coordination** - Knows about ports
+3. **Adapters last** - Thin translation layers
+4. **Test at all layers** - Mostly I/O-free (domain), some I/O-based (adapters)
+5. **Dependencies inward** - Domain can't reference I/O
+
+### Notes
+
+- Not a coding session - conference presentation
+- Provides philosophical foundation for his workflow
+- Explains WHY he structures code the way he does in other videos
+- Good reference for architecture principles
+- Example code is simplified for presentation (not real TDD session)
+- Open source Ensembler app available for reference
 
 ---

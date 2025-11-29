@@ -65,8 +65,8 @@ you need to know:
 
 **Testing Tools Available:**
 
-- **Playwright** - IO-Based tests. Tests actual HTTP endpoints and full page rendering. This is your "MVC test"
-  equivalent.
+- **Playwright** - IO-Based tests. Spins up the entire Next.js application and tests via real browser automation. This
+  is your `@SpringBootTest` equivalent (full application context).
 - **Jest** - Both IO-Free and IO-Based tests. This is your JUnit equivalent.
 - **React Testing Library** - Component testing (optional, we'll mostly use Playwright for UI)
 
@@ -98,15 +98,31 @@ In Next.js, you can do this with different run scripts.
 }
 ```
 
+**Script explanations:**
+
+- `test` - Run all Jest tests (IO-Free + IO-Based Jest tests)
+- `test:watch` - Run Jest in watch mode (auto-reruns tests on file changes for continuous TDD feedback)
+- `test:e2e` - Run Playwright tests headlessly
+- `test:e2e:ui` - Run Playwright in UI mode (launches graphical test explorer interface)
+- `test:all` - Run everything (Jest + Playwright)
+
+**Test running philosophy** (following Ted's approach):
+
+- Run IO-Free tests (Jest unit tests) **constantly** - they're microseconds fast
+- Run IO-Based tests (Jest API tests + Playwright) **periodically** - they're slower but necessary
+- The separation lets you get rapid feedback on business logic while still having confidence in integration points
+
 ### Key Differences from Java/Spring
 
-| Java/Spring Pattern         | Next.js Equivalent             | Test Type | Notes                                     |
-|-----------------------------|--------------------------------|-----------|-------------------------------------------|
-| `@WebMvcTest` with MockMvc  | Playwright test                | IO-Based  | Tests actual HTTP endpoint                |
-| Direct controller test      | Jest test of API route handler | IO-Based  | Import and call function directly         |
-| Domain service test         | Jest test of utility function  | IO-Free   | Pure functions in `utils/` or `services/` |
-| `@Tag("io")` for slow tests | Separate test commands         | -         | `npx playwright test` vs `pnpm test`      |
-| TestContainers              | Test mode configuration        | IO-Based  | Use in-memory alternatives or mock APIs   |
+| Java/Spring Pattern         | Next.js Equivalent                   | Test Type | Notes                                          |
+|-----------------------------|--------------------------------------|-----------|------------------------------------------------|
+| `@SpringBootTest`           | Playwright test                      | IO-Based  | Tests full app via real HTTP + browser         |
+| `@WebMvcTest` with MockMvc  | Jest test of API route handler       | IO-Based  | Import and call handler directly (no HTTP)     |
+| Direct controller test      | Jest test of API route handler       | IO-Based  | Same as above - directly invoke the function   |
+| Domain service test         | Jest test of utility function        | IO-Free   | Pure functions in `utils/` or `services/`      |
+| `@Tag("io")` for slow tests | Separate test commands               | -         | `npx playwright test` vs `pnpm test`           |
+| TestContainers              | TestContainers (works with Next.js!) | IO-Based  | See [varianter/testcontainers-nextjs-template] |
+| WireMock                    | msw (Mock Service Worker) or nock    | IO-Based  | msw preferred for modern JS HTTP mocking       |
 
 ### Questions Answered
 
@@ -114,8 +130,13 @@ In Next.js, you can do this with different run scripts.
 A: Yes. Files in `pages/api/` become HTTP endpoints. `pages/api/import/process.ts` → `POST /api/import/process`
 
 **Q: Is there a domain layer?**
-A: Not by default, but you create one. Put pure business logic in `src/utils/` or `src/services/`. Keep it
-framework-free.
+A: Not by default, but you should create one. Put pure business logic in `src/domain/` for true hexagonal architecture.
+Keep it framework-free and IO-free. The typical Next.js pattern of mixing everything in `utils/` or `services/` defeats
+the purpose of separation. Consider:
+
+- `src/domain/` - Pure business logic (IO-Free, no framework dependencies)
+- `src/application/` - Use case coordination (knows about domain, references IO via interfaces)
+- `src/adapters/` - Framework adapters (API routes, database access, external services)
 
 **Q: Do we use DTOs or domain objects?**
 A: Both. TypeScript interfaces for API contracts (DTOs), separate objects for business logic.
@@ -198,10 +219,11 @@ Ted's approach uses automated tests for slices of the application (IO-Free domai
 often relies on manual testing for full end-to-end flows. He says, "I don't find end-to-end tests being
 all that useful to automate. Manually running stuff. That's a test. It's just not an automated test."
 
-In this guide, we're using Playwright to automate IO-Based tests at the edge, which is a pragmatic adaptation for
-Next.js development. These aren't true "end-to-end" tests in Ted's sense (spinning up the entire production stack), but
-rather focused IO-Based tests of specific user flows. You'll still want to manually test the complete application
-flow in a browser periodically.
+In this guide, we're using Playwright to automate tests at the application boundary. Playwright **does** spin up the
+entire Next.js application (development server) and test through a real browser - this is a true end-to-end test.
+However, we're using it strategically for specific user flows rather than trying to test every possible path through
+the UI. You'll still want to manually test the complete application in a production-like environment periodically, as
+Playwright tests run against the dev server, not your actual production stack.
 
 ---
 
@@ -536,11 +558,17 @@ Commit. Refactor. Commit.
 
 ### Phase 3: Form Submission (IO-Based Layer → API Layer)
 
-**Goal:** User can submit the form with CSV file and order number.
+**Goal:** User can submit the form with CSV file and order number, then see results.
 
 **What Ted Would Do:**
 Write IO-Based test for POST submission. Test will fail because the API endpoint doesn't exist. This is the signal to
 drop down to the API layer.
+
+**Note on POST-Redirect-GET Pattern:**
+In production applications, form submissions typically follow the Post-Redirect-Get (PRG) pattern to prevent duplicate
+submissions on browser refresh. The flow would be: POST form data → API processes → redirect to results page → GET
+displays results. For this example, we're using a simpler client-side state update pattern to focus on the TDD
+workflow, but you should consider PRG for real applications.
 
 **IO-Based Test (Playwright):**
 
@@ -626,6 +654,10 @@ import handler from '../process';
 import formidable from 'formidable';
 
 // Mock formidable for this IO-Based test
+// Note: This is an IO-Based test at the API route layer (adapter layer in hexagonal terms)
+// We're testing the request/response handling logic, not file system IO
+// Using jest.mock() here is acceptable per Ted's guidance - we're simulating the file upload
+// without actually writing to disk. The CSV parsing logic will be tested separately as IO-Free.
 jest.mock('formidable');
 
 describe('POST /api/import/process', () => {
@@ -756,6 +788,10 @@ export default async function handler(
 
 This uses [`formidable`](https://github.com/node-formidable/formidable) for multipart/form-data handling.
 
+**What is formidable?** It's a Node.js library for parsing form data, especially file uploads. Next.js doesn't handle
+multipart form data by default, so you need a library like formidable. It reads uploaded files from the HTTP request
+and gives you access to both form fields and file metadata (path, mimetype, etc.).
+
 **Run the test:**
 
 ```bash
@@ -810,6 +846,9 @@ XYZ789,2,`;
             quantity: 5,
             notes: 'Handle with care',
         });
+        // Note: Jest's expect() is functional but not as fluent as AssertJ
+        // For better assertions, consider: jest-extended, or chai with expect style
+        // Example with jest-extended: expect(result.items).toBeArrayOfSize(2)
     });
 
     it('returns error for missing required columns', () => {
@@ -848,18 +887,19 @@ pnpm test src/utils/csvImport/__tests__/parseCSV.test.ts
 // src/utils/csvImport/parseCSV.ts
 import {parse} from 'csv-parse/sync';
 
-// Domain entity - uses interface for extensibility
-export interface LineItem {
+// Domain entity - keep it simple; use type unless you need extension
+// In Java, this would be a record - immutable, structural, no behavior
+export type LineItem = {
     barcode: string;
     quantity: number;
     notes: string;
 }
 
-// Result DTO - uses type for data transfer
+// Result DTO - discriminated union pattern for success/error cases
 export type ParseResult = {
     success: boolean;
-    items?: LineItem[];
-    error?: string;
+    items?: LineItem[];  // Optional property (may be undefined) - indicated by ?
+    error?: string;      // Optional property (may be undefined)
 };
 
 export function parseCSV(csvData: string): ParseResult {
@@ -999,11 +1039,27 @@ pnpm test pages/api/import/__tests__/process.test.ts
 
 **Expected result:** ✅ PASS (should still pass, now with real parsing)
 
+**TDD Check:** The tests should still pass because we're replacing the hardcoded logic with real parsing that produces
+the same behavior. The test mocks were simulating valid CSV data, so the real parser should handle it the same way. If
+the tests FAIL here, it means our parser has a bug - go back and fix the parser until the API tests pass again. This is
+"coming back up" from the lower layer after implementing the logic there.
+
 ---
 
 ### Phase 7: Complete the Flow (Back Up to IO-Based Layer)
 
 **Goal:** Wire up the frontend to call the API.
+
+**Where we are in the TDD cycle:**
+We've been working our way down and back up:
+
+1. Phase 3: Wrote Playwright test for form submission - FAILED (no API)
+2. Phase 4: Dropped to API layer, wrote tests - FAILED (no handler)
+3. Phase 4: Created API handler with hardcoded response - API tests PASSED
+4. Phase 5: Dropped to service layer, wrote CSV parser tests - FAILED (no parser)
+5. Phase 5: Implemented CSV parser - Parser tests PASSED
+6. Phase 6: Wired parser into API handler - API tests still PASS
+7. **Phase 7 (current):** Back to Playwright - should now PASS because API exists and works
 
 **Update the upload component:**
 
@@ -1195,20 +1251,34 @@ This is the rhythm. Red → Green → Refactor. Outside-in. Let the tests pull t
 
 ### Java/Spring → Next.js/TypeScript
 
-| Java/Spring                               | Next.js                                 | Notes                                 |
-|-------------------------------------------|-----------------------------------------|---------------------------------------|
-| `@RestController`                         | `pages/api/[route].ts`                  | File-based routing                    |
-| `@GetMapping("/items")`                   | `if (req.method === 'GET')`             | Manual method checking in handler     |
-| `@PostMapping`                            | `if (req.method === 'POST')`            | Same pattern                          |
-| `@Service`                                | `src/utils/` or `src/services/`         | No annotation, just export functions  |
-| Domain objects in `domain/` package       | TypeScript interfaces + pure functions  | Keep business logic framework-free    |
-| `@WebMvcTest`                             | Playwright (IO-Based test)              | Tests full HTTP request               |
-| Direct controller test (new Controller()) | Jest test (`node-mocks-http`)           | Import and call handler directly      |
-| Service test (new Service())              | Jest test of util function              | Just call the function                |
-| `@Tag("io")` for slow tests               | Separate test commands                  | `playwright test` vs `pnpm test`      |
-| `application.properties`                  | `.env.local`                            | Environment configuration             |
-| Spring Dependency Injection               | Manual imports or DI library (optional) | Most Next.js code uses manual imports |
-| JPA/Hibernate                             | Sequelize, Prisma, or raw SQL           | Different ORM, same concept           |
+| Java/Spring                               | Next.js                                 | Notes                                            |
+|-------------------------------------------|-----------------------------------------|--------------------------------------------------|
+| `@RestController`                         | `pages/api/[route].ts`                  | File-based routing                               |
+| `@GetMapping("/items")`                   | `if (req.method === 'GET')`             | Manual method checking (consider NestJS instead) |
+| `@PostMapping`                            | `if (req.method === 'POST')`            | Manual method checking (consider NestJS instead) |
+| `@Service`                                | `src/utils/` or `src/services/`         | No annotation, just export functions             |
+| Domain objects in `domain/` package       | TypeScript interfaces + pure functions  | Keep business logic framework-free               |
+| `@WebMvcTest`                             | Playwright (IO-Based test)              | Tests full HTTP request                          |
+| Direct controller test (new Controller()) | Jest test (`node-mocks-http`)           | Import and call handler directly                 |
+| Service test (new Service())              | Jest test of util function              | Just call the function                           |
+| `@Tag("io")` for slow tests               | Separate test commands                  | `playwright test` vs `pnpm test`                 |
+| `application.properties`                  | `.env.local` + `.env`                   | Config and secrets (git-ignored)                 |
+| Spring Dependency Injection               | Manual imports or DI library (optional) | Most Next.js code uses manual imports            |
+| JPA/Hibernate                             | Sequelize, Prisma, or raw SQL           | Different ORM, same concept                      |
+
+**Note on environment configuration:** Next.js uses `.env` files similar to direnv in Java projects:
+
+- `.env.local` - Local overrides, secrets, API keys (git-ignored, like your direnv `.envrc`)
+- `.env` - Default values, non-sensitive config (can be committed)
+- `.env.production` - Production-specific values
+  In production, you'd use actual environment variables (Vercel, Docker, etc.), not `.env` files. This combines the
+  function of both `application.properties` (config) and `.env` (secrets) from Java world.
+
+**Note on Spring Boot equivalent:** If you're coming from Spring Boot and find Next.js API routes too low-level,
+consider [**NestJS**](https://nestjs.com/) instead. NestJS is heavily inspired by Spring Boot with decorators
+(`@Controller`, `@Get`, `@Post`), dependency injection, modules, and similar architecture patterns. It's
+TypeScript-first
+and designed for enterprise applications. The trade-off: you lose Next.js's React integration and file-based routing.
 
 ### Testing Tool Mapping
 

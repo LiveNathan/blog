@@ -16,9 +16,9 @@ do TDD here? Does this workflow translate?*
 This guide maps Ted's outside-in TDD workflow to Next.js development. It's not a TypeScript tutorial—it's a step-by-step
 plan for building features the "Ted way" in an unfamiliar ecosystem.
 
-> **Note on Next.js Version:** This guide uses **Next.js 12 with the Pages Router** (`pages/` directory). If you're
-> using Next.js 13+ with the App Router (`app/` directory), the core TDD workflow remains the same, but file organization
-> and some APIs differ. The principles translate—the file paths change.
+**Note on Next.js Version:** This guide uses Next.js 12 with the Pages Router (`pages/` directory). If you're using
+Next.js 13+ with the App Router (`app/` directory), the core TDD workflow remains the same, but file organization and
+some APIs differ. The principles translate—the file paths change.
 
 ## Table of Contents
 
@@ -72,31 +72,19 @@ you need to know:
 
 **Test Categorization (Ted's IO-Free vs IO-Based):**
 
-> "Note that I have not used the term unit and integration test. Those terms are terrible. Every time somebody says
-> unit, I say what do you mean what is a unit? Right? And you can get into a debate for that gets you nowhere. Not
-> important. What's important is it use IO or not. To me, that's all that matters." - Ted M. Young
+> Note that I have not used the term unit and integration test. Those terms are terrible. Every time somebody says
+> unit, I say, "What do you mean? What is a unit?" And you can get into a debate, but that gets you nowhere. Not
+> important. What's important is if it uses IO or not. To me, that's all that matters." - Ted M. Young
 
 - **IO-Free tests (Jest):** Pure business logic, transformations, calculations. No framework, no database, no HTTP, no
-  file system. These run in microseconds and have **no mocks or test doubles**.
-- **IO-Based tests (Jest + Playwright):** Tests that touch IO - HTTP requests, database calls, file uploads, the Next.js
+  file system. These run in microseconds and have no mocks or test doubles.
+- **IO-Based tests (Jest & Playwright):** Tests that touch IO - HTTP requests, database calls, file uploads, the Next.js
   framework itself. These are slower but necessary for adapter layers.
 
 ### Setting Up Your Test Environment
 
-**Install dependencies:**
-
-```bash
-# Core testing tools
-pnpm add -D @playwright/test playwright
-pnpm add -D jest @types/jest ts-jest
-pnpm add -D node-mocks-http @types/node-mocks-http
-
-# Production dependencies
-pnpm add csv-parse formidable
-pnpm add -D @types/formidable
-```
-
-**Configure package.json scripts:**
+In a Java project you might separate your tests using `@Tag` annotations. The in Intellij create two run configurations.
+In Next.js, you can do this with different run scripts.
 
 ```json
 {
@@ -108,39 +96,6 @@ pnpm add -D @types/formidable
     "test:all": "pnpm test && pnpm test:e2e"
   }
 }
-```
-
-**Create jest.config.js:**
-
-```javascript
-module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  roots: ['<rootDir>/src', '<rootDir>/pages'],
-  testMatch: ['**/__tests__/**/*.test.ts', '**/__tests__/**/*.test.tsx'],
-  moduleNameMapper: {
-    '^components/(.*)$': '<rootDir>/src/components/$1',
-    '^utils/(.*)$': '<rootDir>/src/utils/$1',
-  },
-};
-```
-
-**Create playwright.config.ts:**
-
-```typescript
-import { defineConfig } from '@playwright/test';
-
-export default defineConfig({
-  testDir: './tests/e2e',
-  use: {
-    baseURL: 'http://localhost:3000',
-  },
-  webServer: {
-    command: 'pnpm dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-  },
-});
 ```
 
 ### Key Differences from Java/Spring
@@ -170,12 +125,6 @@ A: Playwright can log in once and reuse session. Jest tests can mock `getSession
 
 **Q: Can we do outside-in TDD?**
 A: Absolutely. Start with Playwright (edge), drop to Jest (internals), work your way back up.
-
-**Q: Do IO-Free tests use mocks?**
-A: No. IO-Free tests have **no mocks, no test doubles, no stubbing**. They test pure functions with real inputs and real
-outputs. If you need a mock, it's an IO-Based test. From Ted's transcript: "you shouldn't see test doubles, mocks,
-anything like that here. Not at all. It don't exist at this level because there's no need. You just instantiate an
-object."
 
 ---
 
@@ -229,8 +178,7 @@ Ted's workflow adapted for Next.js:
 
 **Test Organization:** This guide uses **co-located tests** with `__tests__` folders next to the code being tested. This
 keeps tests close to implementation and makes them easier to find. For IO-Based Playwright tests, use a dedicated
-`tests/` directory
-since they test across multiple files and layers.
+`tests/` directory since they test across multiple files and layers.
 
 **The Flow:**
 
@@ -238,21 +186,21 @@ since they test across multiple files and layers.
 2. Test fails because feature doesn't exist
 3. Add minimal code to make it pass
 4. When you need logic that doesn't exist, drop down a layer
-5. Write test at that layer, implement, get it green
-6. Come back up, original test should pass now
+5. Write test at that layer, implement, get it green. Refactor.
+6. Come back up, original test should pass now. Refactor.
 
 > "What I'm doing is sort of this outside in development. I'm trying to figure out what the web UI needs from the
 > service and then I can start test driving." - Ted M. Young
 
 **Important Distinction: Automated vs Manual Testing**
 
-Ted's approach uses **automated tests for slices** of the application (IO-Free domain logic, IO-Based adapters) but
-often relies on **manual testing for full end-to-end flows**. From his transcripts: "I don't find end-to-end tests being
-all that useful to automate... manually running stuff that's a test it's just not an automated test."
+Ted's approach uses automated tests for slices of the application (IO-Free domain logic, IO-Based adapters) but
+often relies on manual testing for full end-to-end flows. He says, "I don't find end-to-end tests being
+all that useful to automate. Manually running stuff. That's a test. It's just not an automated test."
 
 In this guide, we're using Playwright to automate IO-Based tests at the edge, which is a pragmatic adaptation for
 Next.js development. These aren't true "end-to-end" tests in Ted's sense (spinning up the entire production stack), but
-rather **focused IO-Based tests** of specific user flows. You'll still want to manually test the complete application
+rather focused IO-Based tests of specific user flows. You'll still want to manually test the complete application
 flow in a browser periodically.
 
 ---
@@ -295,13 +243,14 @@ DEF456,10,Fragile
 **What Ted Would Do (Java/Spring):**
 
 ```java
+
 @WebMvcTest(ImportController.class)
 @Tag("io")
 class ImportMvcTest {
     @Test
     void getToImportPageReturns200() {
         mockMvc.perform(get("/import"))
-            .andExpect(status().is2xxSuccessful());
+                .andExpect(status().is2xxSuccessful());
     }
 }
 ```
@@ -310,28 +259,28 @@ class ImportMvcTest {
 
 ```typescript
 // tests/e2e/csv-import/accessibility.spec.ts
-import { test, expect } from '@playwright/test';
+import {test, expect} from '@playwright/test';
 
 test.describe('CSV Import - Accessibility', () => {
-  test('authenticated users can access import page', async ({ page }) => {
-    // Arrange: Log in (use Playwright auth setup)
-    await page.goto('/login');
-    await page.fill('[name="email"]', 'test@example.com');
-    await page.fill('[name="password"]', 'password');
-    await page.getByRole('button', { name: /log in|submit/i }).click();
+    test('authenticated users can access import page', async ({page}) => {
+        // Arrange: Log in (use Playwright auth setup)
+        await page.goto('/login');
+        await page.fill('[name="email"]', 'test@example.com');
+        await page.fill('[name="password"]', 'password');
+        await page.getByRole('button', {name: /log in|submit/i}).click();
 
-    // Act: Navigate to import page
-    await page.goto('/operations/csv-import');
+        // Act: Navigate to import page
+        await page.goto('/operations/csv-import');
 
-    // Assert: Page loads successfully
-    await expect(page).toHaveTitle(/CSV Import/);
-    await expect(page.getByRole('heading', { name: 'Import CSV', level: 1 })).toBeVisible();
-  });
+        // Assert: Page loads successfully
+        await expect(page).toHaveTitle(/CSV Import/);
+        await expect(page.getByRole('heading', {name: 'Import CSV', level: 1})).toBeVisible();
+    });
 
-  test('unauthenticated users are redirected to login', async ({ page }) => {
-    await page.goto('/operations/csv-import');
-    await expect(page).toHaveURL(/\/login/);
-  });
+    test('unauthenticated users are redirected to login', async ({page}) => {
+        await page.goto('/operations/csv-import');
+        await expect(page).toHaveURL(/\/login/);
+    });
 });
 ```
 
@@ -347,34 +296,37 @@ npx playwright test tests/e2e/csv-import/accessibility.spec.ts
 
 ```typescript
 // pages/operations/csv-import/index.tsx
-import type { NextPage, GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
+import type {NextPage, GetServerSideProps} from 'next';
+import {getSession} from 'next-auth/react';
 import PageSEOWrapper from 'components/Layout/PageSEOWrapper';
 
 const CSVImportPage: NextPage = () => {
-  return (
-    <PageSEOWrapper title="CSV Import" description="Import line items from CSV">
-      <h1>Import CSV</h1>
-    </PageSEOWrapper>
-  );
+    return (
+        <PageSEOWrapper title = "CSV Import"
+    description = "Import line items from CSV" >
+        <h1>Import
+    CSV < /h1>
+    < /PageSEOWrapper>
+)
+    ;
 };
 
 // Server-side authentication check
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession(context);
+    const session = await getSession(context);
 
-  if (!session) {
+    if (!session) {
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false,
+            },
+        };
+    }
+
     return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
+        props: {session},
     };
-  }
-
-  return {
-    props: { session },
-  };
 };
 
 export default CSVImportPage;
@@ -388,12 +340,7 @@ npx playwright test tests/e2e/csv-import/accessibility.spec.ts
 
 **Expected result:** ✅ PASS
 
-**Commit:**
-
-```bash
-git add .
-git commit -m "Add CSV import page with auth check"
-```
+Commit to git.
 
 There is an important refactor step that happens here as part of the TDD loop. I have omitted it for brevity.
 
@@ -411,40 +358,40 @@ attributes. In React/Next.js, we test the rendered DOM with Playwright.
 
 ```typescript
 // tests/e2e/csv-import/file-upload.spec.ts
-import { test, expect } from '@playwright/test';
+import {test, expect} from '@playwright/test';
 import path from 'path';
 
 test.describe('CSV Import - File Upload', () => {
-  test.beforeEach(async ({ page }) => {
-    // Assume authenticated (use Playwright's storage state)
-    await page.goto('/operations/csv-import');
-  });
+    test.beforeEach(async ({page}) => {
+        // Assume authenticated (use Playwright's storage state)
+        await page.goto('/operations/csv-import');
+    });
 
-  test('displays file upload dropzone', async ({ page }) => {
-    await expect(page.locator('[data-testid="csv-dropzone"]')).toBeVisible();
-    await expect(page.getByText('Drop CSV file here')).toBeVisible();
-  });
+    test('displays file upload dropzone', async ({page}) => {
+        await expect(page.locator('[data-testid="csv-dropzone"]')).toBeVisible();
+        await expect(page.getByText('Drop CSV file here')).toBeVisible();
+    });
 
-  test('accepts CSV file and displays filename', async ({ page }) => {
-    // Create test CSV file path
-    const filePath = path.join(__dirname, 'fixtures', 'valid-import.csv');
+    test('accepts CSV file and displays filename', async ({page}) => {
+        // Create test CSV file path
+        const filePath = path.join(__dirname, 'fixtures', 'valid-import.csv');
 
-    // Upload file
-    const fileInput = page.locator('input[type="file"]');
-    await fileInput.setInputFiles(filePath);
+        // Upload file
+        const fileInput = page.locator('input[type="file"]');
+        await fileInput.setInputFiles(filePath);
 
-    // Verify file name is displayed
-    await expect(page.getByText('valid-import.csv')).toBeVisible();
-  });
+        // Verify file name is displayed
+        await expect(page.getByText('valid-import.csv')).toBeVisible();
+    });
 
-  test('rejects non-CSV files', async ({ page }) => {
-    const filePath = path.join(__dirname, 'fixtures', 'invalid.txt');
+    test('rejects non-CSV files', async ({page}) => {
+        const filePath = path.join(__dirname, 'fixtures', 'invalid.txt');
 
-    const fileInput = page.locator('input[type="file"]');
-    await fileInput.setInputFiles(filePath);
+        const fileInput = page.locator('input[type="file"]');
+        await fileInput.setInputFiles(filePath);
 
-    await expect(page.getByText('Only CSV files are accepted')).toBeVisible();
-  });
+        await expect(page.getByText('Only CSV files are accepted')).toBeVisible();
+    });
 });
 ```
 
@@ -473,35 +420,38 @@ npx playwright test tests/e2e/csv-import/file-upload.spec.ts
 
 ```typescript
 // pages/operations/csv-import/index.tsx
-import type { NextPage, GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
+import type {NextPage, GetServerSideProps} from 'next';
+import {getSession} from 'next-auth/react';
 import PageSEOWrapper from 'components/Layout/PageSEOWrapper';
 import CSVUpload from 'components/Main/Operations/CSVImport/FileUpload';
 
 const CSVImportPage: NextPage = () => {
-  return (
-    <PageSEOWrapper title="CSV Import" description="Import line items from CSV">
-      <h1>Import CSV</h1>
-      <CSVUpload />
+    return (
+        <PageSEOWrapper title = "CSV Import"
+    description = "Import line items from CSV" >
+        <h1>Import
+    CSV < /h1>
+    < CSVUpload / >
     </PageSEOWrapper>
-  );
+)
+    ;
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession(context);
+    const session = await getSession(context);
 
-  if (!session) {
+    if (!session) {
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false,
+            },
+        };
+    }
+
     return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
+        props: {session},
     };
-  }
-
-  return {
-    props: { session },
-  };
 };
 
 export default CSVImportPage;
@@ -509,50 +459,67 @@ export default CSVImportPage;
 
 ```typescript
 // src/components/Main/Operations/CSVImport/FileUpload/index.tsx
-import { useDropzone } from 'react-dropzone';
-import { useState } from 'react';
-import { Box, Text } from '@chakra-ui/react';
+import {useDropzone} from 'react-dropzone';
+import {useState} from 'react';
+import {Box, Text} from '@chakra-ui/react';
 
 const CSVUpload = () => {
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+    const [fileName, setFileName] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: { 'text/csv': ['.csv'] },
-    maxFiles: 1,
-    onDrop: (acceptedFiles, rejectedFiles) => {
-      setError(null);
-      if (rejectedFiles.length > 0) {
-        setError('Only CSV files are accepted');
-        return;
-      }
-      if (acceptedFiles.length > 0) {
-        setFileName(acceptedFiles[0].name);
-      }
-    },
-  });
+    const {getRootProps, getInputProps} = useDropzone({
+        accept: {'text/csv': ['.csv']},
+        maxFiles: 1,
+        onDrop: (acceptedFiles, rejectedFiles) => {
+            setError(null);
+            if (rejectedFiles.length > 0) {
+                setError('Only CSV files are accepted');
+                return;
+            }
+            if (acceptedFiles.length > 0) {
+                setFileName(acceptedFiles[0].name);
+            }
+        },
+    });
 
-  return (
-    <Box>
-      <Box
-        {...getRootProps()}
-        data-testid="csv-dropzone"
-        border="2px dashed"
-        borderColor="gray.300"
-        p={8}
-        textAlign="center"
-        cursor="pointer"
-      >
-        <input {...getInputProps()} />
-        <Text>Drop CSV file here, or click to select</Text>
-      </Box>
-      {fileName && <Text mt={2}>File: {fileName}</Text>}
-      {error && <Text mt={2} color="red.500">{error}</Text>}
-    </Box>
-  );
-};
+    return (
+        <Box>
+            <Box
+                {...getRootProps()}
+    data - testid = "csv-dropzone"
+    border = "2px dashed"
+    borderColor = "gray.300"
+    p = {8}
+    textAlign = "center"
+    cursor = "pointer"
+        >
+        <input {...getInputProps()}
+    />
+    < Text > Drop
+    CSV
+    file
+    here, or
+    click
+    to
+    select < /Text>
+    < /Box>
+    {
+        fileName && <Text mt = {2} > File
+    :
+        {
+            fileName
+        }
+        </Text>}
+        {
+            error && <Text mt = {2}
+            color = "red.500" > {error} < /Text>}
+                < /Box>
+        )
+            ;
+        }
+        ;
 
-export default CSVUpload;
+        export default CSVUpload;
 ```
 
 **Run the test:**
@@ -563,12 +530,7 @@ npx playwright test tests/e2e/csv-import/file-upload.spec.ts
 
 **Expected result:** ✅ PASS
 
-**Commit:**
-
-```bash
-git add .
-git commit -m "Add CSV file upload with validation"
-```
+Commit. Refactor. Commit.
 
 ---
 
@@ -577,49 +539,48 @@ git commit -m "Add CSV file upload with validation"
 **Goal:** User can submit the form with CSV file and order number.
 
 **What Ted Would Do:**
-Write IO-Based test for POST submission. Test will fail because API endpoint doesn't exist. This is the signal to **drop
-down
-to API layer**.
+Write IO-Based test for POST submission. Test will fail because the API endpoint doesn't exist. This is the signal to
+drop down to the API layer.
 
 **IO-Based Test (Playwright):**
 
 ```typescript
 // tests/e2e/csv-import/form-submission.spec.ts
-import { test, expect } from '@playwright/test';
+import {test, expect} from '@playwright/test';
 import path from 'path';
 
 test.describe('CSV Import - Form Submission', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/operations/csv-import');
-  });
+    test.beforeEach(async ({page}) => {
+        await page.goto('/operations/csv-import');
+    });
 
-  test('submits CSV and order number successfully', async ({ page }) => {
-    // Upload CSV
-    const filePath = path.join(__dirname, 'fixtures', 'valid-import.csv');
-    const fileInput = page.locator('input[type="file"]');
-    await fileInput.setInputFiles(filePath);
+    test('submits CSV and order number successfully', async ({page}) => {
+        // Upload CSV
+        const filePath = path.join(__dirname, 'fixtures', 'valid-import.csv');
+        const fileInput = page.locator('input[type="file"]');
+        await fileInput.setInputFiles(filePath);
 
-    // Enter order number
-    await page.fill('[name="orderNumber"]', 'ORD-12345');
+        // Enter order number
+        await page.fill('[name="orderNumber"]', 'ORD-12345');
 
-    // Submit form
-    await page.getByRole('button', { name: 'Import' }).click();
+        // Submit form
+        await page.getByRole('button', {name: 'Import'}).click();
 
-    // Expect success message
-    await expect(page.getByText('Import completed successfully')).toBeVisible();
-    await expect(page.getByText('2 items imported')).toBeVisible();
-  });
+        // Expect success message
+        await expect(page.getByText('Import completed successfully')).toBeVisible();
+        await expect(page.getByText('2 items imported')).toBeVisible();
+    });
 
-  test('shows error for invalid order number', async ({ page }) => {
-    const filePath = path.join(__dirname, 'fixtures', 'valid-import.csv');
-    const fileInput = page.locator('input[type="file"]');
-    await fileInput.setInputFiles(filePath);
+    test('shows error for invalid order number', async ({page}) => {
+        const filePath = path.join(__dirname, 'fixtures', 'valid-import.csv');
+        const fileInput = page.locator('input[type="file"]');
+        await fileInput.setInputFiles(filePath);
 
-    await page.fill('[name="orderNumber"]', 'INVALID');
-    await page.getByRole('button', { name: 'Import' }).click();
+        await page.fill('[name="orderNumber"]', 'INVALID');
+        await page.getByRole('button', {name: 'Import'}).click();
 
-    await expect(page.getByText('Order not found')).toBeVisible();
-  });
+        await expect(page.getByText('Order not found')).toBeVisible();
+    });
 });
 ```
 
@@ -631,7 +592,7 @@ npx playwright test tests/e2e/csv-import/form-submission.spec.ts
 
 **Expected result:** ❌ FAIL (no API endpoint, no form submit handler)
 
-**This is the signal to drop down to the API layer.**
+This is the signal to drop down to the API layer.
 
 ---
 
@@ -660,7 +621,7 @@ class ImportControllerTest {
 
 ```typescript
 // pages/api/import/__tests__/process.test.ts
-import { createMocks } from 'node-mocks-http';
+import {createMocks} from 'node-mocks-http';
 import handler from '../process';
 import formidable from 'formidable';
 
@@ -668,59 +629,59 @@ import formidable from 'formidable';
 jest.mock('formidable');
 
 describe('POST /api/import/process', () => {
-  it('returns success for valid CSV file and order number', async () => {
-    const mockParse = jest.fn((req, callback) => {
-      callback(null,
-        { orderNumber: 'ORD-12345' }, // fields
-        {
-          file: [{
-            filepath: '/tmp/test.csv',
-            originalFilename: 'test.csv',
-            mimetype: 'text/csv'
-          }]
-        } // files
-      );
+    it('returns success for valid CSV file and order number', async () => {
+        const mockParse = jest.fn((req, callback) => {
+            callback(null,
+                {orderNumber: 'ORD-12345'}, // fields
+                {
+                    file: [{
+                        filepath: '/tmp/test.csv',
+                        originalFilename: 'test.csv',
+                        mimetype: 'text/csv'
+                    }]
+                } // files
+            );
+        });
+
+        (formidable.IncomingForm as jest.Mock).mockImplementation(() => ({
+            parse: mockParse
+        }));
+
+        const {req, res} = createMocks({
+            method: 'POST',
+            headers: {'content-type': 'multipart/form-data'},
+        });
+
+        await handler(req, res);
+
+        expect(res._getStatusCode()).toBe(200);
+        const data = JSON.parse(res._getData());
+        expect(data.success).toBe(true);
     });
 
-    (formidable.IncomingForm as jest.Mock).mockImplementation(() => ({
-      parse: mockParse
-    }));
+    it('returns 400 for invalid order number', async () => {
+        const mockParse = jest.fn((req, callback) => {
+            callback(null,
+                {orderNumber: 'INVALID'},
+                {file: [{filepath: '/tmp/test.csv'}]}
+            );
+        });
 
-    const { req, res } = createMocks({
-      method: 'POST',
-      headers: { 'content-type': 'multipart/form-data' },
+        (formidable.IncomingForm as jest.Mock).mockImplementation(() => ({
+            parse: mockParse
+        }));
+
+        const {req, res} = createMocks({
+            method: 'POST',
+            headers: {'content-type': 'multipart/form-data'},
+        });
+
+        await handler(req, res);
+
+        expect(res._getStatusCode()).toBe(400);
+        const data = JSON.parse(res._getData());
+        expect(data.error).toBe('Order not found');
     });
-
-    await handler(req, res);
-
-    expect(res._getStatusCode()).toBe(200);
-    const data = JSON.parse(res._getData());
-    expect(data.success).toBe(true);
-  });
-
-  it('returns 400 for invalid order number', async () => {
-    const mockParse = jest.fn((req, callback) => {
-      callback(null,
-        { orderNumber: 'INVALID' },
-        { file: [{ filepath: '/tmp/test.csv' }] }
-      );
-    });
-
-    (formidable.IncomingForm as jest.Mock).mockImplementation(() => ({
-      parse: mockParse
-    }));
-
-    const { req, res } = createMocks({
-      method: 'POST',
-      headers: { 'content-type': 'multipart/form-data' },
-    });
-
-    await handler(req, res);
-
-    expect(res._getStatusCode()).toBe(400);
-    const data = JSON.parse(res._getData());
-    expect(data.error).toBe('Order not found');
-  });
 });
 ```
 
@@ -736,73 +697,64 @@ pnpm test pages/api/import/__tests__/process.test.ts
 
 ```typescript
 // pages/api/import/process.ts
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import formidable from 'formidable';
 import fs from 'fs/promises';
 
 // Disable Next.js body parser - required for formidable
 export const config = {
-  api: {
-    bodyParser: false,
-  },
+    api: {
+        bodyParser: false,
+    },
 };
 
 export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
+    req: NextApiRequest,
+    res: NextApiResponse
 ) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const form = formidable();
-
-  form.parse(req, async (err, fields, files) => {
-    if (err) {
-      return res.status(500).json({ error: 'File upload failed' });
+    if (req.method !== 'POST') {
+        return res.status(405).json({error: 'Method not allowed'});
     }
 
-    const orderNumber = Array.isArray(fields.orderNumber)
-      ? fields.orderNumber[0]
-      : fields.orderNumber;
+    const form = formidable();
 
-    // Hardcode for now to make test pass
-    if (orderNumber === 'INVALID') {
-      return res.status(400).json({ error: 'Order not found' });
-    }
+    form.parse(req, async (err, fields, files) => {
+        if (err) {
+            return res.status(500).json({error: 'File upload failed'});
+        }
 
-    const uploadedFile = Array.isArray(files.file) ? files.file[0] : files.file;
+        const orderNumber = Array.isArray(fields.orderNumber)
+            ? fields.orderNumber[0]
+            : fields.orderNumber;
 
-    if (!uploadedFile) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
+        // Hardcode for now to make test pass
+        if (orderNumber === 'INVALID') {
+            return res.status(400).json({error: 'Order not found'});
+        }
 
-    // Read CSV content
-    const csvData = await fs.readFile(uploadedFile.filepath, 'utf-8');
+        const uploadedFile = Array.isArray(files.file) ? files.file[0] : files.file;
 
-    if (!csvData.includes('Barcode')) {
-      return res.status(400).json({ error: 'Invalid CSV format' });
-    }
+        if (!uploadedFile) {
+            return res.status(400).json({error: 'No file uploaded'});
+        }
 
-    // Hardcoded success response
-    return res.status(200).json({
-      success: true,
-      itemsImported: 1,
+        // Read CSV content
+        const csvData = await fs.readFile(uploadedFile.filepath, 'utf-8');
+
+        if (!csvData.includes('Barcode')) {
+            return res.status(400).json({error: 'Invalid CSV format'});
+        }
+
+        // Hardcoded success response
+        return res.status(200).json({
+            success: true,
+            itemsImported: 1,
+        });
     });
-  });
 }
 ```
 
-**Installation:**
-
-```bash
-pnpm add formidable
-pnpm add -D @types/formidable
-```
-
-> **Production Note:** This uses [`formidable`](https://github.com/node-formidable/formidable) for multipart/form-data
-> handling, following the pattern used in the Loomium codebase. The `bodyParser: false` config is **required** for
-> formidable to work properly.
+This uses [`formidable`](https://github.com/node-formidable/formidable) for multipart/form-data handling.
 
 **Run the test:**
 
@@ -841,44 +793,44 @@ class ImportServiceTest {
 
 ```typescript
 // src/utils/csvImport/__tests__/parseCSV.test.ts
-import { parseCSV } from '../parseCSV';
+import {parseCSV} from '../parseCSV';
 
 describe('parseCSV', () => {
-  it('parses valid CSV into line items', () => {
-    const csvData = `Barcode,Quantity,Notes
+    it('parses valid CSV into line items', () => {
+        const csvData = `Barcode,Quantity,Notes
 ABC123,5,Handle with care
 XYZ789,2,`;
 
-    const result = parseCSV(csvData);
+        const result = parseCSV(csvData);
 
-    expect(result.success).toBe(true);
-    expect(result.items).toHaveLength(2);
-    expect(result.items[0]).toEqual({
-      barcode: 'ABC123',
-      quantity: 5,
-      notes: 'Handle with care',
+        expect(result.success).toBe(true);
+        expect(result.items).toHaveLength(2);
+        expect(result.items[0]).toEqual({
+            barcode: 'ABC123',
+            quantity: 5,
+            notes: 'Handle with care',
+        });
     });
-  });
 
-  it('returns error for missing required columns', () => {
-    const csvData = `ProductCode,Amount
+    it('returns error for missing required columns', () => {
+        const csvData = `ProductCode,Amount
 ABC123,5`;
 
-    const result = parseCSV(csvData);
+        const result = parseCSV(csvData);
 
-    expect(result.success).toBe(false);
-    expect(result.error).toContain('Missing required column: Barcode');
-  });
+        expect(result.success).toBe(false);
+        expect(result.error).toContain('Missing required column: Barcode');
+    });
 
-  it('returns error for invalid quantity', () => {
-    const csvData = `Barcode,Quantity,Notes
+    it('returns error for invalid quantity', () => {
+        const csvData = `Barcode,Quantity,Notes
 ABC123,NotANumber,Test`;
 
-    const result = parseCSV(csvData);
+        const result = parseCSV(csvData);
 
-    expect(result.success).toBe(false);
-    expect(result.error).toContain('Invalid quantity');
-  });
+        expect(result.success).toBe(false);
+        expect(result.error).toContain('Invalid quantity');
+    });
 });
 ```
 
@@ -892,84 +844,73 @@ pnpm test src/utils/csvImport/__tests__/parseCSV.test.ts
 
 **Make it pass:**
 
-> **Note:** This is an **IO-Free test**. It takes a string as input and returns parsed data. No file system access, no
-> database, no HTTP. Pure transformation logic. These tests run in microseconds and require no mocks or test doubles.
-
 ```typescript
 // src/utils/csvImport/parseCSV.ts
-import { parse } from 'csv-parse/sync';
+import {parse} from 'csv-parse/sync';
 
 // Domain entity - uses interface for extensibility
 export interface LineItem {
-  barcode: string;
-  quantity: number;
-  notes: string;
+    barcode: string;
+    quantity: number;
+    notes: string;
 }
 
 // Result DTO - uses type for data transfer
 export type ParseResult = {
-  success: boolean;
-  items?: LineItem[];
-  error?: string;
+    success: boolean;
+    items?: LineItem[];
+    error?: string;
 };
 
 export function parseCSV(csvData: string): ParseResult {
-  try {
-    const records = parse(csvData, {
-      columns: true, // Use first row as headers
-      skip_empty_lines: true,
-      trim: true,
-    });
+    try {
+        const records = parse(csvData, {
+            columns: true, // Use first row as headers
+            skip_empty_lines: true,
+            trim: true,
+        });
 
-    // Validate required columns
-    if (records.length === 0) {
-      return { success: false, error: 'CSV is empty' };
+        // Validate required columns
+        if (records.length === 0) {
+            return {success: false, error: 'CSV is empty'};
+        }
+
+        const firstRecord = records[0];
+        if (!('Barcode' in firstRecord)) {
+            return {success: false, error: 'Missing required column: Barcode'};
+        }
+        if (!('Quantity' in firstRecord)) {
+            return {success: false, error: 'Missing required column: Quantity'};
+        }
+
+        const items: LineItem[] = [];
+
+        for (let i = 0; i < records.length; i++) {
+            const record = records[i];
+            const quantity = parseInt(record.Quantity, 10);
+
+            if (isNaN(quantity)) {
+                return {success: false, error: `Invalid quantity on line ${i + 2}`};
+            }
+
+            items.push({
+                barcode: record.Barcode,
+                quantity,
+                notes: record.Notes || '',
+            });
+        }
+
+        return {success: true, items};
+    } catch (error) {
+        return {
+            success: false,
+            error: `CSV parsing failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        };
     }
-
-    const firstRecord = records[0];
-    if (!('Barcode' in firstRecord)) {
-      return { success: false, error: 'Missing required column: Barcode' };
-    }
-    if (!('Quantity' in firstRecord)) {
-      return { success: false, error: 'Missing required column: Quantity' };
-    }
-
-    const items: LineItem[] = [];
-
-    for (let i = 0; i < records.length; i++) {
-      const record = records[i];
-      const quantity = parseInt(record.Quantity, 10);
-
-      if (isNaN(quantity)) {
-        return { success: false, error: `Invalid quantity on line ${i + 2}` };
-      }
-
-      items.push({
-        barcode: record.Barcode,
-        quantity,
-        notes: record.Notes || '',
-      });
-    }
-
-    return { success: true, items };
-  } catch (error) {
-    return {
-      success: false,
-      error: `CSV parsing failed: ${error instanceof Error ? error.message : 'Unknown error'}`
-    };
-  }
 }
 ```
 
-**Installation:**
-
-```bash
-pnpm add csv-parse
-```
-
-> **Production Note:** This uses the [`csv-parse`](https://csv.js.org/parse/) library (part of the actively-maintained
-`csv` package). It properly handles quoted fields with commas, escape characters, and various CSV edge cases that naive
-`.split(',')` cannot. The `csv-parse/sync` import provides synchronous parsing suitable for most use cases.
+This uses the [`csv-parse`](https://csv.js.org/parse/) library (part of the actively-maintained `csv` package).
 
 **Run the test:**
 
@@ -979,12 +920,7 @@ pnpm test src/utils/csvImport/__tests__/parseCSV.test.ts
 
 **Expected result:** ✅ PASS
 
-**Commit:**
-
-```bash
-git add .
-git commit -m "Add CSV parsing utility with validation"
-```
+Commit. Refactor. Commit.
 
 ---
 
@@ -996,62 +932,62 @@ git commit -m "Add CSV parsing utility with validation"
 
 ```typescript
 // pages/api/import/process.ts
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import formidable from 'formidable';
 import fs from 'fs/promises';
-import { parseCSV } from 'utils/csvImport/parseCSV';
+import {parseCSV} from 'utils/csvImport/parseCSV';
 
 export const config = {
-  api: {
-    bodyParser: false,
-  },
+    api: {
+        bodyParser: false,
+    },
 };
 
 export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
+    req: NextApiRequest,
+    res: NextApiResponse
 ) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const form = formidable();
-
-  form.parse(req, async (err, fields, files) => {
-    if (err) {
-      return res.status(500).json({ error: 'File upload failed' });
+    if (req.method !== 'POST') {
+        return res.status(405).json({error: 'Method not allowed'});
     }
 
-    const orderNumber = Array.isArray(fields.orderNumber)
-      ? fields.orderNumber[0]
-      : fields.orderNumber;
+    const form = formidable();
 
-    // Validate order number (stubbed for now)
-    if (orderNumber === 'INVALID') {
-      return res.status(400).json({ error: 'Order not found' });
-    }
+    form.parse(req, async (err, fields, files) => {
+        if (err) {
+            return res.status(500).json({error: 'File upload failed'});
+        }
 
-    const uploadedFile = Array.isArray(files.file) ? files.file[0] : files.file;
+        const orderNumber = Array.isArray(fields.orderNumber)
+            ? fields.orderNumber[0]
+            : fields.orderNumber;
 
-    if (!uploadedFile) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
+        // Validate order number (stubbed for now)
+        if (orderNumber === 'INVALID') {
+            return res.status(400).json({error: 'Order not found'});
+        }
 
-    // Read and parse CSV
-    const csvData = await fs.readFile(uploadedFile.filepath, 'utf-8');
-    const parseResult = parseCSV(csvData);
+        const uploadedFile = Array.isArray(files.file) ? files.file[0] : files.file;
 
-    if (!parseResult.success) {
-      return res.status(400).json({ error: parseResult.error });
-    }
+        if (!uploadedFile) {
+            return res.status(400).json({error: 'No file uploaded'});
+        }
 
-    // TODO: Match barcodes, create line items
-    // For now, just return success
-    return res.status(200).json({
-      success: true,
-      itemsImported: parseResult.items?.length || 0,
+        // Read and parse CSV
+        const csvData = await fs.readFile(uploadedFile.filepath, 'utf-8');
+        const parseResult = parseCSV(csvData);
+
+        if (!parseResult.success) {
+            return res.status(400).json({error: parseResult.error});
+        }
+
+        // TODO: Match barcodes, create line items
+        // For now, just return success
+        return res.status(200).json({
+            success: true,
+            itemsImported: parseResult.items?.length || 0,
+        });
     });
-  });
 }
 ```
 
@@ -1073,117 +1009,150 @@ pnpm test pages/api/import/__tests__/process.test.ts
 
 ```typescript
 // src/components/Main/Operations/CSVImport/FileUpload/index.tsx
-import { useDropzone } from 'react-dropzone';
-import { useState } from 'react';
-import { Box, Text, Input, Button, VStack } from '@chakra-ui/react';
+import {useDropzone} from 'react-dropzone';
+import {useState} from 'react';
+import {Box, Text, Input, Button, VStack} from '@chakra-ui/react';
 
 const CSVUpload = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [orderNumber, setOrderNumber] = useState('');
-  const [result, setResult] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+    const [file, setFile] = useState<File | null>(null);
+    const [fileName, setFileName] = useState<string | null>(null);
+    const [orderNumber, setOrderNumber] = useState('');
+    const [result, setResult] = useState<any>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: { 'text/csv': ['.csv'] },
-    maxFiles: 1,
-    maxSize: 25 * 1024 * 1024, // 25MB limit
-    onDrop: (acceptedFiles, rejectedFiles) => {
-      setError(null);
-      if (rejectedFiles.length > 0) {
-        setError('Only CSV files are accepted');
-        return;
-      }
-      if (acceptedFiles.length > 0) {
-        const uploadedFile = acceptedFiles[0];
-        setFile(uploadedFile);
-        setFileName(uploadedFile.name);
-      }
-    },
-  });
+    const {getRootProps, getInputProps} = useDropzone({
+        accept: {'text/csv': ['.csv']},
+        maxFiles: 1,
+        maxSize: 25 * 1024 * 1024, // 25MB limit
+        onDrop: (acceptedFiles, rejectedFiles) => {
+            setError(null);
+            if (rejectedFiles.length > 0) {
+                setError('Only CSV files are accepted');
+                return;
+            }
+            if (acceptedFiles.length > 0) {
+                const uploadedFile = acceptedFiles[0];
+                setFile(uploadedFile);
+                setFileName(uploadedFile.name);
+            }
+        },
+    });
 
-  const handleSubmit = async () => {
-    if (!file || !orderNumber) return;
+    const handleSubmit = async () => {
+        if (!file || !orderNumber) return;
 
-    setError(null);
-    setResult(null);
-    setIsSubmitting(true);
+        setError(null);
+        setResult(null);
+        setIsSubmitting(true);
 
-    try {
-      // Use FormData for file upload
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('orderNumber', orderNumber);
+        try {
+            // Use FormData for file upload
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('orderNumber', orderNumber);
 
-      const response = await fetch('/api/import/process', {
-        method: 'POST',
-        body: formData, // No Content-Type header - browser sets it with boundary
-      });
+            const response = await fetch('/api/import/process', {
+                method: 'POST',
+                body: formData, // No Content-Type header - browser sets it with boundary
+            });
 
-      const data = await response.json();
+            const data = await response.json();
 
-      if (!response.ok) {
-        setError(data.error || 'Upload failed');
-        return;
-      }
+            if (!response.ok) {
+                setError(data.error || 'Upload failed');
+                return;
+            }
 
-      setResult(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Network error occurred');
-    } finally {
-      setIsSubmitting(false);
+            setResult(data);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Network error occurred');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <VStack spacing = {4}
+    align = "stretch" >
+        <Box
+            {...getRootProps()}
+    data - testid = "csv-dropzone"
+    border = "2px dashed"
+    borderColor = "gray.300"
+    p = {8}
+    textAlign = "center"
+    cursor = "pointer"
+        >
+        <input {...getInputProps()}
+    />
+    < Text > Drop
+    CSV
+    file
+    here, or
+    click
+    to
+    select < /Text>
+    < /Box>
+    {
+        fileName && <Text>File
+    :
+        {
+            fileName
+        }
+        </Text>}
+
+        < Input
+        name = "orderNumber"
+        placeholder = "Order Number (e.g., ORD-12345)"
+        value = {orderNumber}
+        onChange = {(e)
+    =>
+        setOrderNumber(e.target.value)
     }
-  };
+        />
 
-  return (
-    <VStack spacing={4} align="stretch">
-      <Box
-        {...getRootProps()}
-        data-testid="csv-dropzone"
-        border="2px dashed"
-        borderColor="gray.300"
-        p={8}
-        textAlign="center"
-        cursor="pointer"
-      >
-        <input {...getInputProps()} />
-        <Text>Drop CSV file here, or click to select</Text>
-      </Box>
-      {fileName && <Text>File: {fileName}</Text>}
+        < Button
+        onClick = {handleSubmit}
+        isDisabled = {!
+        file || !orderNumber
+    }
+        isLoading = {isSubmitting}
+            >
+            Import
+            < /Button>
 
-      <Input
-        name="orderNumber"
-        placeholder="Order Number (e.g., ORD-12345)"
-        value={orderNumber}
-        onChange={(e) => setOrderNumber(e.target.value)}
-      />
+        {
+            result && (
+                <Box p = {4}
+            bg = "green.100"
+            borderRadius = "md" >
+                <Text>Import
+            completed
+            successfully < /Text>
+            < Text > {result.itemsImported}
+            items
+            imported < /Text>
+            < /Box>
+        )
+        }
 
-      <Button
-        onClick={handleSubmit}
-        isDisabled={!file || !orderNumber}
-        isLoading={isSubmitting}
-      >
-        Import
-      </Button>
+        {
+            error && (
+                <Box p = {4}
+            bg = "red.100"
+            borderRadius = "md" >
+            <Text color = "red.700" > {error} < /Text>
+                < /Box>
+        )
+        }
+        </VStack>
+    )
+        ;
+    }
+    ;
 
-      {result && (
-        <Box p={4} bg="green.100" borderRadius="md">
-          <Text>Import completed successfully</Text>
-          <Text>{result.itemsImported} items imported</Text>
-        </Box>
-      )}
-
-      {error && (
-        <Box p={4} bg="red.100" borderRadius="md">
-          <Text color="red.700">{error}</Text>
-        </Box>
-      )}
-    </VStack>
-  );
-};
-
-export default CSVUpload;
+    export default CSVUpload;
 ```
 
 **Run IO-Based tests:**
@@ -1203,12 +1172,7 @@ pnpm test                                    # All Jest tests (IO-Free + IO-Base
 
 **Expected result:** All green ✅
 
-**Commit:**
-
-```bash
-git add .
-git commit -m "Complete CSV import form submission flow"
-```
+Commit. Refactor. Commit.
 
 ---
 
@@ -1223,7 +1187,7 @@ git commit -m "Complete CSV import form submission flow"
 5. **Back to API layer (Jest, IO-Based):** Wire it up
 6. **Back to Playwright (IO-Based):** Test passes
 
-This is the rhythm. **Red → Green → Refactor.** Outside-in. Let the tests pull the design into existence.
+This is the rhythm. Red → Green → Refactor. Outside-in. Let the tests pull the design into existence.
 
 ---
 
@@ -1242,13 +1206,13 @@ This is the rhythm. **Red → Green → Refactor.** Outside-in. Let the tests pu
 | Direct controller test (new Controller()) | Jest test (`node-mocks-http`)           | Import and call handler directly      |
 | Service test (new Service())              | Jest test of util function              | Just call the function                |
 | `@Tag("io")` for slow tests               | Separate test commands                  | `playwright test` vs `pnpm test`      |
-| `application.yml`                         | `.env.local`                            | Environment configuration             |
+| `application.properties`                  | `.env.local`                            | Environment configuration             |
 | Spring Dependency Injection               | Manual imports or DI library (optional) | Most Next.js code uses manual imports |
 | JPA/Hibernate                             | Sequelize, Prisma, or raw SQL           | Different ORM, same concept           |
 
 ### Testing Tool Mapping
 
-| Ted's Test Type        | Java Tool                        | Next.js Tool                     | IO Type  | When to Use                     |
+| Test Type              | Java Tool                        | Next.js Tool                     | IO Type  | When to Use                     |
 |------------------------|----------------------------------|----------------------------------|----------|---------------------------------|
 | MVC Test               | MockMvc with `@WebMvcTest`       | Playwright                       | IO-Based | Test full HTTP request/response |
 | Direct Controller Test | JUnit, instantiate controller    | Jest with `node-mocks-http`      | IO-Based | Test handler logic without HTTP |
@@ -1256,17 +1220,15 @@ This is the rhythm. **Red → Green → Refactor.** Outside-in. Let the tests pu
 | Domain Test            | JUnit                            | Jest                             | IO-Free  | Test domain rules/calculations  |
 | Repository Test        | `@DataJpaTest` or TestContainers | Jest with test database or mocks | IO-Based | Test actual database queries    |
 
-**Key Point:** Ted's taxonomy doesn't use "unit" or "integration" - only **IO-Free** (no external dependencies, no mocks
-needed) and **IO-Based** (touches framework, database, HTTP, etc.).
 
 ### Test Data Builders in TypeScript
 
-**Java (Ted's pattern):**
+**Java:**
 
 ```java
 Member member = new MemberBuilder()
-    .withEmail("john@example.com")
-    .build();
+        .withEmail("john@example.com")
+        .build();
 ```
 
 **TypeScript equivalent:**
@@ -1274,84 +1236,60 @@ Member member = new MemberBuilder()
 ```typescript
 // src/utils/testHelpers/builders.ts
 interface Member {
-  id: string;
-  email: string;
-  name: string;
+    id: string;
+    email: string;
+    name: string;
 }
 
 export class MemberBuilder {
-  private member: Partial<Member> = {
-    id: 'test-id',
-    name: 'Test User',
-    email: 'test@example.com',
-  };
+    private member: Partial<Member> = {
+        id: 'test-id',
+        name: 'Test User',
+        email: 'test@example.com',
+    };
 
-  withEmail(email: string): this {
-    this.member.email = email;
-    return this;
-  }
+    withEmail(email: string): this {
+        this.member.email = email;
+        return this;
+    }
 
-  withName(name: string): this {
-    this.member.name = name;
-    return this;
-  }
+    withName(name: string): this {
+        this.member.name = name;
+        return this;
+    }
 
-  build(): Member {
-    return this.member as Member;
-  }
+    build(): Member {
+        return this.member as Member;
+    }
 }
 
 // Usage in tests:
 const member = new MemberBuilder()
-  .withEmail('john@example.com')
-  .build();
+    .withEmail('john@example.com')
+    .build();
 ```
-
-### Hexagonal Architecture in Next.js
-
-**Possible structure:**
-
-```
-src/
-  domain/              ← Pure business logic (IO-free)
-    lineItem.ts
-    order.ts
-  application/         ← Use cases, orchestration
-    importCSV.ts
-  adapters/
-    api/               ← API routes (pages/api/)
-    external/          ← External API clients
-      flexAPI.ts
-  utils/               ← Pure functions, helpers
-```
-
-**Key principle:** Domain code should never import from `adapters/` or `pages/`. Dependencies flow inward.
-
-> "Adding domain to me does these magical things one is it all of a sudden says no code here can reference anything
-> hardware io outside world related" - Ted M. Young
 
 ### About Mocking and Test Doubles
 
 **IO-Free tests:** No mocks. No test doubles. No stubbing. Just pure functions.
 
-From Ted's transcript:
-> "When you're testing out the application layer, you still don't want to use IO yet. So, you plug in a mock a test
-> double and so now you can test at the app layer tests are running fast but now you need to substitute now you need to
-> mention this idea of I've got this thing that I want to simulate but it's not really there."
+> When you're testing out the application layer, you still don't want to use IO yet. So, you plug in a mock or a test
+> double. Tests are running fast but now you need to...simulate [what's] not really there.
 
 **The distinction:**
 
-- **Domain/Service layer (IO-Free):** Just instantiate objects. No framework, no IO, no mocks needed.
+- **Domain/Service layer (IO-Free):** Just instantiate objects.
 - **Application layer (IO-Based):** This is where you might use test doubles to simulate external dependencies (
   databases, APIs).
 
 In Next.js terms:
 
 - **IO-Free (utils/services):** `parseCSV(csvString)` - just pass in a string, check the output
-- **IO-Based (API routes):** May need to mock database calls or external APIs
+- **IO-Based (API routes):** May need to simulate database calls or external APIs
 
-Ted writes "98% of my tests don't use any kind of mocking framework because I don't need to." The architecture itself -
-separating IO from logic - eliminates the need for most mocking.
+> 98% of my tests don't use any kind of mocking framework because I don't need to.
+
+The architecture itself - separating IO from logic - eliminates the need for most mocking.
 
 ---
 
@@ -1374,58 +1312,6 @@ separating IO from logic - eliminates the need for most mocking.
 - 🚩 You don't understand why the test passed/failed
 - 🚩 Tests are tightly coupled to implementation details
 - 🚩 You've been stuck for more than 1 hour
-
-### When to Ask for Help
-
-- You can't make a test fail the way you predicted
-- You've been debugging the same issue for >1 hour
-- You're about to write code you don't understand
-- Tests are green but the feature doesn't work
-- You're tempted to skip writing tests
-
-### How to Undo
-
-**Uncommitted changes:**
-
-```bash
-git status
-git diff  # Review what changed
-git restore .  # Undo all changes
-git restore <file>  # Undo specific file
-```
-
-**Committed changes:**
-
-```bash
-git log --oneline  # See recent commits
-git reset --soft HEAD~1  # Undo last commit, keep changes
-git reset --hard HEAD~1  # Undo last commit, discard changes
-```
-
-**Nuclear option (start over from main):**
-
-```bash
-git stash  # Save current work
-git switch main
-git switch -c new-feature-branch-attempt-2
-git stash pop  # Restore work if you want it
-```
-
-### Using an LLM as Your Pair
-
-**Good prompts:**
-
-- "Explain how this test works and what it's verifying"
-- "Show me the Next.js pattern for [X] used elsewhere in this codebase"
-- "I want to test [behavior]. What's the right assertion?"
-- "This test is failing with [error]. What does that mean?"
-- "Does this code follow the patterns in the rest of the codebase?"
-
-**Keep the LLM accountable:**
-
-- "Don't write code I don't understand—explain it first"
-- "Why this approach instead of [alternative]?"
-- "Show me where this pattern is used in the existing code"
 
 ---
 
@@ -1457,7 +1343,7 @@ git stash pop  # Restore work if you want it
 
 **Official Docs:**
 
-- [Next.js Testing Documentation](https://nextjs.org/docs/testing)
+- [Next.js Testing Documentation](https://nextjs.org/docs/app/guides/testing)
 - [Playwright Documentation](https://playwright.dev/docs/intro)
 - [Jest Documentation](https://jestjs.io/docs/getting-started)
 
@@ -1476,27 +1362,8 @@ git stash pop  # Restore work if you want it
 - [Handling multipart/form-data in Next.js](https://dev.to/mazinashfaq/handling-multipartform-data-in-nextjs-26ea)
 - [formidable on GitHub](https://github.com/node-formidable/formidable)
 
----
-
-## Final Thoughts
-
-You can absolutely do TDD in Next.js. The principles Ted teaches—prediction, outside-in, IO-Free vs IO-Based—are
-universal. The tools are different, but the workflow translates.
-
-**Start small.** One IO-Based Playwright test. One IO-Based API route test. One IO-Free util test. Build the muscle
-memory. The TypeScript syntax will become familiar as you write more tests.
-
-**Trust the process.** When a test fails and you're not sure why, that's *information*. When you can't make a test pass
-without dropping down a layer, that's the *design emerging*.
-
-**You've got this.** You know TDD. You know outside-in. You know hexagonal architecture. Now you're just learning a new
-syntax for the same ideas.
-
-Go write that first test. Make it fail. Make it pass. Repeat.
-
-What would Ted do? Exactly what you're about to do.
 
 ---
 
-*This guide synthesizes research from Ted M. Young's YouTube transcripts, blog posts, and open-source codebases. All
+*This guide synthesizes research from Ted M. Young's YouTube transcripts, blog posts, and public codebases. All
 credit for the core methodology goes to Ted. Any errors in translation to Next.js are mine. - Nathan*

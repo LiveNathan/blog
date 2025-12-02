@@ -7,8 +7,8 @@ categories: [ tdd, nextjs, typescript, workflow, ted-young ]
 
 ## The Challenge
 
-You know Test-Driven Development in Java. You know Spring Boot, Vaadin, and hexagonal architecture. You've studied Ted
-M. Young's (JitterTed's) outside-in workflow extensively. Now you're staring at a Next.js codebase thinking: *Can I even
+You know Test-Driven Development in Java. You know Spring Boot, Vaadin, and hexagonal architecture. You've studied [Ted
+M. Young's](https://ted.dev/) (JitterTed's) outside-in workflow extensively. Now you're staring at a Next.js codebase thinking: *Can I even
 do TDD here? Does this workflow translate?*
 
 **Short answer:** Yes. The principles translate. The tools differ.

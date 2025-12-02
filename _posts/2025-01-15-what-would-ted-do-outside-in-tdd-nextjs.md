@@ -74,8 +74,8 @@ you need to know:
 
 > Note that I have not used the term unit and integration test. Those terms are terrible. Every time somebody says
 > unit, I say, "What do you mean? What is a unit?" And you can get into a debate, but that gets you nowhere. Not
-> important. What's important is if it uses IO or not. To me, that's all that matters." - Ted M. Young
-
+> important. What's important is if it uses IO or not. To me, that's all that matters." - Ted M. Young, [Testable Architecture: Keep 'em Separated](https://youtu.be/wlEqNPzCJdo?si=TA3Fejo5mcUojUBY) and [I'm Done with Unit and Integration Tests](https://ted.dev/articles/2023/04/02/i-m-done-with-unit-and-integration-tests/)
+ 
 - **IO-Free tests (Jest):** Pure business logic, transformations, calculations. No framework, no database, no HTTP, no
   file system. These run in microseconds and have no mocks or test doubles.
 - **IO-Based tests (Jest & Playwright):** Tests that touch IO - HTTP requests, database calls, file uploads, the Next.js

@@ -16,20 +16,27 @@ do TDD here? Does this workflow translate?*
 This guide maps Ted's outside-in TDD workflow to Next.js development. It's not a TypeScript tutorial—it's a step-by-step
 plan for building features the "Ted way" in an unfamiliar ecosystem.
 
-**Note on Next.js Version:** This guide uses Next.js 12 with the Pages Router (`pages/` directory). If you're using
-Next.js 13+ with the App Router (`app/` directory), the core TDD workflow remains the same, but file organization and
-some APIs differ. The principles translate—the file paths change.
+**What makes this guide different:** I wrote the initial version *before* building any features (pure prediction), then
+updated it with real code after completing a production feature (136 tests, ~2000 lines of code). The blog post shows
+both my predictions and what actually happened—including what I got wrong. See
+the [Retrospective section](#retrospective-predictions-vs-reality) for the full comparison.
+
+**Note on Next.js Version:** This guide was originally written speculatively before building any features. The actual
+implementation described here uses **Next.js 16 with the Pages Router** (`pages/` directory). The core TDD workflow
+translated perfectly. If you're using the App Router (`app/` directory), the core TDD workflow remains the same, but
+file organization and some APIs differ. The principles translate—the file paths change.
 
 ## Table of Contents
 
 1. [The Quick Reference](#quick-reference)
 2. [Can You Do TDD in Next.js?](#can-you-do-tdd-in-nextjs)
 3. [The Outside-In Workflow for Next.js](#the-outside-in-workflow)
-4. [Running Example: CSV Import Feature](#running-example)
+4. [Running Example: SketchUp Import Feature](#running-example)
 5. [Step-by-Step: Building the Feature](#step-by-step)
 6. [Java → Next.js Translation Guide](#translation-guide)
 7. [Safety Nets & Confidence Builders](#safety-nets)
-8. [Resources](#resources)
+8. [**Retrospective: Predictions vs. Reality**](#retrospective-predictions-vs-reality) ⭐
+9. [Resources](#resources)
 
 ---
 
@@ -229,30 +236,34 @@ Playwright tests run against the dev server, not your actual production stack.
 
 ## Running Example
 
-**Feature:** Import CSV line items into an order
+**Feature:** Import SketchUp CSV exports into Flex Rental Solutions Pull Sheets
 
 **User Story:**
-As a user, I want to upload a CSV file containing line items so that I can bulk-add products to an order without manual
-entry.
+As a user, I want to upload a SketchUp CSV export so that I can bulk-create Pull Sheets with inventory and custom notes
+in Flex Rental Solutions without manual entry.
 
 **Acceptance Criteria:**
 
 - User can access the import page (authenticated only)
 - User can select a CSV file
-- User can specify a target order number
-- System validates CSV format
-- System matches CSV items to inventory by barcode
-- System creates line items in the target order
-- User sees summary of success/failures
+- User can specify a target element number (Quote, Event Folder, or existing Pull Sheet)
+- System validates CSV format and element number
+- System matches CSV barcodes to Flex inventory
+- System creates or replaces Pull Sheets with line items
+- System handles both inventory items and custom note lines
+- User sees detailed results page with success/error summary
 
 **CSV Format:**
 
 ```csv
-Barcode,Quantity,Notes
-ABC123,5,Handle with care
-XYZ789,2,
-DEF456,10,Fragile
+Status,Definition Name,Quantity,Tag
+100001,LED Panel,5,
+100002,Audio Cable,10,
+CUSTOM,Special rigging note,1,Production Notes
 ```
+
+**Note:** This is a real feature built for production, not a tutorial example. All code samples are from the actual
+implementation.
 
 ---
 
@@ -277,34 +288,40 @@ class ImportMvcTest {
 }
 ```
 
-**Next.js Equivalent:**
+**Next.js Equivalent (Real Production Code):**
 
 ```typescript
-// tests/e2e/csv-import/accessibility.spec.ts
-import {test, expect} from '@playwright/test';
+// tests/e2e/sketchup-import/sketchup-import-access.spec.ts
+import {expect, test} from '../../fixtures/mockFlexApi';
 
-test.describe('CSV Import - Accessibility', () => {
-    test('authenticated users can access import page', async ({page}) => {
-        // Arrange: Log in (use Playwright auth setup)
-        await page.goto('/login');
-        await page.fill('[name="email"]', 'test@example.com');
-        await page.fill('[name="password"]', 'password');
-        await page.getByRole('button', {name: /log in|submit/i}).click();
+test.describe('Authentication', () => {
+  test.describe('Unauthenticated Access', () => {
+    // Reset the storage state for this test to avoid being authenticated
+    test.use({storageState: {cookies: [], origins: []}});
 
-        // Act: Navigate to import page
-        await page.goto('/operations/csv-import');
-
-        // Assert: Page loads successfully
-        await expect(page).toHaveTitle(/CSV Import/);
-        await expect(page.getByRole('heading', {name: 'Import CSV', level: 1})).toBeVisible();
+    test('unauthenticated user is shown a login prompt on a protected page', async ({page}) => {
+      await page.goto('/operations/sketchup-import');
+      await expect(page.getByRole('heading', {
+        name: "You need to login to see this page"
+      })).toBeVisible();
+    });
     });
 
-    test('unauthenticated users are redirected to login', async ({page}) => {
-        await page.goto('/operations/csv-import');
-        await expect(page).toHaveURL(/\/login/);
+  test.describe('Authenticated Access', () => {
+    test('authenticated user sees SketchUp Import title', async ({page}) => {
+      await page.goto('/operations/sketchup-import');
+      await expect(page.getByRole('heading', {name: 'SketchUp Import'})).toBeVisible();
+    });
     });
 });
 ```
+
+**Key Differences from Prediction:**
+
+- Uses `mockFlexApi` fixture to avoid hitting real API (critical for preventing rate limits)
+- Uses `storageState` pattern for auth instead of filling login form each time
+- Simpler assertion - just checks heading visibility
+- Authentication handled by Playwright global setup (more efficient)
 
 **Run the test:**
 
@@ -314,45 +331,66 @@ npx playwright test tests/e2e/csv-import/accessibility.spec.ts
 
 **Expected result:** ❌ FAIL (page doesn't exist)
 
-**Make it pass:**
+**Make it pass (Real Implementation):**
 
 ```typescript
-// pages/operations/csv-import/index.tsx
-import type {NextPage, GetServerSideProps} from 'next';
-import {getSession} from 'next-auth/react';
-import PageSEOWrapper from 'components/Layout/PageSEOWrapper';
+// pages/operations/sketchup-import/index.tsx
+import {Heading, VStack} from "@chakra-ui/react";
+import PageSEOWrapper from "components/Layout/PageSEOWrapper";
+import NeedToLoginMessage from "components/Main/NeedToLoginMessage";
+import {userStatus} from "constants/userStatus";
+import {pagesNames} from "constants/pagesNames";
+import useTypeOfUser from "hooks/useTypeOfUser";
 
-const CSVImportPage: NextPage = () => {
-    return (
-        <PageSEOWrapper title = "CSV Import"
-    description = "Import line items from CSV" >
-        <h1>Import
-    CSV < /h1>
-    < /PageSEOWrapper>
+function SketchUpImport() {
+  const typeOfUser = useTypeOfUser();
+
+  return (
+          <PageSEOWrapper
+                  title = {pagesNames.SKETCHUP_IMPORT}
+  description = {pagesNames.SKETCHUP_IMPORT}
+          >
+          {typeOfUser !== userStatus.NOUSER && (
+                  <VStack align = "stretch"
+  gap = {6}
+  maxW = "600px"
+  w = "100%"
+  px = {
+  {
+    base: "4", md
+  :
+    "6", xl
+  :
+    "8"
+  }
+}
+  py = "6" >
+  <Heading as = "h1" > SketchUp
+  Import < /Heading>
+  {/* Form components will go here */
+  }
+  </VStack>
 )
-    ;
-};
+}
 
-// Server-side authentication check
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await getSession(context);
+  {
+    typeOfUser === userStatus.NOUSER && <NeedToLoginMessage / >
+  }
+  </PageSEOWrapper>
+)
+  ;
+}
 
-    if (!session) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false,
-            },
-        };
-    }
-
-    return {
-        props: {session},
-    };
-};
-
-export default CSVImportPage;
+export default SketchUpImport;
 ```
+
+**Key Differences from Prediction:**
+
+- Uses client-side auth check (`useTypeOfUser` hook) instead of `getServerSideProps`
+- This is the Loomium pattern - simpler and works well with NextAuth
+- Uses Chakra UI components (`VStack`, `Heading`) for consistent styling
+- Shows `NeedToLoginMessage` component instead of redirecting to login
+- No TypeScript `NextPage` type (not needed in this pattern)
 
 **Run the test again:**
 
@@ -825,53 +863,74 @@ class ImportServiceTest {
 }
 ```
 
-**Next.js Equivalent:**
+**Next.js Equivalent (Real Production Code):**
 
 ```typescript
-// src/utils/csvImport/__tests__/parseCSV.test.ts
-import {parseCSV} from '../parseCSV';
+// src/utils/sketchupImport/__tests__/csvParser.test.ts
+import {describe, expect, it} from "@jest/globals";
+import {parseAndCleanCsv} from "../csvParser";
 
-describe('parseCSV', () => {
-    it('parses valid CSV into line items', () => {
-        const csvData = `Barcode,Quantity,Notes
-ABC123,5,Handle with care
-XYZ789,2,`;
+describe('parseAndCleanCsv', () => {
+  describe('Domain Object Creation', () => {
+    it('creates InventoryItem for rows with numeric Status', () => {
+      const csvContent = `Status,Definition Name,Quantity
+100001,Test Inventory Item,10`;
 
-        const result = parseCSV(csvData);
+      const result = parseAndCleanCsv(csvContent);
 
-        expect(result.success).toBe(true);
-        expect(result.items).toHaveLength(2);
-        expect(result.items[0]).toEqual({
-            barcode: 'ABC123',
-            quantity: 5,
-            notes: 'Handle with care',
-        });
-        // Note: Jest's expect() is functional but not as fluent as AssertJ
-        // For better assertions, consider: jest-extended, or chai with expect style
-        // Example with jest-extended: expect(result.items).toBeArrayOfSize(2)
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({
+        type: 'inventory',
+        barcode: '100001',
+        quantity: 10,
+        definitionName: 'Test Inventory Item'
+      });
     });
 
-    it('returns error for missing required columns', () => {
-        const csvData = `ProductCode,Amount
-ABC123,5`;
+    it('creates NoteLineItem for rows with non-numeric Status', () => {
+      const csvContent = `Status,Definition Name,Quantity
+CUSTOM,Custom Item Description,5`;
 
-        const result = parseCSV(csvData);
+      const result = parseAndCleanCsv(csvContent);
 
-        expect(result.success).toBe(false);
-        expect(result.error).toContain('Missing required column: Barcode');
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({
+        type: 'note',
+        description: 'Custom Item Description',
+        quantity: 5,
+        definitionName: 'Custom Item Description',
+        tag: undefined
+      });
     });
+  });
 
-    it('returns error for invalid quantity', () => {
-        const csvData = `Barcode,Quantity,Notes
-ABC123,NotANumber,Test`;
+  describe('Whitespace Handling', () => {
+    it('givenCsvWithWhitespace_whenParsed_thenValuesAreTrimmed', () => {
+      const csvContent = `  Status  ,  Definition Name  ,  Quantity
+  100001  ,  Test Item With Spaces  ,  5
+100002,Test Item Without Spaces,3`;
 
-        const result = parseCSV(csvData);
+      const result = parseAndCleanCsv(csvContent);
 
-        expect(result.success).toBe(false);
-        expect(result.error).toContain('Invalid quantity');
+      expect(result).toHaveLength(2);
+      expect(result[0]).toEqual({
+        type: 'inventory',
+        barcode: '100001',
+        quantity: 5,
+        definitionName: 'Test Item With Spaces'
+      });
+    });
     });
 });
 ```
+
+**Key Differences from Prediction:**
+
+- Uses discriminated union types (`type: 'inventory' | 'note'`) for type-safe parsing
+- More sophisticated - handles two different domain types (inventory vs. notes)
+- Test names use Given-When-Then pattern (influenced by TDD learning)
+- No success/error result object - throws `ValidationError` for failures
+- Uses Zod internally for validation (not shown but used in the implementation)
 
 **Run the test:**
 
@@ -881,74 +940,73 @@ pnpm test src/utils/csvImport/__tests__/parseCSV.test.ts
 
 **Expected result:** ❌ FAIL (function doesn't exist)
 
-**Make it pass:**
+**Make it pass (Real Implementation):**
 
 ```typescript
-// src/utils/csvImport/parseCSV.ts
+// src/utils/sketchupImport/csvParser.ts
 import {parse} from 'csv-parse/sync';
+import {ParsedRow, ValidationError} from './types';
+import {parseLineItem, RawCsvRow, validateCsvHeaders} from './validation';
 
-// Domain entity - keep it simple; use type unless you need extension
-// In Java, this would be a record - immutable, structural, no behavior
-export type LineItem = {
-    barcode: string;
-    quantity: number;
-    notes: string;
-}
+/**
+ * Parses and cleans CSV content, returning domain objects (InventoryItem or NoteLineItem)
+ *
+ * Uses Zod discriminated unions for type-safe validation and parsing.
+ */
+export function parseAndCleanCsv(csvContent: string): ParsedRow[] {
+  let records: RawCsvRow[];
 
-// Result DTO - discriminated union pattern for success/error cases
-export type ParseResult = {
-    success: boolean;
-    items?: LineItem[];  // Optional property (may be undefined) - indicated by ?
-    error?: string;      // Optional property (may be undefined)
-};
-
-export function parseCSV(csvData: string): ParseResult {
     try {
-        const records = parse(csvData, {
-            columns: true, // Use first row as headers
+      records = parse(csvContent, {
+        columns: true,
             skip_empty_lines: true,
             trim: true,
         });
+    } catch (error: any) {
+      const errorMessage = error?.message || '';
 
-        // Validate required columns
-        if (records.length === 0) {
-            return {success: false, error: 'CSV is empty'};
-        }
-
-        const firstRecord = records[0];
-        if (!('Barcode' in firstRecord)) {
-            return {success: false, error: 'Missing required column: Barcode'};
-        }
-        if (!('Quantity' in firstRecord)) {
-            return {success: false, error: 'Missing required column: Quantity'};
-        }
-
-        const items: LineItem[] = [];
-
-        for (let i = 0; i < records.length; i++) {
-            const record = records[i];
-            const quantity = parseInt(record.Quantity, 10);
-
-            if (isNaN(quantity)) {
-                return {success: false, error: `Invalid quantity on line ${i + 2}`};
-            }
-
-            items.push({
-                barcode: record.Barcode,
-                quantity,
-                notes: record.Notes || '',
-            });
-        }
-
-        return {success: true, items};
-    } catch (error) {
-        return {
-            success: false,
-            error: `CSV parsing failed: ${error instanceof Error ? error.message : 'Unknown error'}`
-        };
+      // Provide user-friendly error messages for common CSV issues
+      if (errorMessage.includes('Invalid Record Length')) {
+        throw new ValidationError('CSV file is malformed. Please check that all rows have the same number of columns.');
+      }
+      if (errorMessage.includes('Quote Not Closed')) {
+        throw new ValidationError('CSV file is malformed. Please check that all quotes are properly closed.');
+      }
+      throw error;
     }
+
+  // Validate headers
+  if (records.length > 0) {
+    const headers = Object.keys(records[0]);
+    const {valid, missing} = validateCsvHeaders(headers);
+    if (!valid && missing && missing.length > 0) {
+      throw new ValidationError('CSV must have required columns: Definition Name, Status, Quantity');
+        }
+  }
+
+  const parsedRows: ParsedRow[] = [];
+
+  for (const row of records) {
+    // Use Zod-based parser to validate and convert row
+    const lineItem = parseLineItem(row);
+
+    if (lineItem) {
+      parsedRows.push(lineItem);
+    }
+    // Invalid rows are silently skipped (tolerance for mixed valid/invalid data)
+  }
+
+  return parsedRows;
 }
 ```
+
+**Key Differences from Prediction:**
+
+- Throws exceptions instead of returning success/error objects (simpler)
+- Uses Zod schemas (in `validation.ts`) for row parsing - more type-safe
+- More sophisticated error messages for common CSV issues
+- Delegates validation logic to separate `validation.ts` module (better separation)
+- Tolerates mixed valid/invalid rows (skips invalid instead of failing entirely)
 
 This uses the [`csv-parse`](https://csv.js.org/parse/) library (part of the actively-maintained `csv` package).
 
@@ -1385,6 +1443,239 @@ The architecture itself - separating IO from logic - eliminates the need for mos
 
 ---
 
+## Retrospective: Predictions vs. Reality
+
+This guide was written *before* building any production features. After completing the **SketchUp Import feature** (34
+Playwright tests, 13 API tests, 89 service tests, ~2000 lines of production code), here's what actually happened:
+
+### ✅ What Worked Exactly As Predicted
+
+**1. Outside-In TDD Workflow**
+The three-layer approach translated perfectly:
+
+- Started with Playwright tests for page accessibility
+- Dropped to Jest API tests when Playwright needed backend
+- Dropped to Jest IO-Free tests for business logic
+- Came back up as tests passed
+
+**2. IO-Free vs IO-Based Distinction**
+This was the most valuable insight from Ted's approach:
+
+- IO-Free tests (CSV parsing, validation logic) run in microseconds and have **zero mocks**
+- IO-Based tests (API routes, Flex API calls) are slower but necessary
+- The separation made TDD fast and enjoyable
+
+**3. Test Organization**
+
+- Co-located `__tests__/` folders work great
+- Playwright tests in `tests/e2e/` for cross-cutting concerns
+- Test file naming conventions matched exactly
+
+**4. Tools and Libraries**
+
+- `formidable` for file uploads ✅
+- `csv-parse` for CSV parsing ✅
+- `node-mocks-http` for API route testing ✅
+- Playwright for E2E tests ✅
+
+### 🎯 What Evolved Beyond Predictions
+
+**1. React Hook Form + Zod (Not Predicted)**
+The real implementation uses sophisticated form handling:
+
+```typescript
+const {register, handleSubmit, setValue, formState: {errors}} = useForm<ImportFormData>({
+  resolver: zodResolver(ImportFormSchema),
+  mode: "onChange",
+});
+```
+
+This wasn't in the original guide but became essential for:
+
+- Real-time validation
+- Type-safe form data
+- Client-side error messages
+
+**2. Playwright Fixtures (Game Changer)**
+The blog mentioned mocking but didn't predict how critical fixtures would be:
+
+```typescript
+// tests/fixtures/mockFlexApi.ts - 200+ lines of mock Flex API endpoints
+import {expect, test} from '../../fixtures/mockFlexApi';  // Critical import!
+```
+
+**Lesson:** Without this fixture, we hit rate limits on the real Flex API during test runs. This was discovered the hard
+way.
+
+**3. Hexagonal Architecture Pattern**
+The real code has stronger separation than predicted:
+
+- **`FlexClient` class** - Adapter for all Flex API calls (hexagonal "driven" adapter)
+- **`importService.ts`** - Orchestration layer (use case)
+- **`csvParser.ts`, `validation.ts`** - Pure domain logic
+- **API route** - Thin adapter calling the service
+
+This made testing easier because:
+
+- Service tests mock only `FlexClient` (one boundary)
+- API tests mock the entire service
+- Parser tests mock nothing
+
+**4. Observability (Not Mentioned)**
+Production code needs visibility:
+
+```typescript
+import {logger} from "utils/logger";
+
+logger
+        .withMetadata({elementNumber, userId, flexInstance})
+        .info('SketchUp import started');
+```
+
+Plus Sentry integration, database logging, and breadcrumbs. The blog focused on testing but production requires
+debugging tools.
+
+**5. Manual Integration Tests**
+Discovered a new pattern:
+
+```typescript
+// src/utils/sketchupImport/__tests__/barcodeService.manual.test.ts
+describe.skip('Barcode Service - Manual Integration Tests', () => {
+  // Tests against real Flex API, skipped by default
+});
+```
+
+These run: `pnpm test:manual:barcode`
+
+Why? Because mocking can hide bugs. We had a mock structure that didn't match production data, causing a bug that only
+appeared in staging. Manual integration tests catch these.
+
+### ❌ What Didn't Match Predictions
+
+**1. Authentication Pattern**
+**Predicted:** Server-side redirect with `getServerSideProps`
+
+```typescript
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+  if (!session) return {redirect: {destination: '/login'}};
+  return {props: {session}};
+};
+```
+
+**Reality:** Client-side check with custom hook
+
+```typescript
+const typeOfUser = useTypeOfUser();
+{
+  typeOfUser === userStatus.NOUSER && <NeedToLoginMessage / >
+}
+```
+
+**Why the difference?** The Loomium codebase already had established patterns. Following existing conventions was more
+important than the "theoretically correct" approach.
+
+**2. Post-Redirect-Get Pattern**
+**Predicted:** "For this example, we're using a simpler client-side state update"
+
+**Reality:** Fully implemented PRG pattern with database persistence
+
+```typescript
+const importId = uuidv4();
+await SketchUpImportLog.create({id: importId, ...result});
+await router.push(`/operations/sketchup-import/results/${importId}`);
+```
+
+Turned out this was critical for:
+
+- Users refreshing results page
+- Sharing import results URLs
+- Historical analysis
+
+**3. Test Doubles Usage**
+**Predicted:** "98% of my tests don't use any kind of mocking framework"
+
+**Reality:** More like 70% IO-Free (no mocks), 30% IO-Based (strategic mocking)
+
+The IO-Based tests mock:
+
+- `FlexClient` (adapter boundary)
+- `getSession` (NextAuth)
+- `getCustomer` (database)
+
+**Key insight:** The hexagonal architecture made mocking boundaries clear. We mock at adapter boundaries, never in
+domain logic.
+
+### 📚 Biggest Lessons Learned
+
+**1. The Workflow Actually Works**
+Outside-In TDD in Next.js is not just possible—it's enjoyable. The rapid feedback from IO-Free tests (microseconds)
+combined with the safety net of Playwright tests (full integration) gave confidence to refactor aggressively.
+
+**2. Test Speed Matters More Than Expected**
+Running 89 Jest tests in ~2 seconds vs. 34 Playwright tests in ~30 seconds makes a huge difference in workflow. You
+run IO-Free tests constantly, IO-Based tests periodically.
+
+**3. Type Safety Reduces Test Burden**
+TypeScript + Zod caught entire classes of bugs that would have required tests in JavaScript:
+
+- Column name typos
+- Missing required fields
+- Type coercion issues
+
+This let us focus tests on business logic, not syntax validation.
+
+**4. Production Code Needs More Than The Blog Shows**
+Real features need:
+
+- Logging and observability
+- Error tracking (Sentry)
+- Database persistence
+- Admin configuration UIs
+- Results pages
+- CSV templates
+- Rate limit handling
+
+The blog shows the TDD workflow but not the full production context.
+
+**5. Fixture Maintenance Is Real Work**
+The `mockFlexApi.ts` fixture is 200+ lines and needs updates when:
+
+- New Flex API endpoints are called
+- Response formats change
+- New admin settings are added
+
+This is maintenance overhead but absolutely worth it to avoid rate limits and flaky tests.
+
+### 🎓 Advice for Your Next Feature
+
+**Do This:**
+
+- ✅ Start with Playwright test for page accessibility
+- ✅ Use Outside-In workflow (edge → internals)
+- ✅ Keep IO-Free tests truly IO-Free (no mocks!)
+- ✅ Use Zod for all validation
+- ✅ Create Playwright fixtures for external APIs
+- ✅ Write manual integration tests for critical adapters
+- ✅ Follow the codebase's existing patterns (even if blog says otherwise)
+
+**Don't Do This:**
+
+- ❌ Don't mock inside domain logic
+- ❌ Don't skip IO-Free tests and only write E2E tests
+- ❌ Don't import from `@playwright/test` - use your fixtures!
+- ❌ Don't test implementation details - test behavior
+- ❌ Don't write tests after code (defeats the purpose)
+
+**When Stuck:**
+
+1. Check if similar code exists elsewhere in the codebase
+2. Look at test files for patterns (we have 136 tests now)
+3. Ask: "Am I testing behavior or implementation?"
+4. Drop down a layer if the current test is too hard to make pass
+
+---
+
 ## Resources
 
 ### Ted M. Young's Work
@@ -1435,5 +1726,21 @@ The architecture itself - separating IO from logic - eliminates the need for mos
 
 ---
 
-*This guide synthesizes research from Ted M. Young's YouTube transcripts, blog posts, and public codebases. All
-credit for the core methodology goes to Ted. Any errors in translation to Next.js are mine. - Nathan*
+## Final Thoughts
+
+When I started this project, I knew Java and Spring Boot but was new to Next.js and React. The question was: "Can I
+do TDD the way Ted Young teaches in this unfamiliar ecosystem?"
+
+After building a production feature with 136 automated tests, the answer is **yes**—but with adjustments. The
+Outside-In workflow, IO-Free vs IO-Based distinction, and test-first discipline all translated. The tools and patterns
+differ, but the principles hold.
+
+The retrospective section shows what I got right in my predictions and what I learned the hard way. If you're in a
+similar position—experienced in one stack, learning another—I hope this guide gives you confidence that TDD works
+across ecosystems. The mechanics change. The discipline doesn't.
+
+---
+
+*This guide synthesizes research from Ted M. Young's YouTube transcripts, blog posts, and public codebases, then
+validates those ideas through building a real production feature. All credit for the core methodology goes to Ted. The
+translation to Next.js—including the mistakes and corrections—is mine. - Nathan*

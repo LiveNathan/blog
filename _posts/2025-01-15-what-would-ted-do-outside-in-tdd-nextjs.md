@@ -411,10 +411,28 @@ There is an important refactor step that happens here as part of the TDD loop. I
 **Goal:** User can select a CSV file and see it in the UI.
 
 **What Ted Would Do:**
-Continue at IO-Based layer testing the UI interaction. In Java/Spring with Thymeleaf, he'd use MockMvc to check model
-attributes. In React/Next.js, we test the rendered DOM with Playwright.
+Continue at IO-Based layer testing the UI interaction. In Java/Spring with Thymeleaf, he'd use MockMvc to check that the
+form backing object is present in the model.
 
-**Test:**
+```java
+@WebMvcTest(ImportController.class)
+@Tag("io")
+class ImportMvcTest {
+    @Autowired MockMvc mockMvc;
+
+    @Test
+    void importPageShowsFileUploadForm() throws Exception {
+        mockMvc.perform(get("/import"))
+               .andExpect(status().isOk())
+               .andExpect(view().name("import"))
+               .andExpect(model().attributeExists("importForm"));
+    }
+}
+```
+
+**Next.js Equivalent (Playwright):**
+
+In React/Next.js, we test the rendered DOM with Playwright.
 
 ```typescript
 // tests/e2e/csv-import/file-upload.spec.ts
@@ -601,6 +619,24 @@ Commit. Refactor. Commit.
 **What Ted Would Do:**
 Write IO-Based test for POST submission. Test will fail because the API endpoint doesn't exist. This is the signal to
 drop down to the API layer.
+
+```java
+@WebMvcTest(ImportController.class)
+@Tag("io")
+class ImportMvcTest {
+    @Test
+    void submittingCsvImportsItemsAndRedirects() throws Exception {
+        MockMultipartFile csvFile = new MockMultipartFile(
+            "file", "test.csv", "text/csv", "Barcode,Qty\n123,1".getBytes());
+
+        mockMvc.perform(multipart("/import")
+                .file(csvFile)
+                .param("orderNumber", "ORD-123"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/import/result"));
+    }
+}
+```
 
 **Note on POST-Redirect-GET Pattern:**
 In production applications, form submissions typically follow the Post-Redirect-Get (PRG) pattern to prevent duplicate
@@ -1026,6 +1062,17 @@ Commit. Refactor. Commit.
 
 **Goal:** API route uses the CSV parser.
 
+**What Ted Would Do:**
+Update the controller to use the newly created service/parser.
+
+```java
+@PostMapping("/import")
+public String processImport(@RequestParam("file") MultipartFile file) throws IOException {
+    importService.parse(file.getInputStream());
+    return "redirect:/import/result";
+}
+```
+
 **Update the API handler:**
 
 ```typescript
@@ -1118,6 +1165,20 @@ We've been working our way down and back up:
 5. Phase 5: Implemented CSV parser - Parser tests PASSED
 6. Phase 6: Wired parser into API handler - API tests still PASS
 7. **Phase 7 (current):** Back to Playwright - should now PASS because API exists and works
+
+**What Ted Would Do:**
+Implement the HTML form in the Thymeleaf template to submit data to the backend.
+
+```html
+<!-- src/main/resources/templates/import.html -->
+<form method="post" enctype="multipart/form-data" th:action="@{/import}">
+    <div class="dropzone">
+        <input type="file" name="file" accept=".csv" />
+    </div>
+    <input type="text" name="orderNumber" placeholder="Order Number" />
+    <button type="submit">Import</button>
+</form>
+```
 
 **Update the upload component:**
 

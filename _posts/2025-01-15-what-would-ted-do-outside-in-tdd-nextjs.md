@@ -90,7 +90,8 @@ you need to know:
 
 ### Setting Up Your Test Environment
 
-In a Java project you might separate your tests using `@Tag` annotations. The in Intellij create two run configurations.
+In a Java project you might separate your tests using `@Tag` annotations. In IntelliJ, you would create two run
+configurations.
 In Next.js, you can do this with different run scripts.
 
 ```json
@@ -305,14 +306,14 @@ test.describe('Authentication', () => {
         name: "You need to login to see this page"
       })).toBeVisible();
     });
-    });
+  });
 
   test.describe('Authenticated Access', () => {
     test('authenticated user sees SketchUp Import title', async ({page}) => {
       await page.goto('/operations/sketchup-import');
       await expect(page.getByRole('heading', {name: 'SketchUp Import'})).toBeVisible();
     });
-    });
+  });
 });
 ```
 
@@ -351,7 +352,8 @@ function SketchUpImport() {
   description = {pagesNames.SKETCHUP_IMPORT}
           >
           {typeOfUser !== userStatus.NOUSER && (
-                  <VStack align = "stretch"
+                  <VStack
+                          align = "stretch"
   gap = {6}
   maxW = "600px"
   w = "100%"
@@ -364,7 +366,8 @@ function SketchUpImport() {
     "8"
   }
 }
-  py = "6" >
+  py = "6"
+  >
   <Heading as = "h1" > SketchUp
   Import < /Heading>
   {/* Form components will go here */
@@ -505,14 +508,14 @@ import CSVUpload from 'components/Main/Operations/CSVImport/FileUpload';
 
 const CSVImportPage: NextPage = () => {
     return (
-        <PageSEOWrapper title = "CSV Import"
-    description = "Import line items from CSV" >
-        <h1>Import
-    CSV < /h1>
-    < CSVUpload / >
-    </PageSEOWrapper>
+            <PageSEOWrapper title = "CSV Import"
+  description = "Import line items from CSV" >
+          <h1>Import
+  CSV < /h1>
+  < CSVUpload / >
+  </PageSEOWrapper>
 )
-    ;
+  ;
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -564,40 +567,45 @@ const CSVUpload = () => {
         <Box>
             <Box
                 {...getRootProps()}
-    data - testid = "csv-dropzone"
-    border = "2px dashed"
-    borderColor = "gray.300"
-    p = {8}
-    textAlign = "center"
-    cursor = "pointer"
-        >
-        <input {...getInputProps()}
-    />
-    < Text > Drop
-    CSV
-    file
-    here, or
-    click
-    to
-    select < /Text>
-    < /Box>
+  data - testid = "csv-dropzone"
+  border = "2px dashed"
+  borderColor = "gray.300"
+  p = {8}
+  textAlign = "center"
+  cursor = "pointer"
+          >
+          <input {...getInputProps()}
+  />
+  < Text > Drop
+  CSV
+  file
+  here, or
+  click
+  to
+  select < /Text>
+  < /Box>
+  {
+    fileName && (
+            <Text mt = {2} > File
+  :
     {
-        fileName && <Text mt = {2} > File
-    :
-        {
-            fileName
-        }
-        </Text>}
-        {
-            error && <Text mt = {2}
-            color = "red.500" > {error} < /Text>}
-                < /Box>
-        )
-            ;
-        }
-        ;
+      fileName
+    }
+    </Text>
+  )
+  }
+  {
+    error && (
+            <Text mt = {2}
+    color = "red.500" > {error} < /Text>
+  )
+  }
+  </Box>
+)
+  ;
+};
 
-        export default CSVUpload;
+export default CSVUpload;
 ```
 
 **Run the test:**
@@ -964,7 +972,7 @@ CUSTOM,Custom Item Description,5`;
 
 - Uses discriminated union types (`type: 'inventory' | 'note'`) for type-safe parsing
 - More sophisticated - handles two different domain types (inventory vs. notes)
-- Test names use Given-When-Then pattern (influenced by TDD learning)
+- Test names can use Given-When-Then pattern (influenced by TDD learning)
 - No success/error result object - throws `ValidationError` for failures
 - Uses Zod internally for validation (not shown but used in the implementation)
 
@@ -1248,86 +1256,86 @@ const CSVUpload = () => {
     };
 
     return (
-        <VStack spacing = {4}
-    align = "stretch" >
-        <Box
-            {...getRootProps()}
-    data - testid = "csv-dropzone"
-    border = "2px dashed"
-    borderColor = "gray.300"
-    p = {8}
-    textAlign = "center"
-    cursor = "pointer"
-        >
-        <input {...getInputProps()}
-    />
-    < Text > Drop
-    CSV
-    file
-    here, or
-    click
-    to
-    select < /Text>
-    < /Box>
+            <VStack spacing = {4}
+  align = "stretch" >
+          <Box
+                  {...getRootProps()}
+  data - testid = "csv-dropzone"
+  border = "2px dashed"
+  borderColor = "gray.300"
+  p = {8}
+  textAlign = "center"
+  cursor = "pointer"
+          >
+          <input {...getInputProps()}
+  />
+  < Text > Drop
+  CSV
+  file
+  here, or
+  click
+  to
+  select < /Text>
+  < /Box>
+  {
+    fileName && <Text>File
+  :
     {
-        fileName && <Text>File
-    :
-        {
-            fileName
-        }
-        </Text>}
-
-        < Input
-        name = "orderNumber"
-        placeholder = "Order Number (e.g., ORD-12345)"
-        value = {orderNumber}
-        onChange = {(e)
-    =>
-        setOrderNumber(e.target.value)
+      fileName
     }
-        />
+    </Text>}
 
-        < Button
-        onClick = {handleSubmit}
-        isDisabled = {!
-        file || !orderNumber
-    }
-        isLoading = {isSubmitting}
+    < Input
+    name = "orderNumber"
+    placeholder = "Order Number (e.g., ORD-12345)"
+    value = {orderNumber}
+    onChange = {(e)
+  =>
+    setOrderNumber(e.target.value)
+  }
+    />
+
+    < Button
+    onClick = {handleSubmit}
+    isDisabled = {!
+    file || !orderNumber
+  }
+    isLoading = {isSubmitting}
             >
             Import
             < /Button>
 
-        {
-            result && (
-                <Box p = {4}
-            bg = "green.100"
-            borderRadius = "md" >
-                <Text>Import
-            completed
-            successfully < /Text>
-            < Text > {result.itemsImported}
-            items
-            imported < /Text>
-            < /Box>
-        )
-        }
-
-        {
-            error && (
-                <Box p = {4}
-            bg = "red.100"
-            borderRadius = "md" >
-            <Text color = "red.700" > {error} < /Text>
-                < /Box>
-        )
-        }
-        </VStack>
+    {
+      result && (
+              <Box p = {4}
+      bg = "green.100"
+      borderRadius = "md" >
+              <Text>Import
+      completed
+      successfully < /Text>
+      < Text > {result.itemsImported}
+      items
+      imported < /Text>
+      < /Box>
     )
-        ;
     }
-    ;
 
-    export default CSVUpload;
+    {
+      error && (
+              <Box p = {4}
+      bg = "red.100"
+      borderRadius = "md" >
+      <Text color = "red.700" > {error} < /Text>
+              < /Box>
+    )
+    }
+        </VStack>
+  )
+    ;
+  }
+  ;
+
+  export default CSVUpload;
 ```
 
 **Run IO-Based tests:**

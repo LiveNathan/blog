@@ -8,7 +8,7 @@ categories: [ tdd, nextjs, typescript, workflow, ted-young ]
 ## The Challenge
 
 You know Test-Driven Development in Java. You know Spring Boot, Vaadin, and hexagonal architecture. You've studied [Ted
-M. Young's](https://ted.dev/) (JitterTed's) outside-in workflow extensively. Now you're staring at a Next.js codebase thinking: *Can I even
+M. Young's](https://ted.dev/) (JitterTed's) outside-in workflow. Now you're staring at a Next.js codebase thinking: *Can I even
 do TDD here? Does this workflow translate?*
 
 **Short answer:** Yes. The principles translate. The tools differ.
@@ -23,7 +23,7 @@ the [Retrospective section](#retrospective-predictions-vs-reality) for the full 
 
 **Note on Next.js Version:** This guide was originally written speculatively before building any features. The actual
 implementation described here uses **Next.js 16 with the Pages Router** (`pages/` directory). The core TDD workflow
-translated perfectly. If you're using the App Router (`app/` directory), the core TDD workflow remains the same, but
+translated well. If you're using the App Router (`app/` directory), the core TDD workflow remains the same, but
 file organization and some APIs differ. The principles translate—the file paths change.
 
 ## Table of Contents
@@ -46,10 +46,10 @@ When you're stuck and need to know "what's next?", use this:
 
 **Starting a new feature:**
 
-1. Write IO-Based test (Playwright) for endpoint accessibility → Should FAIL
-2. Create Next.js page file → IO test PASSES. Refactor step omitted for brevity.
-3. Write IO-Based test for UI interaction → Should FAIL
-4. Add minimal UI component → IO test PASSES
+1. Write IO-Based test (Playwright) for endpoint accessibility → Should FAIL (page doesn't exist)
+2. Create Next.js page file → IO test PASSES. Refactor.
+3. Write IO-Based test for UI interaction → Should FAIL (component doesn't exist)
+4. Add minimal UI component → IO test PASSES. Refactor.
 5. Write IO-Based test for form submission → Should FAIL (no API endpoint)
 6. **Drop down:** Write API route test (Jest, IO-Based) → Should FAIL
 7. Create API route handler → API test PASSES
@@ -347,41 +347,27 @@ function SketchUpImport() {
   const typeOfUser = useTypeOfUser();
 
   return (
-          <PageSEOWrapper
-                  title = {pagesNames.SKETCHUP_IMPORT}
-  description = {pagesNames.SKETCHUP_IMPORT}
-          >
-          {typeOfUser !== userStatus.NOUSER && (
-                  <VStack
-                          align = "stretch"
-  gap = {6}
-  maxW = "600px"
-  w = "100%"
-  px = {
-  {
-    base: "4", md
-  :
-    "6", xl
-  :
-    "8"
-  }
-}
-  py = "6"
-  >
-  <Heading as = "h1" > SketchUp
-  Import < /Heading>
-  {/* Form components will go here */
-  }
-  </VStack>
-)
-}
+    <PageSEOWrapper
+      title={pagesNames.SKETCHUP_IMPORT}
+      description={pagesNames.SKETCHUP_IMPORT}
+    >
+      {typeOfUser !== userStatus.NOUSER && (
+        <VStack
+          align="stretch"
+          gap={6}
+          maxW="600px"
+          w="100%"
+          px={{ base: "4", md: "6", xl: "8" }}
+          py="6"
+        >
+          <Heading as="h1">SketchUp Import</Heading>
+          {/* Form components will go here */}
+        </VStack>
+      )}
 
-  {
-    typeOfUser === userStatus.NOUSER && <NeedToLoginMessage / >
-  }
-  </PageSEOWrapper>
-)
-  ;
+      {typeOfUser === userStatus.NOUSER && <NeedToLoginMessage />}
+    </PageSEOWrapper>
+  );
 }
 
 export default SketchUpImport;
@@ -508,14 +494,14 @@ import CSVUpload from 'components/Main/Operations/CSVImport/FileUpload';
 
 const CSVImportPage: NextPage = () => {
     return (
-            <PageSEOWrapper title = "CSV Import"
-  description = "Import line items from CSV" >
-          <h1>Import
-  CSV < /h1>
-  < CSVUpload / >
-  </PageSEOWrapper>
-)
-  ;
+        <PageSEOWrapper 
+            title="CSV Import"
+            description="Import line items from CSV"
+        >
+            <h1>Import CSV</h1>
+            <CSVUpload />
+        </PageSEOWrapper>
+    );
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -567,42 +553,24 @@ const CSVUpload = () => {
         <Box>
             <Box
                 {...getRootProps()}
-  data - testid = "csv-dropzone"
-  border = "2px dashed"
-  borderColor = "gray.300"
-  p = {8}
-  textAlign = "center"
-  cursor = "pointer"
-          >
-          <input {...getInputProps()}
-  />
-  < Text > Drop
-  CSV
-  file
-  here, or
-  click
-  to
-  select < /Text>
-  < /Box>
-  {
-    fileName && (
-            <Text mt = {2} > File
-  :
-    {
-      fileName
-    }
-    </Text>
-  )
-  }
-  {
-    error && (
-            <Text mt = {2}
-    color = "red.500" > {error} < /Text>
-  )
-  }
-  </Box>
-)
-  ;
+                data-testid="csv-dropzone"
+                border="2px dashed"
+                borderColor="gray.300"
+                p={8}
+                textAlign="center"
+                cursor="pointer"
+            >
+                <input {...getInputProps()} />
+                <Text>Drop CSV file here, or click to select</Text>
+            </Box>
+            {fileName && (
+                <Text mt={2}>File: {fileName}</Text>
+            )}
+            {error && (
+                <Text mt={2} color="red.500">{error}</Text>
+            )}
+        </Box>
+    );
 };
 
 export default CSVUpload;
@@ -1003,9 +971,9 @@ export function parseAndCleanCsv(csvContent: string): ParsedRow[] {
     try {
       records = parse(csvContent, {
         columns: true,
-            skip_empty_lines: true,
-            trim: true,
-        });
+        skip_empty_lines: true,
+        trim: true,
+      });
     } catch (error: any) {
       const errorMessage = error?.message || '';
 
@@ -1256,86 +1224,54 @@ const CSVUpload = () => {
     };
 
     return (
-            <VStack spacing = {4}
-  align = "stretch" >
-          <Box
-                  {...getRootProps()}
-  data - testid = "csv-dropzone"
-  border = "2px dashed"
-  borderColor = "gray.300"
-  p = {8}
-  textAlign = "center"
-  cursor = "pointer"
-          >
-          <input {...getInputProps()}
-  />
-  < Text > Drop
-  CSV
-  file
-  here, or
-  click
-  to
-  select < /Text>
-  < /Box>
-  {
-    fileName && <Text>File
-  :
-    {
-      fileName
-    }
-    </Text>}
-
-    < Input
-    name = "orderNumber"
-    placeholder = "Order Number (e.g., ORD-12345)"
-    value = {orderNumber}
-    onChange = {(e)
-  =>
-    setOrderNumber(e.target.value)
-  }
-    />
-
-    < Button
-    onClick = {handleSubmit}
-    isDisabled = {!
-    file || !orderNumber
-  }
-    isLoading = {isSubmitting}
+        <VStack spacing={4} align="stretch">
+            <Box
+                {...getRootProps()}
+                data-testid="csv-dropzone"
+                border="2px dashed"
+                borderColor="gray.300"
+                p={8}
+                textAlign="center"
+                cursor="pointer"
             >
-            Import
-            < /Button>
+                <input {...getInputProps()} />
+                <Text>Drop CSV file here, or click to select</Text>
+            </Box>
+            
+            {fileName && <Text>File: {fileName}</Text>}
 
-    {
-      result && (
-              <Box p = {4}
-      bg = "green.100"
-      borderRadius = "md" >
-              <Text>Import
-      completed
-      successfully < /Text>
-      < Text > {result.itemsImported}
-      items
-      imported < /Text>
-      < /Box>
-    )
-    }
+            <Input
+                name="orderNumber"
+                placeholder="Order Number (e.g., ORD-12345)"
+                value={orderNumber}
+                onChange={(e) => setOrderNumber(e.target.value)}
+            />
 
-    {
-      error && (
-              <Box p = {4}
-      bg = "red.100"
-      borderRadius = "md" >
-      <Text color = "red.700" > {error} < /Text>
-              < /Box>
-    )
-    }
+            <Button
+                onClick={handleSubmit}
+                isDisabled={!file || !orderNumber}
+                isLoading={isSubmitting}
+            >
+                Import
+            </Button>
+
+            {result && (
+                <Box p={4} bg="green.100" borderRadius="md">
+                    <Text>Import completed successfully</Text>
+                    <Text>{result.itemsImported} items imported</Text>
+                </Box>
+            )}
+
+            {error && (
+                <Box p={4} bg="red.100" borderRadius="md">
+                    <Text color="red.700">{error}</Text>
+                </Box>
+            )}
         </VStack>
-  )
-    ;
-  }
-  ;
+    );
+};
 
-  export default CSVUpload;
+export default CSVUpload;
 ```
 
 **Run IO-Based tests:**
@@ -1490,7 +1426,7 @@ The architecture itself - separating IO from logic - eliminates the need for mos
 
 ---
 
-## Safety Nets
+## Safety Nets & Confidence Builders
 
 ### How to Know You're On Track
 
@@ -1636,9 +1572,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 ```typescript
 const typeOfUser = useTypeOfUser();
-{
-  typeOfUser === userStatus.NOUSER && <NeedToLoginMessage / >
-}
+
+{typeOfUser === userStatus.NOUSER && <NeedToLoginMessage />}
 ```
 
 **Why the difference?** The Loomium codebase already had established patterns. Following existing conventions was more

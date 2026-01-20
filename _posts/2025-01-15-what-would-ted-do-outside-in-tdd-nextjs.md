@@ -46,16 +46,16 @@ When you're stuck and need to know "what's next?", use this:
 
 **Starting a new feature:**
 
-1. Write IO-Based test (Playwright) for endpoint accessibility → Should FAIL (page doesn't exist)
-2. Create Next.js page file → IO test PASSES. Refactor.
-3. Write IO-Based test for UI interaction → Should FAIL (component doesn't exist)
-4. Add minimal UI component → IO test PASSES. Refactor.
-5. Write IO-Based test for form submission → Should FAIL (no API endpoint)
-6. **Drop down:** Write API route test (Jest, IO-Based) → Should FAIL
-7. Create API route handler → API test PASSES
-8. **Drop down:** Write service/util test (Jest, IO-Free) → Should FAIL
-9. Implement service logic → Service test PASSES
-10. **Back up:** IO-Based form submission test → Should PASS now
+1. Write IO-Based test (Playwright) for endpoint accessibility → Should <span style="color: red;">FAIL</span> (page doesn't exist)
+2. Create Next.js page file → IO test <span style="color: green;">PASSES</span>. Refactor.
+3. Write IO-Based test for UI interaction → Should <span style="color: red;">FAIL</span> (component doesn't exist)
+4. Add minimal UI component → IO test <span style="color: green;">PASSES</span>. Refactor.
+5. Write IO-Based test for form submission → Should <span style="color: red;">FAIL</span> (no API endpoint)
+6. **Drop down a level:** Write API route test (Jest, IO-Based) → Should <span style="color: red;">FAIL</span> (no API handler)
+7. Create API route handler → API test <span style="color: green;">PASSES</span>
+8. **Drop down a level:** Write service/util test (Jest, IO-Free) → Should <span style="color: red;">FAIL</span> (no service logic)
+9. Implement service logic → Service test <span style="color: green;">PASSES</span>
+10. **Back up a level:** IO-Based form submission test → Should PASS now
 11. Refactor, commit, repeat for next increment
 
 **When tests are green at current layer:** Move up one layer.
@@ -72,10 +72,10 @@ you need to know:
 
 **Testing Tools Available:**
 
-- **Playwright** - IO-Based tests. Spins up the entire Next.js application and tests via real browser automation. This
+- **Playwright** – IO-Based tests. Spins up the entire Next.js application and tests via real browser automation. This
   is your `@SpringBootTest` equivalent (full application context).
-- **Jest** - Both IO-Free and IO-Based tests. This is your JUnit equivalent.
-- **React Testing Library** - Component testing (optional, we'll mostly use Playwright for UI)
+- **Jest** – Both IO-Free and IO-Based tests. This is your JUnit equivalent.
+- **React Testing Library** – Component testing. In my cases I'm using off-the-shelf components from Chakra UI and not find a need to test them.
 
 **Test Categorization (Ted's IO-Free vs IO-Based):**
 
@@ -84,7 +84,7 @@ you need to know:
 > important. What's important is if it uses IO or not. To me, that's all that matters." - Ted M. Young, [Testable Architecture: Keep 'em Separated](https://youtu.be/wlEqNPzCJdo?si=TA3Fejo5mcUojUBY) and [I'm Done with Unit and Integration Tests](https://ted.dev/articles/2023/04/02/i-m-done-with-unit-and-integration-tests/)
  
 - **IO-Free tests (Jest):** Pure business logic, transformations, calculations. No framework, no database, no HTTP, no
-  file system. These run in microseconds and have no mocks or test doubles.
+  file system, no clock. These run in microseconds.
 - **IO-Based tests (Jest & Playwright):** Tests that touch IO - HTTP requests, database calls, file uploads, the Next.js
   framework itself. These are slower but necessary for adapter layers.
 
@@ -97,27 +97,17 @@ In Next.js, you can do this with different run scripts.
 ```json
 {
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:all": "pnpm test && pnpm test:e2e"
+    "test:io-free": "jest",
+    "test:io-based": "playwright test",
+    "test:all": "pnpm test:io-free && pnpm test:io-based"
   }
 }
 ```
 
-**Script explanations:**
-
-- `test` - Run all Jest tests (IO-Free + IO-Based Jest tests)
-- `test:watch` - Run Jest in watch mode (auto-reruns tests on file changes for continuous TDD feedback)
-- `test:e2e` - Run Playwright tests headlessly
-- `test:e2e:ui` - Run Playwright in UI mode (launches graphical test explorer interface)
-- `test:all` - Run everything (Jest + Playwright)
-
 **Test running philosophy** (following Ted's approach):
 
-- Run IO-Free tests (Jest unit tests) **constantly** - they're microseconds fast
-- Run IO-Based tests (Jest API tests + Playwright) **periodically** - they're slower but necessary
+- Run all IO-Free tests (Jest unit tests) often – they're fast
+- Run IO-Based tests periodically – they're slower but necessary
 - The separation lets you get rapid feedback on business logic while still having confidence in integration points
 
 ### Key Differences from Java/Spring
@@ -138,9 +128,7 @@ In Next.js, you can do this with different run scripts.
 A: Yes. Files in `pages/api/` become HTTP endpoints. `pages/api/import/process.ts` → `POST /api/import/process`
 
 **Q: Is there a domain layer?**
-A: Not by default, but you should create one. Put pure business logic in `src/domain/` for true hexagonal architecture.
-Keep it framework-free and IO-free. The typical Next.js pattern of mixing everything in `utils/` or `services/` defeats
-the purpose of separation. Consider:
+A: Not by default, but you should create one. Put pure business logic in `src/domain/` for hexagonal architecture. Keep it framework-free and IO-free. The typical Next.js pattern of mixing everything in `utils/` or `services/` defeats the purpose of separation. Consider:
 
 - `src/domain/` - Pure business logic (IO-Free, no framework dependencies)
 - `src/application/` - Use case coordination (knows about domain, references IO via interfaces)
@@ -150,7 +138,7 @@ the purpose of separation. Consider:
 A: Both. TypeScript interfaces for API contracts (DTOs), separate objects for business logic.
 
 **Q: How do we handle authentication in tests?**
-A: Playwright can log in once and reuse session. Jest tests can mock `getSession()`.
+A: Playwright can log in once and reuse the session. Jest tests can mock `getSession()`.
 
 **Q: Can we do outside-in TDD?**
 A: Absolutely. Start with Playwright (edge), drop to Jest (internals), work your way back up.
@@ -169,11 +157,11 @@ Ted's workflow adapted for Next.js:
 │  • Form submission                          │
 │  • Full happy path                          │
 │                                             │
-│  Test: tests/e2e/csv-import.spec.ts        │
+│  Test: tests/e2e/csv-import.spec.ts         │
 │  Tool: Playwright                           │
 │  Speed: Slow (seconds)                      │
 │  IO: HTTP, server, framework, database      │
-│  When: Start here, return here             │
+│  When: Start here, return here              │
 └─────────────────────────────────────────────┘
                     ↓ (test fails, need API)
 ┌─────────────────────────────────────────────┐
@@ -183,7 +171,7 @@ Ted's workflow adapted for Next.js:
 │  • Response formatting                      │
 │  • Status codes                             │
 │                                             │
-│  Test: pages/api/import/__tests__/         │
+│  Test: pages/api/import/__tests__/          │
 │  Tool: Jest                                 │
 │  Speed: Fast (milliseconds)                 │
 │  IO: Next.js framework, possibly database   │
@@ -197,16 +185,15 @@ Ted's workflow adapted for Next.js:
 │  • Pure functions                           │
 │  • Domain rules                             │
 │                                             │
-│  Test: src/utils/csvImport/__tests__/      │
+│  Test: src/utils/csvImport/__tests__/       │
 │  Tool: Jest                                 │
 │  Speed: Very fast (microseconds)            │
-│  IO: NONE - no mocks, no test doubles      │
+│  IO: NONE - no mocks, no test doubles       │
 │  When: API test needs logic                 │
 └─────────────────────────────────────────────┘
 ```
 
-**Test Organization:** This guide uses **co-located tests** with `__tests__` folders next to the code being tested. This
-keeps tests close to implementation and makes them easier to find. For IO-Based Playwright tests, use a dedicated
+**Test Organization:** In Java projects the `main` file structure is duplicated in the `test` package. In NextJS projects the common practice is to co-located tests with `__tests__` folders next to the code being tested. This still feels strange to me, but at least it keeps tests close to the implementation and makes them easier to find. For IO-Based Playwright tests, I use a dedicated
 `tests/` directory since they test across multiple files and layers.
 
 **The Flow:**
@@ -219,7 +206,7 @@ keeps tests close to implementation and makes them easier to find. For IO-Based 
 6. Come back up, original test should pass now. Refactor.
 
 > "What I'm doing is sort of this outside in development. I'm trying to figure out what the web UI needs from the
-> service and then I can start test driving." - Ted M. Young
+> service and then I can start test driving." — Ted M. Young
 
 **Important Distinction: Automated vs Manual Testing**
 
@@ -330,7 +317,7 @@ test.describe('Authentication', () => {
 npx playwright test tests/e2e/csv-import/accessibility.spec.ts
 ```
 
-**Expected result:** ❌ FAIL (page doesn't exist)
+**Expected result:** ❌ <span style="color: red;">FAIL</span> (page doesn't exist)
 
 **Make it pass (Real Implementation):**
 
@@ -481,7 +468,7 @@ XYZ789,2,
 npx playwright test tests/e2e/csv-import/file-upload.spec.ts
 ```
 
-**Expected result:** ❌ FAIL (no dropzone component)
+**Expected result:** ❌ <span style="color: red;">FAIL</span> (no dropzone component)
 
 **Make it pass:**
 
@@ -668,7 +655,7 @@ test.describe('CSV Import - Form Submission', () => {
 npx playwright test tests/e2e/csv-import/form-submission.spec.ts
 ```
 
-**Expected result:** ❌ FAIL (no API endpoint, no form submit handler)
+**Expected result:** ❌ <span style="color: red;">FAIL</span> (no API endpoint, no form submit handler)
 
 This is the signal to drop down to the API layer.
 
@@ -773,7 +760,7 @@ describe('POST /api/import/process', () => {
 pnpm test pages/api/import/__tests__/process.test.ts
 ```
 
-**Expected result:** ❌ FAIL (handler doesn't exist)
+**Expected result:** ❌ <span style="color: red;">FAIL</span> (handler doesn't exist)
 
 **Make it pass (minimal implementation):**
 
@@ -950,7 +937,7 @@ CUSTOM,Custom Item Description,5`;
 pnpm test src/utils/csvImport/__tests__/parseCSV.test.ts
 ```
 
-**Expected result:** ❌ FAIL (function doesn't exist)
+**Expected result:** ❌ <span style="color: red;">FAIL</span> (function doesn't exist)
 
 **Make it pass (Real Implementation):**
 

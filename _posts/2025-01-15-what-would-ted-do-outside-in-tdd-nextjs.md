@@ -215,10 +215,9 @@ often relies on manual testing for full end-to-end flows. He says, "I don't find
 all that useful to automate. Manually running stuff. That's a test. It's just not an automated test."
 
 In this guide, we're using Playwright to automate tests at the application boundary. Playwright **does** spin up the
-entire Next.js application (development server) and test through a real browser - this is a true end-to-end test.
+entire Next.js application (development server) and test through a real browser – this is a true end-to-end test.
 However, we're using it strategically for specific user flows rather than trying to test every possible path through
-the UI. You'll still want to manually test the complete application in a production-like environment periodically, as
-Playwright tests run against the dev server, not your actual production stack.
+the UI.
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "What Would Ted Do? Outside-In TDD for Next.js Feature Development"
-date: 2025-01-15 00:00:00 -0000
+date: 2026-01-15 00:00:00 -0000
 categories: [ tdd, nextjs, typescript, workflow, ted-young ]
 ---
 
@@ -231,9 +231,9 @@ in Flex Rental Solutions without manual entry.
 
 **Acceptance Criteria:**
 
-- User can access the import page (authenticated only)
+- Authenticated User can access the import page
 - User can select a CSV file
-- User can specify a target element number (Quote, Event Folder, or existing Pull Sheet)
+- User can specify a target element number
 - System validates CSV format and element number
 - System matches CSV barcodes to Flex inventory
 - System creates or replaces Pull Sheets with line items
@@ -249,9 +249,6 @@ Status,Definition Name,Quantity,Tag
 CUSTOM,Special rigging note,1,Production Notes
 ```
 
-**Note:** This is a real feature built for production, not a tutorial example. All code samples are from the actual
-implementation.
-
 ---
 
 ## Step-by-Step
@@ -260,7 +257,7 @@ implementation.
 
 **Goal:** Confirm authenticated users can reach the page.
 
-**What Ted Would Do (Java/Spring):**
+**What Ted Would Do (Java + Spring):**
 
 ```java
 
@@ -268,19 +265,16 @@ implementation.
 @Tag("io")
 class ImportMvcTest {
     @Test
-    void getToImportPageReturns200() {
+    void getRequestToImportPageReturns200() {
         mockMvc.perform(get("/import"))
                 .andExpect(status().is2xxSuccessful());
     }
 }
 ```
 
-**Next.js Equivalent (Real Production Code):**
+**Next.js Equivalent:**
 
 ```typescript
-// tests/e2e/sketchup-import/sketchup-import-access.spec.ts
-import {expect, test} from '../../fixtures/mockFlexApi';
-
 test.describe('Authentication', () => {
   test.describe('Unauthenticated Access', () => {
     // Reset the storage state for this test to avoid being authenticated
@@ -318,41 +312,21 @@ npx playwright test tests/e2e/csv-import/accessibility.spec.ts
 
 **Expected result:** ❌ <span style="color: red;">FAIL</span> (page doesn't exist)
 
-**Make it pass (Real Implementation):**
+**Make it pass:**
 
 ```typescript
-// pages/operations/sketchup-import/index.tsx
-import {Heading, VStack} from "@chakra-ui/react";
-import PageSEOWrapper from "components/Layout/PageSEOWrapper";
-import NeedToLoginMessage from "components/Main/NeedToLoginMessage";
-import {userStatus} from "constants/userStatus";
-import {pagesNames} from "constants/pagesNames";
-import useTypeOfUser from "hooks/useTypeOfUser";
-
 function SketchUpImport() {
   const typeOfUser = useTypeOfUser();
 
   return (
-    <PageSEOWrapper
-      title={pagesNames.SKETCHUP_IMPORT}
-      description={pagesNames.SKETCHUP_IMPORT}
-    >
       {typeOfUser !== userStatus.NOUSER && (
-        <VStack
-          align="stretch"
-          gap={6}
-          maxW="600px"
-          w="100%"
-          px={{ base: "4", md: "6", xl: "8" }}
-          py="6"
-        >
+        <VStack>
           <Heading as="h1">SketchUp Import</Heading>
           {/* Form components will go here */}
         </VStack>
       )}
 
       {typeOfUser === userStatus.NOUSER && <NeedToLoginMessage />}
-    </PageSEOWrapper>
   );
 }
 
@@ -362,10 +336,7 @@ export default SketchUpImport;
 **Key Differences from Prediction:**
 
 - Uses client-side auth check (`useTypeOfUser` hook) instead of `getServerSideProps`
-- This is the Loomium pattern - simpler and works well with NextAuth
-- Uses Chakra UI components (`VStack`, `Heading`) for consistent styling
 - Shows `NeedToLoginMessage` component instead of redirecting to login
-- No TypeScript `NextPage` type (not needed in this pattern)
 
 **Run the test again:**
 
@@ -938,7 +909,7 @@ pnpm test src/utils/csvImport/__tests__/parseCSV.test.ts
 
 **Expected result:** ❌ <span style="color: red;">FAIL</span> (function doesn't exist)
 
-**Make it pass (Real Implementation):**
+**Make it pass:**
 
 ```typescript
 // src/utils/sketchupImport/csvParser.ts

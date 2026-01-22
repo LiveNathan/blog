@@ -6,3 +6,6 @@ _site/
 .bundle/
 vendor/
 out/
+
+# Local research and drafts - never publish
+research/

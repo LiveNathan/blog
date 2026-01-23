@@ -110,9 +110,9 @@ In Next.js, you can do this with different run scripts.
 - Run IO-Based tests periodically – they're slower but necessary
 - The separation lets you get rapid feedback on business logic while still having confidence in integration points
 
-### Key Differences from Java/Spring
+### Key Differences from Java + Spring
 
-| Java/Spring Pattern         | Next.js Equivalent                   | Test Type | Notes                                          |
+| Java + Spring Pattern         | Next.js Equivalent                   | Test Type | Notes                                          |
 |-----------------------------|--------------------------------------|-----------|------------------------------------------------|
 | `@SpringBootTest`           | Playwright test                      | IO-Based  | Tests full app via real HTTP + browser         |
 | `@WebMvcTest` with MockMvc  | Jest test of API route handler       | IO-Based  | Import and call handler directly (no HTTP)     |
@@ -357,7 +357,7 @@ There is an important refactor step that happens here as part of the TDD loop. I
 **Goal:** User can select a CSV file and see it in the UI.
 
 **What Ted Would Do:**
-Continue at IO-Based layer testing the UI interaction. In Java/Spring with Thymeleaf, he'd use MockMvc to check that the
+Continue at IO-Based layer testing the UI interaction. In Java + Spring with Thymeleaf, he'd use MockMvc to check that the
 form backing object is present in the model.
 
 ```java
@@ -381,14 +381,10 @@ class ImportMvcTest {
 In React/Next.js, we test the rendered DOM with Playwright.
 
 ```typescript
-// tests/e2e/csv-import/file-upload.spec.ts
-import {test, expect} from '@playwright/test';
-import path from 'path';
-
 test.describe('CSV Import - File Upload', () => {
     test.beforeEach(async ({page}) => {
         // Assume authenticated (use Playwright's storage state)
-        await page.goto('/operations/csv-import');
+        await page.goto('/csv-import');
     });
 
     test('displays file upload dropzone', async ({page}) => {
@@ -443,50 +439,16 @@ npx playwright test tests/e2e/csv-import/file-upload.spec.ts
 **Make it pass:**
 
 ```typescript
-// pages/operations/csv-import/index.tsx
-import type {NextPage, GetServerSideProps} from 'next';
-import {getSession} from 'next-auth/react';
-import PageSEOWrapper from 'components/Layout/PageSEOWrapper';
-import CSVUpload from 'components/Main/Operations/CSVImport/FileUpload';
-
 const CSVImportPage: NextPage = () => {
-    return (
-        <PageSEOWrapper 
-            title="CSV Import"
-            description="Import line items from CSV"
-        >
-            <h1>Import CSV</h1>
+    return (<h1>Import CSV</h1>
             <CSVUpload />
-        </PageSEOWrapper>
     );
-};
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await getSession(context);
-
-    if (!session) {
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false,
-            },
-        };
-    }
-
-    return {
-        props: {session},
-    };
 };
 
 export default CSVImportPage;
 ```
 
 ```typescript
-// src/components/Main/Operations/CSVImport/FileUpload/index.tsx
-import {useDropzone} from 'react-dropzone';
-import {useState} from 'react';
-import {Box, Text} from '@chakra-ui/react';
-
 const CSVUpload = () => {
     const [fileName, setFileName] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -508,24 +470,12 @@ const CSVUpload = () => {
 
     return (
         <Box>
-            <Box
-                {...getRootProps()}
-                data-testid="csv-dropzone"
-                border="2px dashed"
-                borderColor="gray.300"
-                p={8}
-                textAlign="center"
-                cursor="pointer"
-            >
+            <Box {...getRootProps()} data-testid="csv-dropzone" >
                 <input {...getInputProps()} />
                 <Text>Drop CSV file here, or click to select</Text>
             </Box>
-            {fileName && (
-                <Text mt={2}>File: {fileName}</Text>
-            )}
-            {error && (
-                <Text mt={2} color="red.500">{error}</Text>
-            )}
+            {fileName && (<Text mt={2}>File: {fileName} </Text> )}
+            {error && (<Text mt={2} color="red.500">{error}</Text> )}
         </Box>
     );
 };
@@ -547,11 +497,11 @@ Commit. Refactor. Commit.
 
 ### Phase 3: Form Submission (IO-Based Layer → API Layer)
 
-**Goal:** User can submit the form with CSV file and order number, then see results.
+**Goal:** User can submit the form with CSV file and element number, then see results.
 
 **What Ted Would Do:**
-Write IO-Based test for POST submission. Test will fail because the API endpoint doesn't exist. This is the signal to
-drop down to the API layer.
+Write IO-Based test for POST submission. Test will fail because the controller endpoint doesn't exist. This is the signal to
+drop down to the controller layer.
 
 ```java
 @WebMvcTest(ImportController.class)
@@ -564,39 +514,29 @@ class ImportMvcTest {
 
         mockMvc.perform(multipart("/import")
                 .file(csvFile)
-                .param("orderNumber", "ORD-123"))
+                .param("elementNumber", "ELM-123"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/import/result"));
     }
 }
 ```
 
-**Note on POST-Redirect-GET Pattern:**
-In production applications, form submissions typically follow the Post-Redirect-Get (PRG) pattern to prevent duplicate
-submissions on browser refresh. The flow would be: POST form data → API processes → redirect to results page → GET
-displays results. For this example, we're using a simpler client-side state update pattern to focus on the TDD
-workflow, but you should consider PRG for real applications.
-
 **IO-Based Test (Playwright):**
 
 ```typescript
-// tests/e2e/csv-import/form-submission.spec.ts
-import {test, expect} from '@playwright/test';
-import path from 'path';
-
 test.describe('CSV Import - Form Submission', () => {
     test.beforeEach(async ({page}) => {
-        await page.goto('/operations/csv-import');
+        await page.goto('/csv-import');
     });
 
-    test('submits CSV and order number successfully', async ({page}) => {
+    test('submits CSV and element number successfully', async ({page}) => {
         // Upload CSV
         const filePath = path.join(__dirname, 'fixtures', 'valid-import.csv');
         const fileInput = page.locator('input[type="file"]');
         await fileInput.setInputFiles(filePath);
 
-        // Enter order number
-        await page.fill('[name="orderNumber"]', 'ORD-12345');
+        // Enter element number
+        await page.fill('[name="elementNumber"]', 'ORD-12345');
 
         // Submit form
         await page.getByRole('button', {name: 'Import'}).click();
@@ -606,15 +546,15 @@ test.describe('CSV Import - Form Submission', () => {
         await expect(page.getByText('2 items imported')).toBeVisible();
     });
 
-    test('shows error for invalid order number', async ({page}) => {
+    test('shows error for invalid element number', async ({page}) => {
         const filePath = path.join(__dirname, 'fixtures', 'valid-import.csv');
         const fileInput = page.locator('input[type="file"]');
         await fileInput.setInputFiles(filePath);
 
-        await page.fill('[name="orderNumber"]', 'INVALID');
+        await page.fill('[name="elementNumber"]', 'INVALID');
         await page.getByRole('button', {name: 'Import'}).click();
 
-        await expect(page.getByText('Order not found')).toBeVisible();
+        await expect(page.getByText('Element not found')).toBeVisible();
     });
 });
 ```
@@ -633,45 +573,39 @@ This is the signal to drop down to the API layer.
 
 ### Phase 4: API Route (IO-Based, Jest)
 
-**Goal:** API endpoint accepts CSV file and order number, returns success/error.
+**Goal:** API endpoint accepts CSV file and element number, returns success/error.
 
 **What Ted Would Do (Direct Controller Test, IO-Based):**
 
 ```java
 class ImportControllerTest {
-    @Test
-    void processImportReturnsSuccessForValidInput() {
-        ImportService service = new ImportService();
-        ImportController controller = new ImportController(service);
+  @Test
+  void processImportReturnsSuccessForValidInput() {
+    ImportService service = new ImportService();
+    ImportController controller = new ImportController(service);
 
-        ImportResult result = controller.processImport("ORD-123", csvData);
+    String viewName = controller.processImport("EM-123", csvData);
 
-        assertThat(result.success()).isTrue();
-        assertThat(result.itemsImported()).isEqualTo(2);
-    }
+    assertThat(viewName)
+            .isEqualTo("results");
+  }
 }
 ```
 
 **Next.js Equivalent (Jest test of API route):**
 
 ```typescript
-// pages/api/import/__tests__/process.test.ts
-import {createMocks} from 'node-mocks-http';
-import handler from '../process';
-import formidable from 'formidable';
-
 // Mock formidable for this IO-Based test
 // Note: This is an IO-Based test at the API route layer (adapter layer in hexagonal terms)
 // We're testing the request/response handling logic, not file system IO
-// Using jest.mock() here is acceptable per Ted's guidance - we're simulating the file upload
-// without actually writing to disk. The CSV parsing logic will be tested separately as IO-Free.
+// Using jest.mock() here is acceptable per Ted's guidance - we're simulating the file upload without actually writing to disk. The CSV parsing logic will be tested separately as IO-Free.
 jest.mock('formidable');
 
 describe('POST /api/import/process', () => {
-    it('returns success for valid CSV file and order number', async () => {
+    it('returns success for valid CSV file and element number', async () => {
         const mockParse = jest.fn((req, callback) => {
             callback(null,
-                {orderNumber: 'ORD-12345'}, // fields
+                {elementNumber: 'ORD-12345'}, // fields
                 {
                     file: [{
                         filepath: '/tmp/test.csv',
@@ -698,10 +632,10 @@ describe('POST /api/import/process', () => {
         expect(data.success).toBe(true);
     });
 
-    it('returns 400 for invalid order number', async () => {
+    it('returns 400 for invalid element number', async () => {
         const mockParse = jest.fn((req, callback) => {
             callback(null,
-                {orderNumber: 'INVALID'},
+                {elementNumber: 'INVALID'},
                 {file: [{filepath: '/tmp/test.csv'}]}
             );
         });
@@ -719,7 +653,7 @@ describe('POST /api/import/process', () => {
 
         expect(res._getStatusCode()).toBe(400);
         const data = JSON.parse(res._getData());
-        expect(data.error).toBe('Order not found');
+        expect(data.error).toBe('Element not found');
     });
 });
 ```
@@ -735,11 +669,6 @@ pnpm test pages/api/import/__tests__/process.test.ts
 **Make it pass (minimal implementation):**
 
 ```typescript
-// pages/api/import/process.ts
-import type {NextApiRequest, NextApiResponse} from 'next';
-import formidable from 'formidable';
-import fs from 'fs/promises';
-
 // Disable Next.js body parser - required for formidable
 export const config = {
     api: {
@@ -747,10 +676,7 @@ export const config = {
     },
 };
 
-export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
         return res.status(405).json({error: 'Method not allowed'});
     }
@@ -762,13 +688,13 @@ export default async function handler(
             return res.status(500).json({error: 'File upload failed'});
         }
 
-        const orderNumber = Array.isArray(fields.orderNumber)
-            ? fields.orderNumber[0]
-            : fields.orderNumber;
+        const elementNumber = Array.isArray(fields.elementNumber)
+            ? fields.elementNumber[0]
+            : fields.elementNumber;
 
         // Hardcode for now to make test pass
-        if (orderNumber === 'INVALID') {
-            return res.status(400).json({error: 'Order not found'});
+        if (elementNumber === 'INVALID') {
+            return res.status(400).json({error: 'Element not found'});
         }
 
         const uploadedFile = Array.isArray(files.file) ? files.file[0] : files.file;
@@ -794,10 +720,6 @@ export default async function handler(
 ```
 
 This uses [`formidable`](https://github.com/node-formidable/formidable) for multipart/form-data handling.
-
-**What is formidable?** It's a Node.js library for parsing form data, especially file uploads. Next.js doesn't handle
-multipart form data by default, so you need a library like formidable. It reads uploaded files from the HTTP request
-and gives you access to both form fields and file metadata (path, mimetype, etc.).
 
 **Run the test:**
 
@@ -826,24 +748,20 @@ class ImportServiceTest {
         List<LineItem> items = ImportService.parseCSV(csv);
 
         assertThat(items).hasSize(2);
-        assertThat(items.get(0).barcode()).isEqualTo("ABC123");
-        assertThat(items.get(0).quantity()).isEqualTo(5);
+        assertThat(items.getFirst().barcode()).isEqualTo("ABC123");
+        assertThat(items.getFirst().quantity()).isEqualTo(5);
     }
 }
 ```
 
-**Next.js Equivalent (Real Production Code):**
+**Next.js Equivalent:**
 
 ```typescript
-// src/utils/sketchupImport/__tests__/csvParser.test.ts
-import {describe, expect, it} from "@jest/globals";
-import {parseAndCleanCsv} from "../csvParser";
-
 describe('parseAndCleanCsv', () => {
   describe('Domain Object Creation', () => {
     it('creates InventoryItem for rows with numeric Status', () => {
       const csvContent = `Status,Definition Name,Quantity
-100001,Test Inventory Item,10`;
+      100001,Test Inventory Item,10`;
 
       const result = parseAndCleanCsv(csvContent);
 
@@ -858,7 +776,7 @@ describe('parseAndCleanCsv', () => {
 
     it('creates NoteLineItem for rows with non-numeric Status', () => {
       const csvContent = `Status,Definition Name,Quantity
-CUSTOM,Custom Item Description,5`;
+      CUSTOM,Custom Item Description,5`;
 
       const result = parseAndCleanCsv(csvContent);
 
@@ -876,8 +794,8 @@ CUSTOM,Custom Item Description,5`;
   describe('Whitespace Handling', () => {
     it('givenCsvWithWhitespace_whenParsed_thenValuesAreTrimmed', () => {
       const csvContent = `  Status  ,  Definition Name  ,  Quantity
-  100001  ,  Test Item With Spaces  ,  5
-100002,Test Item Without Spaces,3`;
+      100001  ,  Test Item With Spaces  ,  5
+      100002,Test Item Without Spaces,3`;
 
       const result = parseAndCleanCsv(csvContent);
 
@@ -896,8 +814,7 @@ CUSTOM,Custom Item Description,5`;
 **Key Differences from Prediction:**
 
 - Uses discriminated union types (`type: 'inventory' | 'note'`) for type-safe parsing
-- More sophisticated - handles two different domain types (inventory vs. notes)
-- Test names can use Given-When-Then pattern (influenced by TDD learning)
+- Test names can use Given-When-Then pattern
 - No success/error result object - throws `ValidationError` for failures
 - Uses Zod internally for validation (not shown but used in the implementation)
 
@@ -912,16 +829,6 @@ pnpm test src/utils/csvImport/__tests__/parseCSV.test.ts
 **Make it pass:**
 
 ```typescript
-// src/utils/sketchupImport/csvParser.ts
-import {parse} from 'csv-parse/sync';
-import {ParsedRow, ValidationError} from './types';
-import {parseLineItem, RawCsvRow, validateCsvHeaders} from './validation';
-
-/**
- * Parses and cleans CSV content, returning domain objects (InventoryItem or NoteLineItem)
- *
- * Uses Zod discriminated unions for type-safe validation and parsing.
- */
 export function parseAndCleanCsv(csvContent: string): ParsedRow[] {
   let records: RawCsvRow[];
 
@@ -971,11 +878,10 @@ export function parseAndCleanCsv(csvContent: string): ParsedRow[] {
 
 **Key Differences from Prediction:**
 
-- Throws exceptions instead of returning success/error objects (simpler)
+- Throws exceptions instead of returning success/error objects
 - Uses Zod schemas (in `validation.ts`) for row parsing - more type-safe
 - More sophisticated error messages for common CSV issues
 - Delegates validation logic to separate `validation.ts` module (better separation)
-- Tolerates mixed valid/invalid rows (skips invalid instead of failing entirely)
 
 This uses the [`csv-parse`](https://csv.js.org/parse/) library (part of the actively-maintained `csv` package).
 
@@ -1036,13 +942,13 @@ export default async function handler(
             return res.status(500).json({error: 'File upload failed'});
         }
 
-        const orderNumber = Array.isArray(fields.orderNumber)
-            ? fields.orderNumber[0]
-            : fields.orderNumber;
+        const elementNumber = Array.isArray(fields.elementNumber)
+            ? fields.elementNumber[0]
+            : fields.elementNumber;
 
-        // Validate order number (stubbed for now)
-        if (orderNumber === 'INVALID') {
-            return res.status(400).json({error: 'Order not found'});
+        // Validate element number (stubbed for now)
+        if (elementNumber === 'INVALID') {
+            return res.status(400).json({error: 'Element not found'});
         }
 
         const uploadedFile = Array.isArray(files.file) ? files.file[0] : files.file;
@@ -1108,7 +1014,7 @@ Implement the HTML form in the Thymeleaf template to submit data to the backend.
     <div class="dropzone">
         <input type="file" name="file" accept=".csv" />
     </div>
-    <input type="text" name="orderNumber" placeholder="Order Number" />
+    <input type="text" name="elementNumber" placeholder="Element Number" />
     <button type="submit">Import</button>
 </form>
 ```
@@ -1124,7 +1030,7 @@ import {Box, Text, Input, Button, VStack} from '@chakra-ui/react';
 const CSVUpload = () => {
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState<string | null>(null);
-    const [orderNumber, setOrderNumber] = useState('');
+    const [elementNumber, setElementNumber] = useState('');
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -1148,7 +1054,7 @@ const CSVUpload = () => {
     });
 
     const handleSubmit = async () => {
-        if (!file || !orderNumber) return;
+        if (!file || !elementNumber) return;
 
         setError(null);
         setResult(null);
@@ -1158,7 +1064,7 @@ const CSVUpload = () => {
             // Use FormData for file upload
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('orderNumber', orderNumber);
+            formData.append('elementNumber', elementNumber);
 
             const response = await fetch('/api/import/process', {
                 method: 'POST',
@@ -1185,7 +1091,7 @@ const CSVUpload = () => {
             <Box
                 {...getRootProps()}
                 data-testid="csv-dropzone"
-                border="2px dashed"
+                belement="2px dashed"
                 borderColor="gray.300"
                 p={8}
                 textAlign="center"
@@ -1198,22 +1104,22 @@ const CSVUpload = () => {
             {fileName && <Text>File: {fileName}</Text>}
 
             <Input
-                name="orderNumber"
-                placeholder="Order Number (e.g., ORD-12345)"
-                value={orderNumber}
-                onChange={(e) => setOrderNumber(e.target.value)}
+                name="elementNumber"
+                placeholder="Element Number (e.g., ORD-12345)"
+                value={elementNumber}
+                onChange={(e) => setElementNumber(e.target.value)}
             />
 
             <Button
                 onClick={handleSubmit}
-                isDisabled={!file || !orderNumber}
+                isDisabled={!file || !elementNumber}
                 isLoading={isSubmitting}
             >
                 Import
             </Button>
 
             {result && (
-                <Box p={4} bg="green.100" borderRadius="md">
+                <Box p={4} bg="green.100" belementRadius="md">
                     <Text>Import completed successfully</Text>
                     <Text>{result.itemsImported} items imported</Text>
                 </Box>
@@ -1269,9 +1175,9 @@ This is the rhythm. Red → Green → Refactor. Outside-in. Let the tests pull t
 
 ## Translation Guide
 
-### Java/Spring → Next.js/TypeScript
+### Java + Spring → Next.js/TypeScript
 
-| Java/Spring                               | Next.js                                 | Notes                                            |
+| Java + Spring                               | Next.js                                 | Notes                                            |
 |-------------------------------------------|-----------------------------------------|--------------------------------------------------|
 | `@RestController`                         | `pages/api/[route].ts`                  | File-based routing                               |
 | `@GetMapping("/items")`                   | `if (req.method === 'GET')`             | Manual method checking (consider NestJS instead) |

@@ -901,8 +901,7 @@ Commit. Refactor. Commit.
 
 **Goal:** API route uses the CSV parser.
 
-**What Ted Would Do:**
-Update the controller to use the newly created service/parser.
+**What Ted Would Do:** Update the controller to use the newly created service/parser.
 
 ```java
 @PostMapping("/import")
@@ -915,12 +914,6 @@ public String processImport(@RequestParam("file") MultipartFile file) throws IOE
 **Update the API handler:**
 
 ```typescript
-// pages/api/import/process.ts
-import type {NextApiRequest, NextApiResponse} from 'next';
-import formidable from 'formidable';
-import fs from 'fs/promises';
-import {parseCSV} from 'utils/csvImport/parseCSV';
-
 export const config = {
     api: {
         bodyParser: false,
@@ -985,7 +978,7 @@ pnpm test pages/api/import/__tests__/process.test.ts
 
 **TDD Check:** The tests should still pass because we're replacing the hardcoded logic with real parsing that produces
 the same behavior. The test mocks were simulating valid CSV data, so the real parser should handle it the same way. If
-the tests FAIL here, it means our parser has a bug - go back and fix the parser until the API tests pass again. This is
+the tests FAIL here, it means our parser has a bug – go back and fix the parser until the API tests pass again. This is
 "coming back up" from the lower layer after implementing the logic there.
 
 ---
@@ -994,22 +987,19 @@ the tests FAIL here, it means our parser has a bug - go back and fix the parser 
 
 **Goal:** Wire up the frontend to call the API.
 
-**Where we are in the TDD cycle:**
-We've been working our way down and back up:
+**Where we are in the TDD cycle:** We've been working our way down and back up:
 
-1. Phase 3: Wrote Playwright test for form submission - FAILED (no API)
-2. Phase 4: Dropped to API layer, wrote tests - FAILED (no handler)
-3. Phase 4: Created API handler with hardcoded response - API tests PASSED
-4. Phase 5: Dropped to service layer, wrote CSV parser tests - FAILED (no parser)
+1. Phase 3: Wrote Playwright test for form submission – FAILED (no API)
+2. Phase 4: Dropped to API layer, wrote tests – FAILED (no handler)
+3. Phase 4: Created API handler with hardcoded response – API tests PASSED
+4. Phase 5: Dropped to service layer, wrote CSV parser tests – FAILED (no parser)
 5. Phase 5: Implemented CSV parser - Parser tests PASSED
-6. Phase 6: Wired parser into API handler - API tests still PASS
-7. **Phase 7 (current):** Back to Playwright - should now PASS because API exists and works
+6. Phase 6: Wired parser into API handler – API tests still PASS
+7. **Phase 7 (current):** Back to Playwright – should now PASS because API exists and works
 
-**What Ted Would Do:**
-Implement the HTML form in the Thymeleaf template to submit data to the backend.
+**What Ted Would Do:** Implement the HTML form in the Thymeleaf template to submit data to the backend.
 
 ```html
-<!-- src/main/resources/templates/import.html -->
 <form method="post" enctype="multipart/form-data" th:action="@{/import}">
     <div class="dropzone">
         <input type="file" name="file" accept=".csv" />
@@ -1022,11 +1012,6 @@ Implement the HTML form in the Thymeleaf template to submit data to the backend.
 **Update the upload component:**
 
 ```typescript
-// src/components/Main/Operations/CSVImport/FileUpload/index.tsx
-import {useDropzone} from 'react-dropzone';
-import {useState} from 'react';
-import {Box, Text, Input, Button, VStack} from '@chakra-ui/react';
-
 const CSVUpload = () => {
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState<string | null>(null);
@@ -1088,15 +1073,7 @@ const CSVUpload = () => {
 
     return (
         <VStack spacing={4} align="stretch">
-            <Box
-                {...getRootProps()}
-                data-testid="csv-dropzone"
-                belement="2px dashed"
-                borderColor="gray.300"
-                p={8}
-                textAlign="center"
-                cursor="pointer"
-            >
+            <Box {...getRootProps()} data-testid="csv-dropzone" >
                 <input {...getInputProps()} />
                 <Text>Drop CSV file here, or click to select</Text>
             </Box>
@@ -1113,8 +1090,7 @@ const CSVUpload = () => {
             <Button
                 onClick={handleSubmit}
                 isDisabled={!file || !elementNumber}
-                isLoading={isSubmitting}
-            >
+                isLoading={isSubmitting} >
                 Import
             </Button>
 
@@ -1162,10 +1138,10 @@ Commit. Refactor. Commit.
 
 **Now repeat the cycle for the next feature increment:**
 
-1. **IO-Based test (Playwright):** "Matched barcodes create line items in order"
+1. **IO-Based test (Playwright):** "Matched barcodes create line items in pullsheet"
 2. **Fails** → Need barcode matching logic
 3. **Drop to IO-Free layer (Jest):** Write test for barcode lookup
-4. **Implement** barcode lookup util (IO-Free)
+4. **Implement** barcode lookup utility (IO-Free)
 5. **Back to API layer (Jest, IO-Based):** Wire it up
 6. **Back to Playwright (IO-Based):** Test passes
 
@@ -1177,34 +1153,22 @@ This is the rhythm. Red → Green → Refactor. Outside-in. Let the tests pull t
 
 ### Java + Spring → Next.js/TypeScript
 
-| Java + Spring                               | Next.js                                 | Notes                                            |
-|-------------------------------------------|-----------------------------------------|--------------------------------------------------|
-| `@RestController`                         | `pages/api/[route].ts`                  | File-based routing                               |
-| `@GetMapping("/items")`                   | `if (req.method === 'GET')`             | Manual method checking (consider NestJS instead) |
-| `@PostMapping`                            | `if (req.method === 'POST')`            | Manual method checking (consider NestJS instead) |
-| `@Service`                                | `src/utils/` or `src/services/`         | No annotation, just export functions             |
-| Domain objects in `domain/` package       | TypeScript interfaces + pure functions  | Keep business logic framework-free               |
-| `@WebMvcTest`                             | Playwright (IO-Based test)              | Tests full HTTP request                          |
-| Direct controller test (new Controller()) | Jest test (`node-mocks-http`)           | Import and call handler directly                 |
-| Service test (new Service())              | Jest test of util function              | Just call the function                           |
-| `@Tag("io")` for slow tests               | Separate test commands                  | `playwright test` vs `pnpm test`                 |
-| `application.properties`                  | `.env.local` + `.env`                   | Config and secrets (git-ignored)                 |
-| Spring Dependency Injection               | Manual imports or DI library (optional) | Most Next.js code uses manual imports            |
-| JPA/Hibernate                             | Sequelize, Prisma, or raw SQL           | Different ORM, same concept                      |
+| Java + Spring                             | Next.js                                 | Notes                                 |
+|-------------------------------------------|-----------------------------------------|---------------------------------------|
+| `@RestController`                         | `pages/api/[route].ts`                  | File-based routing                    |
+| `@GetMapping("/items")`                   | `if (req.method === 'GET')`             | Manual method checking                |
+| `@PostMapping`                            | `if (req.method === 'POST')`            | Manual method checking                |
+| `@Service`                                | `src/utils/` or `src/services/`         | No annotation, just export functions  |
+| Domain objects in `domain/` package       | TypeScript interfaces + pure functions  | Keep business logic framework-free    |
+| `@WebMvcTest`                             | Playwright (IO-Based test)              | Tests full HTTP request               |
+| Direct controller test (new Controller()) | Jest test (`node-mocks-http`)           | Import and call handler directly      |
+| Service test (new Service())              | Jest test of util function              | Just call the function                |
+| `@Tag("io")` for slow tests               | Separate test commands                  | `playwright test` vs `pnpm test`      |
+| `application.properties`                  | `.env.local` + `.env`                   | Config and secrets (git-ignored)      |
+| Spring Dependency Injection               | Manual imports or DI library (optional) | Most Next.js code uses manual imports |
+| JDBC                                      | Sequelize, Prisma, or raw SQL           | Different ORM, same concept           |
 
-**Note on environment configuration:** Next.js uses `.env` files similar to direnv in Java projects:
-
-- `.env.local` - Local overrides, secrets, API keys (git-ignored, like your direnv `.envrc`)
-- `.env` - Default values, non-sensitive config (can be committed)
-- `.env.production` - Production-specific values
-  In production, you'd use actual environment variables (Vercel, Docker, etc.), not `.env` files. This combines the
-  function of both `application.properties` (config) and `.env` (secrets) from Java world.
-
-**Note on Spring Boot equivalent:** If you're coming from Spring Boot and find Next.js API routes too low-level,
-consider [**NestJS**](https://nestjs.com/) instead. NestJS is heavily inspired by Spring Boot with decorators
-(`@Controller`, `@Get`, `@Post`), dependency injection, modules, and similar architecture patterns. It's
-TypeScript-first
-and designed for enterprise applications. The trade-off: you lose Next.js's React integration and file-based routing.
+**Note on Spring Boot equivalent:** If you're coming from Spring Boot and find Next.js API routes too low-level, I've just been reading about NestJS. It looks helpful and if I had heard about it earlier I might have used it.
 
 ### Testing Tool Mapping
 

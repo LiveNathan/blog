@@ -31,7 +31,7 @@ file organization and some APIs differ. The principles translate—the file path
 1. [The Quick Reference](#quick-reference)
 2. [Can You Do TDD in Next.js?](#can-you-do-tdd-in-nextjs)
 3. [The Outside-In Workflow for Next.js](#the-outside-in-workflow)
-4. [Running Example: SketchUp Import Feature](#running-example)
+4. [Running Example: Csv Import Feature](#running-example)
 5. [Step-by-Step: Building the Feature](#step-by-step)
 6. [Java → Next.js Translation Guide](#translation-guide)
 7. [Safety Nets & Confidence Builders](#safety-nets)
@@ -223,10 +223,10 @@ the UI.
 
 ## Running Example
 
-**Feature:** Import SketchUp CSV exports into Flex Rental Solutions Pull Sheets
+**Feature:** Import Csv CSV exports into Flex Rental Solutions Pull Sheets
 
 **User Story:**
-As a user, I want to upload a SketchUp CSV export so that I can bulk-create Pull Sheets with inventory and custom notes
+As a user, I want to upload a Csv CSV export so that I can bulk-create Pull Sheets with inventory and custom notes
 in Flex Rental Solutions without manual entry.
 
 **Acceptance Criteria:**
@@ -281,7 +281,7 @@ test.describe('Authentication', () => {
     test.use({storageState: {cookies: [], origins: []}});
 
     test('unauthenticated user is shown a login prompt on a protected page', async ({page}) => {
-      await page.goto('/operations/sketchup-import');
+      await page.goto('/operations/csv-import');
       await expect(page.getByRole('heading', {
         name: "You need to login to see this page"
       })).toBeVisible();
@@ -289,9 +289,9 @@ test.describe('Authentication', () => {
   });
 
   test.describe('Authenticated Access', () => {
-    test('authenticated user sees SketchUp Import title', async ({page}) => {
-      await page.goto('/operations/sketchup-import');
-      await expect(page.getByRole('heading', {name: 'SketchUp Import'})).toBeVisible();
+    test('authenticated user sees Csv Import title', async ({page}) => {
+      await page.goto('/operations/csv-import');
+      await expect(page.getByRole('heading', {name: 'Csv Import'})).toBeVisible();
     });
   });
 });
@@ -315,13 +315,13 @@ npx playwright test tests/e2e/csv-import/accessibility.spec.ts
 **Make it pass:**
 
 ```typescript
-function SketchUpImport() {
+function CsvImport() {
   const typeOfUser = useTypeOfUser();
 
   return (
       {typeOfUser !== userStatus.NOUSER && (
         <VStack>
-          <Heading as="h1">SketchUp Import</Heading>
+          <Heading as="h1">Csv Import</Heading>
           {/* Form components will go here */}
         </VStack>
       )}
@@ -330,7 +330,7 @@ function SketchUpImport() {
   );
 }
 
-export default SketchUpImport;
+export default CsvImport;
 ```
 
 **Key Differences from Prediction:**
@@ -1194,7 +1194,6 @@ Member member = new MemberBuilder()
 **TypeScript equivalent:**
 
 ```typescript
-// src/utils/testHelpers/builders.ts
 interface Member {
     id: string;
     email: string;
@@ -1234,17 +1233,16 @@ const member = new MemberBuilder()
 **IO-Free tests:** No mocks. No test doubles. No stubbing. Just pure functions.
 
 > When you're testing out the application layer, you still don't want to use IO yet. So, you plug in a mock or a test
-> double. Tests are running fast but now you need to...simulate [what's] not really there.
+> double. Tests are running fast, but now you need to...simulate [what's] not really there.
 
 **The distinction:**
 
-- **Domain/Service layer (IO-Free):** Just instantiate objects.
-- **Application layer (IO-Based):** This is where you might use test doubles to simulate external dependencies (
-  databases, APIs).
+- **Domain/Service layer (IO-Free):** Instantiate objects.
+- **Application layer (IO-Based):** This is where you might use test doubles to simulate external dependencies (databases, APIs).
 
 In Next.js terms:
 
-- **IO-Free (utils/services):** `parseCSV(csvString)` - just pass in a string, check the output
+- **IO-Free (utils/services):** `parseCSV(csvString)` - pass in a string, check the output
 - **IO-Based (API routes):** May need to simulate database calls or external APIs
 
 > 98% of my tests don't use any kind of mocking framework because I don't need to.
@@ -1271,19 +1269,17 @@ The architecture itself - separating IO from logic - eliminates the need for mos
 - 🚩 You're writing code without a failing test first
 - 🚩 You don't understand why the test passed/failed
 - 🚩 Tests are tightly coupled to implementation details
-- 🚩 You've been stuck for more than 1 hour
 
 ---
 
 ## Retrospective: Predictions vs. Reality
 
-This guide was written *before* building any production features. After completing the **SketchUp Import feature** (34
-Playwright tests, 13 API tests, 89 service tests, ~2000 lines of production code), here's what actually happened:
+This guide was written *before* building any production features. I just reviewed a bunch of Ted's articles and videos and compared those my research of NextJS technology. After completing the CSV Import feature (52 Playwright tests, 23 API tests, 213 service tests, ~2500 lines of production code), here's what actually happened:
 
 ### ✅ What Worked Exactly As Predicted
 
 **1. Outside-In TDD Workflow**
-The three-layer approach translated perfectly:
+The three-layer approach translated well:
 
 - Started with Playwright tests for page accessibility
 - Dropped to Jest API tests when Playwright needed backend
@@ -1299,16 +1295,8 @@ This was the most valuable insight from Ted's approach:
 
 **3. Test Organization**
 
-- Co-located `__tests__/` folders work great
+- Co-located `__tests__/` folders work fine
 - Playwright tests in `tests/e2e/` for cross-cutting concerns
-- Test file naming conventions matched exactly
-
-**4. Tools and Libraries**
-
-- `formidable` for file uploads ✅
-- `csv-parse` for CSV parsing ✅
-- `node-mocks-http` for API route testing ✅
-- Playwright for E2E tests ✅
 
 ### 🎯 What Evolved Beyond Predictions
 
@@ -1332,12 +1320,10 @@ This wasn't in the original guide but became essential for:
 The blog mentioned mocking but didn't predict how critical fixtures would be:
 
 ```typescript
-// tests/fixtures/mockFlexApi.ts - 200+ lines of mock Flex API endpoints
 import {expect, test} from '../../fixtures/mockFlexApi';  // Critical import!
 ```
 
-**Lesson:** Without this fixture, we hit rate limits on the real Flex API during test runs. This was discovered the hard
-way.
+**Lesson:** Without this fixture, I hit rate limits on the real Flex API during test runs daily.
 
 **3. Hexagonal Architecture Pattern**
 The real code has stronger separation than predicted:
@@ -1345,7 +1331,7 @@ The real code has stronger separation than predicted:
 - **`FlexClient` class** - Adapter for all Flex API calls (hexagonal "driven" adapter)
 - **`importService.ts`** - Orchestration layer (use case)
 - **`csvParser.ts`, `validation.ts`** - Pure domain logic
-- **API route** - Thin adapter calling the service
+- **API route** – Thin adapter calling the service
 
 This made testing easier because:
 
@@ -1361,17 +1347,15 @@ import {logger} from "utils/logger";
 
 logger
         .withMetadata({elementNumber, userId, flexInstance})
-        .info('SketchUp import started');
+        .info('CSV import started');
 ```
 
-Plus Sentry integration, database logging, and breadcrumbs. The blog focused on testing but production requires
-debugging tools.
+Plus Sentry integration, database logging, and breadcrumbs. The blog focused on testing but production requires debugging tools.
 
-**5. Manual Integration Tests**
+**5. Manual Integration Tests For Research**
 Discovered a new pattern:
 
 ```typescript
-// src/utils/sketchupImport/__tests__/barcodeService.manual.test.ts
 describe.skip('Barcode Service - Manual Integration Tests', () => {
   // Tests against real Flex API, skipped by default
 });
@@ -1379,7 +1363,7 @@ describe.skip('Barcode Service - Manual Integration Tests', () => {
 
 These run: `pnpm test:manual:barcode`
 
-Why? Because mocking can hide bugs. We had a mock structure that didn't match production data, causing a bug that only
+Why? Because mocking can hide bugs and bakes in any assumptions I may have made about API behavior. I had a mock structure that didn't match production data, causing a bug that only
 appeared in staging. Manual integration tests catch these.
 
 ### ❌ What Didn't Match Predictions
@@ -1403,8 +1387,7 @@ const typeOfUser = useTypeOfUser();
 {typeOfUser === userStatus.NOUSER && <NeedToLoginMessage />}
 ```
 
-**Why the difference?** The Loomium codebase already had established patterns. Following existing conventions was more
-important than the "theoretically correct" approach.
+**Why the difference?** The codebase already had established patterns. Following existing conventions was more important than the "theoretically correct" approach.
 
 **2. Post-Redirect-Get Pattern**
 **Predicted:** "For this example, we're using a simpler client-side state update"
@@ -1413,8 +1396,8 @@ important than the "theoretically correct" approach.
 
 ```typescript
 const importId = uuidv4();
-await SketchUpImportLog.create({id: importId, ...result});
-await router.push(`/operations/sketchup-import/results/${importId}`);
+await CsvImportLog.create({id: importId, ...result});
+await router.push(`/operations/csv-import/results/${importId}`);
 ```
 
 Turned out this was critical for:
@@ -1439,12 +1422,12 @@ domain logic.
 
 ### 📚 Biggest Lessons Learned
 
-**1. The Workflow Actually Works**
+**1. The Workflow Works**
 Outside-In TDD in Next.js is not just possible—it's enjoyable. The rapid feedback from IO-Free tests (microseconds)
 combined with the safety net of Playwright tests (full integration) gave confidence to refactor aggressively.
 
 **2. Test Speed Matters More Than Expected**
-Running 89 Jest tests in ~2 seconds vs. 34 Playwright tests in ~30 seconds makes a huge difference in workflow. You
+Running 200 Jest tests in ~2 seconds vs. 50 Playwright tests in ~30 seconds makes a huge difference in workflow. You
 run IO-Free tests constantly, IO-Based tests periodically.
 
 **3. Type Safety Reduces Test Burden**
@@ -1454,7 +1437,7 @@ TypeScript + Zod caught entire classes of bugs that would have required tests in
 - Missing required fields
 - Type coercion issues
 
-This let us focus tests on business logic, not syntax validation.
+This let me focus tests on business logic, not syntax validation.
 
 **4. Production Code Needs More Than The Blog Shows**
 Real features need:
@@ -1472,7 +1455,7 @@ The blog shows the TDD workflow but not the full production context.
 **5. Fixture Maintenance Is Real Work**
 The `mockFlexApi.ts` fixture is 200+ lines and needs updates when:
 
-- New Flex API endpoints are called
+- New API endpoints are called
 - Response formats change
 - New admin settings are added
 
@@ -1485,25 +1468,17 @@ This is maintenance overhead but absolutely worth it to avoid rate limits and fl
 - ✅ Start with Playwright test for page accessibility
 - ✅ Use Outside-In workflow (edge → internals)
 - ✅ Keep IO-Free tests truly IO-Free (no mocks!)
-- ✅ Use Zod for all validation
+- ✅ Use Zod for centralized validation
 - ✅ Create Playwright fixtures for external APIs
 - ✅ Write manual integration tests for critical adapters
-- ✅ Follow the codebase's existing patterns (even if blog says otherwise)
+- ✅ Follow the codebase's existing patterns
 
 **Don't Do This:**
 
 - ❌ Don't mock inside domain logic
 - ❌ Don't skip IO-Free tests and only write E2E tests
-- ❌ Don't import from `@playwright/test` - use your fixtures!
 - ❌ Don't test implementation details - test behavior
 - ❌ Don't write tests after code (defeats the purpose)
-
-**When Stuck:**
-
-1. Check if similar code exists elsewhere in the codebase
-2. Look at test files for patterns (we have 136 tests now)
-3. Ask: "Am I testing behavior or implementation?"
-4. Drop down a layer if the current test is too hard to make pass
 
 ---
 
@@ -1513,23 +1488,19 @@ This is maintenance overhead but absolutely worth it to avoid rate limits and fl
 
 **Core Workflow Articles:**
 
-- [Predicting the Failing Test](https://ted.dev/articles/2021/11/05/predicting-the-failing-test/) - The foundation of
-  PTDD
-- [Implementing the Feature](https://ted.dev/articles/2022/05/09/implementing-the-feature/) - Green phase and tightening
-  assertions
-- [I'm Done with Unit and Integration Tests](https://ted.dev/articles/2023/04/02/i-m-done-with-unit-and-integration-tests/) -
-  IO-Free vs IO-Based taxonomy
+- [Predicting the Failing Test](https://ted.dev/articles/2021/11/05/predicting-the-failing-test/) – The foundation of PTDD
+- [Implementing the Feature](https://ted.dev/articles/2022/05/09/implementing-the-feature/) - Green phase and tightening assertions
+- [I'm Done with Unit and Integration Tests](https://ted.dev/articles/2023/04/02/i-m-done-with-unit-and-integration-tests/) - IO-Free vs IO-Based taxonomy
 
 **Videos:**
 
-- [TDD & Hexagonal Architecture Exercise - Part 1](https://www.youtube.com/watch?v=BYHlxsyD288) - Pure domain TDD with
-  ZOMBIES
+- [TDD & Hexagonal Architecture Exercise - Part 1](https://www.youtube.com/watch?v=BYHlxsyD288) – Pure domain TDD with ZOMBIES
 - [Song Themes Episode 2](https://www.youtube.com/watch?v=S100FP9piGs) - Outside-in web development, test categorization
 
 **Code Examples:**
 
 - [yacht-tdd repository](https://github.com/jitterted/yacht-tdd) - Nullables pattern (testing without mocks)
-- [ensembler repository](https://github.com/jitterted/ensembler) - Full hexagonal architecture example
+- [ensembler repository](https://github.com/jitterted/ensembler) – Full hexagonal architecture example
 
 ### Next.js/TypeScript Testing
 
@@ -1547,7 +1518,7 @@ This is maintenance overhead but absolutely worth it to avoid rate limits and fl
 **CSV Parsing:**
 
 - [csv-parse Documentation](https://csv.js.org/parse/) - Production-ready CSV parser
-- [Top JavaScript CSV Parsers](https://www.oneschema.co/blog/top-5-javascript-csv-parsers) - Comparison of libraries
+- [Top JavaScript CSV Parsers](https://www.oneschema.co/blog/top-5-javascript-csv-parsers) – Comparison of libraries
 
 **File Uploads:**
 
@@ -1559,12 +1530,9 @@ This is maintenance overhead but absolutely worth it to avoid rate limits and fl
 
 ## Final Thoughts
 
-When I started this project, I knew Java and Spring Boot but was new to Next.js and React. The question was: "Can I
-do TDD the way Ted Young teaches in this unfamiliar ecosystem?"
+When I started this project, I knew some Java, Spring Boot, and Vaadin but was new to Next.js and React. The question was: "Can I do TDD the way Ted Young teaches in this unfamiliar ecosystem?"
 
-After building a production feature with 136 automated tests, the answer is **yes**—but with adjustments. The
-Outside-In workflow, IO-Free vs IO-Based distinction, and test-first discipline all translated. The tools and patterns
-differ, but the principles hold.
+After building a production feature with 250 automated tests, the answer is yes. The Outside-In workflow, IO-Free vs IO-Based distinction, and test-first discipline all translated. The tools and patterns differ, but the principles hold.
 
 The retrospective section shows what I got right in my predictions and what I learned the hard way. If you're in a
 similar position—experienced in one stack, learning another—I hope this guide gives you confidence that TDD works

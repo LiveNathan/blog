@@ -1,24 +1,86 @@
+---
+layout: post
+title: "How to Test Embabel Agents – The Missing Guide"
+date: 2026-02-19 09:00:00 -0000
+categories: [java, spring, tdd]
+---
+
 What's the hardest thing about writing tests?
 
 The setup.
 
 No one wants to write tests because no one wants to stop to think about the setup. What inputs do we need? How do we get them? What outputs do we expect?
 
-Luckily, Embabel provides a fake OperationContext out of the box. Unluckily, that won't get you very far. The fake that Embabel provides will help you with a single builder test and thats it. That will help you get started and make sure that you wrote the builder correctly, but it won't help you with the really important stuff – actually testing the agent.
+Luckily, Embabel provides a fake OperationContext out of the box. Unluckily, that won't get you very far. The fake that Embabel provides will help you with a single builder test and that's it. That will help you get started and make sure that you wrote the builder correctly, but it won't help you with the really important stuff – actually testing the agent.
+
+As Rod Johnson has famously said, "Embabel is all about the fight against non determinism." To do that we need to test the agent.
 
 This is the missing guide.
 
+## Embabel, I love you.
+
+Before I met you, working with LLMs was unpredictable and painful. I had big giant tests with 122 assertions. Thanks to your framework, and examples, I found a more reliable and enjoyable way to work. The only thing missing in your documentation is how to test a real implementation of an agent. Please feel free to use anything I've written here and if I've made any mistakes know that they are all my own and not because of you.
+
 ## The boring stuff
 
-Let's get the boring stuff out of the way.  we'll use the fake OperationContext to lock the builder values in place.
+Let's get the boring stuff out of the way. We'll use the fake OperationContext to lock the builder values in place.
 
 Let's build a simple agent to classify user input as a query or a command. We love TDD so we'll start with a failing test.
 
-// test
+What I'll do with all of this code here is to just show abbreviated versions to make it easier to read here in the blog post, but you can read the full code on [GitHub](https://github.com/LiveNathan/embabeltests).
 
-We expect the test to fail because it won't compile because there's no production code, yet.
+```java
+@Test
+void givenUserInput_whenClassifying_thenBuildsLlmInteractionCorrectly() {
+    // Given
+    String userInput = "What is the capital of Portugal?";
+    ClassificationAgent.ClassifiedIntents dummyResponse = new ClassificationAgent.ClassifiedIntents(
+            Set.of(new ClassificationAgent.RequestFragment("any", QUERY)));
+    FakeOperationContext context = FakeOperationContext.create();
+    context.expectResponse(dummyResponse);
+    ClassificationAgent agent = new ClassificationAgent();
 
-// prod
+    // When
+    agent.classify(userInput, context.ai());
+
+    // Then
+    List<LlmInvocation> invocations = context.getLlmInvocations();
+    assertThat(invocations)
+            .as("Should call LLM exactly once")
+            .hasSize(1);
+
+    LlmInvocation invocation = invocations.getFirst();
+
+    List<PromptContributor> examples = invocation.getInteraction().getPromptContributors();
+    assertThat(examples)
+            .as("Should provide four classification examples (query, command, other, multiple requests)")
+            .hasSize(4);
+
+    assertThat(invocation.getInteraction().getToolGroups())
+            .as("Should not require any tools")
+            .isEmpty();
+
+    assertThat(invocation.getInteraction().getLlm().getTemperature())
+            .as("Should use low temperature for consistent classification")
+            .isEqualTo(0.1);
+    //  For more assertions, see the full code on GitHub.
+}
+```
+
+We expect the test to fail because there's no production code yet.
+
+```java
+ClassifiedIntents classify(String userInput, Ai ai) {
+    return ai.withLlm(LlmOptions.withAutoLlm().withTemperature(TEMPERATURE))
+            .withId(INTERACTION_ID)
+            .creating(ClassifiedIntents.class)
+            .withExample("Query example: Where's the lead vocal?", queryExample())
+            .withExample("Command example: Rename channels 1-4 to RF 1-4", commandExample())
+            .withExample("Other example: Hello there robot!", otherExample())
+            .withExample("Multiple requests example: Where's the lead vocal? Send it to the vocal buss.", independentRequestsExample())
+            .fromPrompt(buildPrompt(userInput));
+}
+```
 
 Now the test passes as expected.
 
@@ -28,13 +90,123 @@ Ok, now that we've gotten the boring stuff out of the way, let's do the fun stuf
 
 What do we expect the agent to do?
 
-At a minimum it should return the expected output object. Beyond that the output object should contain the expected content. Let's see if we can come up with an intial list of expectations to drive the design.
+At a minimum it should return the expected output object. Beyond that the output object should contain the expected content. Let's see if we can come up with an initial list of expectations to drive the design.
 - [ ] givenValidInput_whenClassified_thenReturnsExpectedObject
 - [ ] givenThisUserMessage_whenClassified_thenReturnsExpectedContent
 - [ ] givenThisUserMessage_whenClassified_thenReturnsExpectedOutput
 
-// first test
+For these we need a real LLM. Enter `@SpringBootTest`.
 
-This test will pass because it's so simple. Should we make it more complex or change the test to first convince ourselves that it fails for the expected reason?
+```java
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+class ClassificationAgentIntegrationTest {
+    @Autowired
+    private Ai ai;
+
+    private ClassificationAgent agent;
+
+    @BeforeEach
+    void setUp() {
+        agent = new ClassificationAgent();
+    }
+```
+
+First test: does it return the right type for a basic input?
+
+```java
+@Test
+void classifiesGreetingAsOther() {
+    String userInput = "Bom dia amigo!";
+
+    ClassificationAgent.ClassifiedIntents actual = agent.classify(userInput, ai);
+
+    assertSingleFragment(actual, ClassificationAgent.RequestFragment.RequestType.OTHER);
+}
+```
+
+This test will pass because it's so simple. Should we make it more complex or change the test to first convince ourselves that it fails for the expected reason? I'd say start simple. Earn complexity. If the agent regresses later, this test will catch it.
+
+Add a couple more in the same pattern:
+
+```java
+@Test
+void classifiesQuestionAsQuery() {
+    String userInput = "What channel is the snare on?";
+    ClassificationAgent.ClassifiedIntents actual = agent.classify(userInput, ai);
+    assertSingleFragment(actual, ClassificationAgent.RequestFragment.RequestType.QUERY);
+}
+
+@Test
+void classifiesSingleCommandAsCommand() {
+    String userInput = "Channel 2 should be named kick out.";
+    ClassificationAgent.ClassifiedIntents actual = agent.classify(userInput, ai);
+    assertSingleFragment(actual, ClassificationAgent.RequestFragment.RequestType.COMMAND);
+}
+```
+
+With a tiny helper to keep things readable:
+
+```java
+private void assertSingleFragment(ClassificationAgent.ClassifiedIntents result,
+                                  ClassificationAgent.RequestFragment.RequestType expectedType) {
+    assertThat(result.fragments())
+            .hasSize(1)
+            .extracting(ClassificationAgent.RequestFragment::type)
+            .containsExactly(expectedType);
+}
+```
+
+Now here's where it gets interesting. The real value of the agent isn't just classifying single inputs – it's splitting compound commands and resolving ambiguity. "Rename channels 1-4 to RF 1-4 and make them red" has a pronoun problem: "them" without context is useless to the next step in the pipeline. The agent needs to resolve it.
+
+```java
+@Test
+void splitsCompoundCommandIntoTwoFragments() {
+    String userInput = "Rename channels 1-4 to RF 1-4 and make them red";
+
+    ClassificationAgent.ClassifiedIntents actual = agent.classify(userInput, ai);
+
+    assertThat(actual.fragments())
+            .hasSize(2)
+            .allSatisfy(fragment -> assertThat(fragment.type())
+                    .isEqualTo(ClassificationAgent.RequestFragment.RequestType.COMMAND))
+            .extracting(ClassificationAgent.RequestFragment::description)
+            .allSatisfy(description ->
+                    assertThat(description)
+                            .as("Each fragment should explicitly reference channels, not use pronouns like 'them'")
+                            .containsIgnoringCase("channel"))
+            .satisfiesExactlyInAnyOrder(
+                    description -> assertThat(description).containsIgnoringCase("rename"),
+                    description -> assertThat(description).containsIgnoringCase("red"));
+}
+```
+
+This one test checks four things: fragment count, type, pronoun resolution, and content. When it fails you know exactly which expectation broke. That's the fight.
+
+One more – mixed types in a single input:
+
+```java
+@Test
+void splitsMixedInputIntoQueryAndCommand() {
+    String userInput = "What channel is the snare on? Rename it to Snare Top.";
+
+    ClassificationAgent.ClassifiedIntents actual = agent.classify(userInput, ai);
+
+    assertThat(actual.fragments())
+            .hasSize(2)
+            .extracting(ClassificationAgent.RequestFragment::type)
+            .containsExactlyInAnyOrder(
+                    ClassificationAgent.RequestFragment.RequestType.QUERY,
+                    ClassificationAgent.RequestFragment.RequestType.COMMAND);
+}
+```
 
 ## Conclusion
+
+Two test classes, two jobs:
+
+1. `ClassificationAgentTest` – fast, no LLM, verifies the builder is wired correctly
+2. `ClassificationAgentIntegrationTest` – slow, real LLM, verifies the agent actually works
+
+The unit tests catch configuration mistakes. The integration tests catch the stuff that matters: does the agent do what you need? You can't guarantee the LLM will always respond the same way, but you can document your expectations and catch regressions when they happen.
+
+That's the fight against non-determinism. Start with the boring stuff. Then add the fun stuff.

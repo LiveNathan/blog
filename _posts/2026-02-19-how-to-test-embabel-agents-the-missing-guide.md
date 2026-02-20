@@ -13,7 +13,7 @@ No one wants to write tests because no one wants to stop to think about the setu
 
 Luckily, Embabel provides a fake OperationContext out of the box. Unluckily, that won't get you very far. The fake that Embabel provides will help you with a single builder test and that's it. That will help you get started and make sure that you wrote the builder correctly, but it won't help you with the really important stuff – actually testing the agent.
 
-*What's a fake?* A fake is kind of test double. It is a lightweight implementation of a dependency, typically with some in-memory implementation, used to mimic real behavior without the complexity of the real system.
+*What's a fake?* A fake is a kind of test double. It is a lightweight implementation of a dependency, typically with some in-memory implementation, used to mimic real behavior without the complexity of the real system.
 
 As Rod Johnson [has famously said](https://youtu.be/yMDw0nlWd7s?list=TLGGY--hTTVlTXAyMDAyMjAyNg)
 
@@ -33,7 +33,7 @@ Let's get the boring stuff out of the way. We'll use the fake OperationContext t
 
 Let's build a simple agent to classify user input as a query or a command. We love TDD, so we'll start with a failing test.
 
-What I'll do with all of this code here is to just show abbreviated versions to make it easier to read in the blog post, but you can read the full code on [GitHub](https://github.com/LiveNathan/embabeltests).
+I'll show abbreviated versions here to keep things readable, but you can find the full code on [GitHub](https://github.com/LiveNathan/embabeltests).
 
 ```java
 @Test
@@ -106,7 +106,7 @@ At a minimum it should return the expected output object. Beyond that, the outpu
 
 What's the context? Why am I writing these tests in the first place?
 
-I'm building a desktop app for live sound engineers called Console Whisperer to help with mixing console setup. I want it to answer questions about the console and make changes like channel names and colors and it I want it do that in a fast, cheap, and reliable way. More on that later.
+I'm building a desktop app for live sound engineers called Console Whisperer to help with mixing console setup. I want it to answer questions about the console and make changes like channel names and colors, and I want it to do that in a fast, cheap, and reliable way. More on that later.
 
 For these we need a real LLM. Enter `@SpringBootTest`.
 
@@ -211,7 +211,7 @@ void splitsMixedInputIntoQueryAndCommand() {
 }
 ```
 
-## fast, cheap, and reliable
+## Fast, Cheap, and Reliable
 
 Now that the tests are in place, use them to optimize your settings.
 

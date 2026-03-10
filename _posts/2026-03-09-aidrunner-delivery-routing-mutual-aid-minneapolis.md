@@ -77,7 +77,7 @@ mostly just figuring it out herself.
 
 ## What I Built
 
-[Screenshot: AidRunner main screen]
+![aid-runner-destinations.png](../assets/images/aid-runner-destinations.png)
 
 I knew of a Java optimization library called [Timefold](https://solver.timefold.ai),
 which is designed to solve exactly this kind of problem – optimizing routes across
@@ -91,8 +91,6 @@ The interface is straightforward on purpose. You enter a depot address – where
 You pick how many vehicles. You add delivery addresses one by one. Every field has
 autocomplete.
 
-[Screenshot: address input with autocomplete]
-
 Hit Solve, and it:
 
 1. Calculates a distance matrix between every location
@@ -100,7 +98,7 @@ Hit Solve, and it:
 3. Fetches turn-by-turn directions for each route
 4. Returns a printable set of directions, one per driver
 
-[Screenshot: solved routes with printable directions]
+![aidrunner-route-optimizer.png](../assets/images/aidrunner-route-optimizer.png)
 
 You click print, cut the pages, hand one to each driver. They leave with directions and
 no phone.

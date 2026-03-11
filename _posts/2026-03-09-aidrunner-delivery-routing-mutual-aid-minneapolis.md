@@ -5,14 +5,9 @@ date: 2026-03-09 00:00:00 -0000
 categories: [building-in-public, entrepreneurship, java, micro-saas]
 ---
 
-Two months ago I was sitting in my neighbor Sara's living room, helping her pack
-groceries for delivery. She runs the Sunday mutual aid runs in our neighborhood, and
-while we packed, she was juggling handwritten address lists and MapQuest trying to plan
-the most efficient routes for four drivers. She needed everything figured out before
-anyone left the house. The drivers couldn't bring their phones.
+Two months ago I was sitting in my neighbor Sara's living room, helping her pack groceries for delivery. She runs the Sunday mutual aid runs in our neighborhood, and while we packed, she was juggling handwritten address lists and MapQuest, trying to plan efficient routes for four drivers. Everything had to be figured out before anyone left the house. The drivers couldn't bring their phones.
 
-It's called the traveling salesman problem. And I thought: a computer would be better
-at this.
+What she was doing has a name: the traveling salesman problem. Given a list of stops, what's the shortest route that visits each one exactly once and returns to the start? The tricky part is how fast the possibilities multiply. With 2 stops, there's really only 1 route to evaluate. Add a third stop and you have 6 possiblilites. A fourth gives you 24. Each new stop multiplies the count by the number of stops you now have – so by the time you're looking at 20 stops, you're dealing with roughly 2.4 quintillion possible routes. Brute-forcing that would take a modern computer approximately 26,000 years. And Sara was doing it on paper.
 
 ## What Was Happening
 
@@ -77,7 +72,7 @@ mostly just figuring it out herself.
 
 ## What I Built
 
-![aid-runner-destinations.png](../assets/images/aid-runner-destinations.png)
+![aid-runner-destinations.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/aid-runner-destinations.png)
 
 I knew of a Java optimization library called [Timefold](https://solver.timefold.ai),
 which is designed to solve exactly this kind of problem – optimizing routes across
@@ -98,7 +93,7 @@ Hit Solve, and it:
 3. Fetches turn-by-turn directions for each route
 4. Returns a printable set of directions, one per driver
 
-![aidrunner-route-optimizer.png](../assets/images/aidrunner-route-optimizer.png)
+![aidrunner-route-optimizer.png](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/aidrunner-route-optimizer.png)
 
 You click print, cut the pages, hand one to each driver. They leave with directions and
 no phone.

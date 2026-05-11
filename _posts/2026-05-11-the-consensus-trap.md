@@ -15,7 +15,7 @@ How do you find demand?
 
 People say you should talk to your customers. That's true—but there's a trap.
 
-![asymptote]({{ "/blog/assets/images/asymptote.png" | relative_url }})
+![asymptote](https://raw.githubusercontent.com/LiveNathan/blog/a8ceb34c6648c96eff8a9423c886a4a7ed912f58/assets/images/asymptote.png)
 
 ## Demand discovery by consensus
 

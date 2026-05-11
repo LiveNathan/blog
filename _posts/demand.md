@@ -2,19 +2,21 @@
 
 You want your app to be a hit.
 
-You want it to be truly helpful and profitable.
+You want it to be helpful and profitable.
 
 The easiest way to do that is to satisfy existing demand in the market.
 
-How do you find that demand?
+How do you find demand?
 
 People say you should talk to your customers, which is true, but there's a sneaky trap: demand by discovery is an asymptote.
+
+![asymptote.png](../assets/images/asymptote.png)
 
 ## Demand discovery by consensus
 
 A year and a half ago, I spent six months doing 56 discovery interviews with commercial AV managers. I was trying to find the perfect idea for a micro-SaaS business.
 
-Common business advice is to talk to customers to discover their problem then and build the solution.
+Common business advice is to talk to customers. Discover their problem then and build the solution.
 
 The way this is supposed to play out is that you talk to five or six people, they all say, "I have problem X", then you build a solution for X.
 
@@ -29,29 +31,29 @@ I wanted a shortcut so badly that I built custom AI tools to review my discovery
 But LLMs couldn’t figure it out either, because the overlap didn't exist. The AI would start grasping at straws: *"You should build a labor app!"*
 
 I had to talk it out of its own ideas: *"But only one person actually asked for that."*
-*"Oh yeah, you're right,"* the AI would reply.
+*"Oh yeah, you're right,"* it would reply.
 
 It’s a crestfallen feeling. Your stomach hurts. You put all this energy into a shortcut because some part of you feels like you aren't smart enough to figure it out on your own, and then even the shortcut just shrugs at you.
 
-**"We Don't Have Problems"**
+## "We Don't Have Problems"
 
 Recently, I tried the discovery process again. Just five people.
 
 This time, I asked mid-sized AV company owners where they were spending too much time. At least three of them essentially told me: *"We don't have any problems. We've been refining this process for 20 years."*
 
-Demand, at its core, means someone is willing to pay for a change. Even if they casually say they want to improve, the moment you offer a $100/month solution, the answer is no. It's partly the money, but with businesses it's also all of the time and effort to learn a new tool, integrate it into your existing workflow, get stakeholders to buy in.
+Demand, at its core, means someone is willing to pay for a change. Even if they casually say they want to improve, the moment you offer a $100/month solution, the answer is no. It's partly the money, but with businesses it's also all the time and effort to learn a new tool, integrate it into your existing workflow, get stakeholders to buy in. There are many barriers to entry.
 
 Hearing this over and over triggered my lizard brain. In those interviews, I'd get emotionally hijacked and defeated. I'd start pitching them random ideas, essentially fishing for validation. *Please tell me I'm good enough.*
 
 I realized you just can't do successful customer discovery when you're secretly demanding emotional validation from the person on the other end of the Zoom call.
 
-**Taking the Boot Off My Neck**
+## Taking the Boot Off My Neck
 
 What finally changed? I got a part-time job.
 
 With the boot of capitalism slightly off my neck, the pressure to immediately find a scalable B2B SaaS with 100 paying customers out of the gate disappeared. I finally had the time and space to stop looking for 15 people to agree and find *one* problem for *one* person. (honestly, I could have done that all along, but going slow just didn't seem like an option)
 
-That person is Chris. His specific problem is building production schedules. He spends hours converting meeting transcripts into planning documents and a final production schedule. He cares about delivery excellent service to his clients, and he doesn't want to let anything fall through the cracks.
+That person is Chris. His specific problem is building production schedules. He spends hours converting meeting transcripts into planning documents and a final production schedule. He cares about delivering excellent service to his clients, and he doesn't want to let anything fall through the cracks.
 
 Instead of asking 55 other people if they also wanted this, I just started building it for him. It's called ShowBook.
 

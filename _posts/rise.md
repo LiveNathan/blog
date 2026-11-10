@@ -28,4 +28,15 @@ But people don't do it. I've been going to the gym weekly at the same time for a
 
 What is success? 
 
-Replace my income. Pay the bills. But also a feeling. 
+Replace my income. Pay the bills. But also a feeling.
+
+Launching a product is a lot of work and a big risk and I'm always hoping for big returns, but there's also some feeling of success that I'm looking for. I did some career coaching for sound engineers and I was always start by getting them to identify the goal and describe in as much detail as possible - how it feels, what your day is like, etc. And so I have done that exercise plenty of times for myself in the past and I try not to be too prescriptive, but it always includes it always includes the word "thriving" and talks about a supportive group of customers that want to collaborate on improving the product and pushing it forward. I think one of the hardest things for me about SubAligner was always that no one seemed to want to talk about it. Everyone subscription to SubAligner comes with a "💪️ 60-minute private training session with Nathan" but no one has ever taken advantage of it.
+
+The other risk with ShowBook was focusing on a technically skilled customer. Said another way, it's possible he could just build it himself. And ultimately, he did. The demand was there, he needed a solution, ShowBook wasn't ready, yet, so he built his own. You could argue that if I would have delivered faster, ShowBook would have been a success, but I'd argue that it would have just made its decline longer. First to market is great, but maybe I would have never made it beyond a single customer if everyone else eventually started using Claude instead. 
+
+## What's next?
+
+I don't know. Some ideas:
+1. GainGuardian - Maybe improvements in large language models will help me overcome some technical challenges.
+2. AI/Automation Consultant - Seems like businesses are trying to figure out how to leverage AI. I've been obsessive out it. I can help.
+3. Do nothing - I would certainly make more money and have more free time if I just avoid entrepreneurship.

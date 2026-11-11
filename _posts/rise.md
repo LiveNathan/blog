@@ -1,10 +1,14 @@
 # I Built ShowBook for Six Months. My Customer Found Another Way.
 
-I was waiting for a milestone before writing much about ShowBook. I wanted to get through its first real event so I could tell you what it actually did for someone, not what I hoped it would do.
+I was waiting to tell you about ShowBook. I wanted it to be a surprise.
+
+I wanted to get through its first real event so I could tell you what it actually did for someone, not what I hoped it would do.
 
 Instead, I'm writing about shutting it down.
 
-After the initial discovery and a March deposit, I spent about six months building software to help live-event producers turn meeting transcripts, emails, and spreadsheets into a production schedule their crews could rely on. I had a paying customer, real documents to build against, regular meetings, and more feature ideas than I could possibly finish.
+...Surprise!
+
+After the initial discovery and a March deposit, I spent six months building software to help live-event producers turn meeting transcripts, emails, and spreadsheets into a production schedule their crews could rely on. I had a paying customer, real documents to build against, regular meetings, and more feature ideas than I could possibly finish.
 
 Then my customer found a way to do much of the work with Claude and Google Sheets.
 
@@ -14,19 +18,19 @@ The easy headline is "AI killed my startup." That's part of the story. But it le
 
 ShowBook wasn't my first attempt at building a software business.
 
-There was SubAligner, where I ran into the limits of a small market. AV Sync, where I couldn't establish clear demand. GainGuardian, where technical challenges and the lack of a path to market stopped me.
+There was SubAligner, where I ran into the limits of a small market. AV Sync, where I couldn't establish clear demand. GainGuardian, where technical challenges and the lack of a clear path to market stopped me.
 
-With AV Sync, I kept trying to build a product by consensus. Business books said to talk to customers about their problems, so I talked to customers about their problems. More than 50 AV managers. When I couldn't find enough overlap, I did more interviews.
+With AV Sync, I kept trying to build a product by consensus. Business books say to talk to customers about their problems, so I talked to customers about their problems. More than 50 AV managers. When I couldn't find enough overlap, I did more interviews.
 
 I thought I was being diligent. I was also hoping that if I worked hard enough, the conversations would eventually tell me what to build.
 
-With ShowBook, I tried something different: interview five people, pick a specific problem, and move forward. I had seen this work at SquareWave, where we sometimes build a feature for one customer and then generalize it for others.
+With ShowBook, I tried something different: interview five people, pick a specific problem, and move forward. I had seen this work successfully at SquareWave, where we sometimes build a feature for one customer and then generalize it for others.
 
 The problem I picked was familiar from my years in live sound: getting the information out of all the conversations about a show and into the document people use to run it.
 
-A production schedule isn't just a calendar. It tells you which room needs to be ready when, who's responsible, what equipment goes where, how the room should be arranged, and what changed since the last conversation. A mistake can mean the crew arrives without something important, or everyone is working from a different version of the plan.
+A production schedule isn't just a calendar. It tells you which room needs to be ready when, who's responsible, what equipment goes where, how the room should be arranged, and what changed since the last conversation. A mistake can mean [the crew arrives without something important](https://youtu.be/sfd7YcDjUlg?si=-GI6hUZxgBPitaDE), or everyone is working from a different version of the plan.
 
-My first customer was already recording client meetings. For a complicated event, he might have 12 to 14 transcripts, plus email chains, that needed to become a coherent production schedule. He was using ChatGPT to help, then doing the work of organizing and formatting the result in Google Sheets.
+My first customer was already recording client meetings and using chatGPT to process those transcriptions into show planning documents. For a complex event, he might have 50 meeting transcripts, one for every week of planning until the event, plus email chains, that needed to become a coherent production schedule. He was using ChatGPT to help extract decisions, details, and commitments, then doing the work of organizing and formatting the result in Google Sheets.
 
 He didn't need to be convinced that the problem existed. He could show me the inputs and the finished document.
 
@@ -40,9 +44,9 @@ It wasn't imaginary demand. But I would eventually learn how much distance there
 
 My customer did almost everything you would want an early customer to do.
 
-We met regularly. He shared real documents. He tested things. I would send an email with questions and often get a detailed response the next day. He explained not just what he wanted changed, but how the work happened and why a seemingly small detail mattered.
+We met regularly. He shared real documents. He tested things. I would send an email with questions and often get a detailed response the next day. He explained not just what he wanted changed, but how the work happened and why a seemingly small detail mattered. He pushed me to make the product better.
 
-When I sent mockups, he studied them. When I needed to understand what a technician should see on a room handout, he showed me examples. He helped name features using the language his crews already used.
+When I sent mockups, he studied them. When I needed to understand what a technician should see on a room handout, he showed me examples.
 
 We became friends.
 
@@ -50,13 +54,13 @@ I want to say this clearly because a story about a customer finding another solu
 
 Working with him was one of the most satisfying parts of the whole experience.
 
-In previous businesses, one of the hardest things was getting people to give a fuck. My teaching business declined gradually over the years. Near the end of one attempt to revive it, I offered free Q&A sessions. Nobody signed up. Nobody came.
-
-That's a particular kind of sadness: making yourself available and discovering that nobody wants what you're offering, even for free.
+In previous businesses, one of the hardest things was getting people to give a fuck. My teaching business declined gradually over the years. Near the end of one attempt to revive it, I offered free Q&A sessions. Nobody came.
 
 Every SubAligner subscription includes a private training session with me. Nobody has taken me up on it.
 
-So having someone who cared, who replied, who wanted to think through the problem together, felt wonderful. It gave me energy to keep going.
+I guess part of the attraction of business is shared interests. Can I find something that you and I are both interested in to such a degree that we'll put in our time and resources?
+
+So having someone who cared, who replied, who wanted to think through the problem together, felt great. It gave me energy to keep going.
 
 When I've done career coaching with sound engineers, I ask them to describe success in detail. Not just a number, but what their days would feel like. I've done that exercise myself, and the word that keeps coming up is "thriving." A useful product, enough income to pay the bills, and customers who want to collaborate on making it better.
 
@@ -66,17 +70,17 @@ I think that's part of why it's hard to let go.
 
 ## A simple idea with a very long prerequisite list
 
-The promise sounded straightforward: put in the transcripts and emails, get out an accurate production schedule.
+The promise sounded straightforward: dump in transcripts and emails, get out an accurate production schedule.
 
 But before that could be useful, there were a few things to build.
 
 A schedule needed to be editable. Importing a spreadsheet couldn't silently lose columns. The software needed to distinguish a standard room setup from changes for one particular session. It needed contacts, crew assignments, room-specific handouts, printable output, and links people could open without creating accounts.
 
-None of these were silly requests. They were the details that made the difference between a demo and something you could actually use at a show.
+None of these were nice-to-haves. They were the details that made the difference between a demo and something you could actually use at a show.
 
 Even a basic question like "When is the event?" turned out not to be basic. Sometimes there was an event but no confirmed date. Sometimes there was a time, but it was tentative. A spreadsheet lets you turn a cell yellow, add a question mark, and keep going. Software that insists on a definite answer can make the job harder.
 
-I started to understand a production schedule differently. For much of its life, it isn't a finished plan. It's a record of what you know, what you think you know, and what you're still waiting to find out.
+I started to understand a production schedule differently. For much of its life, it isn't a record of facts. It's a record of what you know, what you think you know, and what you're still waiting to find out.
 
 Then there was the question of which information to trust.
 
@@ -92,7 +96,7 @@ The metaphor helped us talk about the stages. It also exposed the problem: the t
 
 By late summer, we were still working through the basics of making ShowBook a comfortable place to work. In June, the feedback had already been clear: importing a schedule was useful, but without easy editing it was mostly a viewer. By September, he was testing imports and reviewing outputs, but ShowBook still had not become the place he did his day-to-day work.
 
-The project was moving. Adoption wasn't moving at the same speed.
+The project was moving. Adoption wasn't moving at the same speed. No one was using it.
 
 ## Dallas was going to be the test
 
@@ -104,7 +108,7 @@ We worked backward from that. The crew needed room briefs and show handouts befo
 
 The deadline became November 10, one week before the trip.
 
-On October 31, I sent an update saying I'd imported the full 96-row production schedule and manually entered the contacts from his spreadsheet. I didn't wait for the automatic solution. I did the work so we could move forward.
+On October 31, I sent an update saying I'd imported the full 96-row production schedule and manually entered the contacts from his spreadsheet. I did the work so we could move forward.
 
 There's nothing inherently wrong with doing things manually for an early customer. You can learn a lot that way. But the distinction between helping someone adopt your product and becoming the person who operates it for them matters.
 

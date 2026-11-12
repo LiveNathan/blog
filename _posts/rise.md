@@ -24,6 +24,8 @@ With AV Sync, I kept trying to build a product by consensus. Business books say 
 
 I thought I was being diligent. I was also hoping that if I worked hard enough, the conversations would eventually tell me what to build.
 
+With Console Whisperer I tried to scratch my own itch and speed up mixing console setup. Five other people told me that they were building the same thing. 1 sale.
+
 With ShowBook, I tried something different: interview five people, pick a specific problem, and move forward. I had seen this work successfully at SquareWave, where we sometimes build a feature for one customer and then generalize it for others.
 
 The problem I picked was familiar from my years in live sound: getting the information out of all the conversations about a show and into the document people use to run it.
@@ -126,15 +128,15 @@ While I was building, my customer was experimenting too.
 
 He was using Claude to read emails, meeting transcripts, planning documents, and his production schedule. In our October 14 meeting, he showed me how he was comparing information across those sources, finding discrepancies, and preparing updates.
 
-It wasn't perfect. He still checked its work. Sometimes it misread things. But it worked inside the tools he already knew, and he could change what it did by asking.
+It wasn't perfect. He still checked its work. Sometimes it misread things. It required handholding because an LLM doesn't know what a production schedule is, much less its requirements for my customer. But it worked inside the tools he already knew, and he could change what it did by asking.
 
 If he wanted a new summary, a different way to organize the information, or another cross-check, he didn't need to wait for me to build a feature.
 
-That is a hell of a competitor.
+Instant gratification is a hell of a competitor. 
 
 My first instinct was to say this happened overnight. Looking back through our conversations, it wasn't quite overnight. The direction had been visible for a while. What changed was how much he could accomplish without waiting for ShowBook.
 
-We discussed a pivot: make ShowBook the structured source of truth and let Claude read and write to it. There were still reasons that might be useful. Reliable structure, change history, and traceable sources don't stop mattering because a chatbot can edit a spreadsheet.
+We discussed a pivot: make ShowBook the structured source of truth and let Claude read and write to it. There were still reasons that might be useful. Reliable structure, enforce business rules, change history, and traceable sources don't stop mattering because a chatbot can edit a spreadsheet.
 
 But those advantages would have to be valuable enough to justify moving his information, learning the system, and maintaining another tool.
 
@@ -186,6 +188,8 @@ I still care about reliability, source tracking, and making uncertainty visible.
 
 Five interviews was a useful boundary for discovery. I needed an equally clear one around building: what behavior am I trying to observe, by when, and what will I do if it doesn't happen? Dallas gave us a date. It didn't keep the definition of the test from changing.
 
+If I went back and did it again I would have pushed a lot harder on adoption. 3 months in and no one is using it should have been a big red flag.
+
 **Remember what I want from the work.**
 
 I want income, independence, useful work, and people who care about what we're making together. None of those are unreasonable things to want. But enjoying the collaboration isn't evidence that the business works, and ending the product doesn't make the collaboration worthless.
@@ -194,7 +198,7 @@ I want income, independence, useful work, and people who care about what we're m
 
 I don't know yet.
 
-I could revisit GainGuardian if better tools help with the technical obstacles. I could help businesses with AI and automation, since I've become pretty obsessive about both. I could also stop trying to turn every useful skill into another company for a while. I'd probably have more free time, and quite possibly more money.
+I could revisit GainGuardian if better tools help with the technical obstacles and I can develop a more clear path to market. I could help businesses with AI and automation, since I've become pretty obsessive about both. I could also stop trying to turn every useful skill into another company for a while. I'd probably have more free time and more money. Don't ask me how much $$ I paid for LLMs to work on building ShowBook. 
 
 Right now, I don't want to rush into a new idea just to avoid feeling disappointed about this one.
 

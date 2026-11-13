@@ -15,7 +15,7 @@ Instead, I'm writing about shutting it down.
 
 After the initial discovery and a March deposit, I spent six months building software to help live-event producers turn meeting transcripts, emails, and spreadsheets into a production schedule their crews could rely on. I had a paying customer, real documents to build against, regular meetings, and more feature ideas than I could possibly finish.
 
-Then my customer found a way to do much of the work with Claude and Google Sheets.
+Then my customer found a way to do most of the work with Claude and Google Sheets.
 
 The easy headline is "AI killed my startup." That's part of the story. But it leaves out the warning signs, why I thought purpose-built software would still win, and the part of the experience I actually wanted most.
 
@@ -51,7 +51,7 @@ It wasn't imaginary demand. But I would eventually learn how much distance there
 
 My customer did almost everything you would want an early customer to do.
 
-We met regularly. He shared real documents. He tested things. I would send an email with questions and often get a detailed response the next day. He explained not just what he wanted changed, but how the work happened and why a seemingly small detail mattered. He pushed me to make the product better.
+We met regularly. He shared real documents. He tested things. I would send an email with questions and often get a detailed response the next day. He explained not just what he wanted to be changed, but how the work happened and why a seemingly small detail mattered. He pushed me to make the product better.
 
 When I sent mockups, he studied them. When I needed to understand what a technician should see on a room handout, he showed me examples.
 
@@ -137,7 +137,7 @@ It wasn't perfect. He still checked its work. Sometimes it misread things. He ha
 
 If he wanted a new summary, a different way to organize the information, or another cross-check, he didn't need to wait for me to build a feature.
 
-Instant gratification is a hell of a competitor.
+Instant gratification is a helluva competitor.
 
 ## Why I still thought ShowBook could win
 
@@ -227,7 +227,7 @@ I want income, independence, useful work, and people who care about what we're m
 
 I don't know yet.
 
-I could revisit GainGuardian if better tools help with the technical obstacles and I can develop a clearer path to market. I could help businesses with AI and automation, since I've become pretty obsessive about both. I could also stop trying to turn every useful skill into another company for a while. I'd probably have more free time and more money. Don't ask me how much I paid for LLMs to build ShowBook.
+I could revisit GainGuardian if better tools help with the technical obstacles and I can develop a clearer path to market. I can help businesses with AI and automation, since I've become pretty obsessive about both. I can also stop trying to turn every useful skill into another company for a while. I'd probably have more free time and more money. Don't ask me how much I paid for LLMs to build ShowBook.
 
 Right now, I don't want to rush into a new idea just to avoid feeling disappointed about this one.
 

@@ -85,6 +85,10 @@ A schedule needed to be editable. Importing a spreadsheet couldn't silently lose
 
 None of these were nice-to-haves. They made the difference between a demo and something you could actually use at a show.
 
+![The ShowBook production schedule, with dates, times, activities, and technicians](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-01-production-schedule.jpg)
+
+*The production schedule, with dates, times, activities, and technicians, and the columns panel open. All data shown is fictional, from a fake NorthStar Clinical Summit 2027 showbook I built for these screenshots.*
+
 Even a basic question like "When is the event?" turned out not to be basic. Sometimes there was an event but no confirmed date. Sometimes there was a time, but it was tentative. A spreadsheet lets you turn a cell yellow, add a question mark, and keep going. Software that insists on a definite answer can make the job harder.
 
 I started to understand a production schedule differently. For much of its life, it isn't a record of facts. It's a record of what you know, what you think you know, and what you're still waiting to find out.
@@ -112,6 +116,10 @@ We had a concrete destination: a November event in Dallas.
 I planned to go, work alongside the crew, and see what happened when ShowBook met a real show. Not just another screen-sharing demo. Actual people needing actual information at the moment they needed it.
 
 We worked backward from that. The crew needed room briefs and show handouts before the event. Those weren't decorative reports; they were how people ran the rooms.
+
+![A room brief for Willow, Sponsor Office 1, Northgate Bio](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-03-room-brief-willow.png)
+
+*A room brief for Willow, Sponsor Office 1, Northgate Bio: technicians, room set, capacity, technical scope, and agenda.*
 
 The deadline became November 10, one week before the trip.
 
@@ -170,6 +178,10 @@ Built-in expertise could save him effort. It didn't automatically make that trad
 My first instinct was to say this happened overnight. Looking back through our conversations, it wasn't quite overnight. The direction had been visible for a while. What changed was how much my customer could accomplish without waiting for ShowBook.
 
 We discussed a pivot: make ShowBook the structured source of truth and let Claude read and write to it. There were still reasons that might be useful. Reliable structure, business rules, change history, and traceable sources don't stop mattering because a chatbot can edit a spreadsheet.
+
+![Field history for an activity name, showing a system-generated value and an edited value, each restorable](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-02-field-history.png)
+
+*Every field kept its full history. This activity name was first system generated, then edited by a user, and either value can be restored. That is what made unlimited undo possible: ShowBook was event sourced, so a change added to the history instead of overwriting what was there.*
 
 But those advantages would have to justify moving his information, learning the system, and maintaining another tool.
 
@@ -236,3 +248,63 @@ My first reaction was that I'd spent six months and had nothing to show for it. 
 I wish those things had come with a sustainable income. They didn't.
 
 The part I will miss most isn't closing issues or planning the next feature. It's sending someone a question about a problem we both cared about and knowing I'd get a thoughtful answer back.
+
+## ShowBook, in pictures
+
+ShowBook is shut down now, so these screenshots are the record of what it looked like to work in. All of them show the same fictional showbook, a made-up NorthStar Clinical Summit 2027, built from anonymized data so no real customer information appears anywhere.
+
+![Import results](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-04-import-results.jpg)
+
+*Importing the fictional schedule: 101 rows in, with field warnings showing exactly what ShowBook could not read as written.*
+
+![Editing a date in the schedule](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-05-schedule-date-picker.jpg)
+
+*Editing a date in the schedule grid.*
+
+![Field history on a schedule row](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-06-schedule-field-history.png)
+
+*The same history view on a schedule row: the system-generated name, then the edited name, each restorable.*
+
+![Assigning crew to an activity](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-07-activity-crew.png)
+
+*Assigning crew to an activity, with roles and a lead.*
+
+![Crew roles](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-08-crew-roles.png)
+
+*The twelve crew roles in this showbook, with row counts across every showbook in the account.*
+
+![The show handout, crew section](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-09-show-handout-crew.jpg)
+
+*The show handout: crew, roles, and contacts up top.*
+
+![The show handout, schedule section](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-10-show-handout-schedule.jpg)
+
+*The show handout's day-by-day schedule, Tuesday, March 9.*
+
+![The room timeline view](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-11-room-timeline.jpg)
+
+*The room timeline view: every room across the week, color-coded by production phase. Best viewed full size.*
+
+![The pre-meeting readiness report, dark mode](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-12-readiness-report.jpg)
+
+*The pre-meeting readiness report: missing essentials, flagged cells, and overlaps, in dark mode.*
+
+![The pre-meeting readiness report, light mode](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-13-readiness-report-light.jpg)
+
+*The same readiness report in light mode.*
+
+![The showbook workspace](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-14-workspace.jpg)
+
+*The showbook workspace: rooms, credentials, and links to every view.*
+
+![A system-generated value](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-15-system-generated-value.jpg)
+
+*A system-generated activity name, with its source and last-modified time shown.*
+
+![Flagging a field](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-16-flag-dialog.png)
+
+*Flagging a field for follow-up, with a reason.*
+
+![A flagged field](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-17-flagged-field.jpg)
+
+*A flagged field, with its reason, source, and a Resolve button.*

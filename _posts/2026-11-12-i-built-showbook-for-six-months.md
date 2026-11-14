@@ -281,6 +281,8 @@ ShowBook is shut down now, so these screenshots are the record of what it looked
 
 *The show handout's day-by-day schedule, Tuesday, March 9.*
 
+[Download the full 30-page show handout (PDF)](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/Show_Handout___NorthStar_Clinical_Summit_2027.pdf)
+
 ![The room timeline view](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-11-room-timeline.jpg)
 
 *The room timeline view: every room across the week, color-coded by production phase. Best viewed full size.*

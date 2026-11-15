@@ -321,6 +321,20 @@ Second, I would get more people using it, not just him. That is the biggest diff
 
 There is another path I keep coming back to, and I am not sure if it is the right one: integrate with Sheets better instead of replacing it. Let Sheets stay where it is, and have ShowBook add structure, history, and crew views on top of it. Replacing Sheets and integrating with it are almost opposite bets, and they would pull in different directions as a main strategy. But integrating first and replacing later might have been a way to get him, and then his team, into ShowBook sooner, instead of asking him to make the whole switch at once.
 
+### The same species of problem
+
+One more thing I have noticed since writing this post: the problem ShowBook was trying to solve is a bigger one, and a lot of people and companies are trying to solve it right now.
+
+Embabel calls it the semantic layer. Other people call it the context layer, or the contextual layer. The idea is the layer that sits between a chatbot and all of your business context. People are seeing how powerful LLM and chatbot assistant tools are, but those tools are also very ephemeral. They do not know everything you know, or everything about how you and your business and your company work. Every new conversation starts more or less from zero.
+
+Embabel came out with their own product for this, called Embabel Worlds, announced in October 2026. It tries to be that semantic layer, a layer above your business that understands it and exposes it to AI. You can read the announcement here: https://medium.com/@springrod/a-new-layer-for-a-new-client-introducing-embabel-worlds-616ccde93533
+
+That is kind of, or exactly, what ShowBook was trying to be for my customer and for production companies. A place where the facts of the business live, with their history and their sources, so a chatbot is answering from something real instead of improvising.
+
+I do not know if it is better to have a specific, purpose-built version of that, like ShowBook, or something more generic, like Embabel Worlds. You could use Embabel Worlds and essentially do the same thing we were doing with ShowBook. What you would not have is the same validation and business rules built in: a tentative time has to stay flagged, a blank cell cannot silently keep an old value live on a public Room Brief, a deleted row has to actually go away, a change to a client-facing output needs a stop and ask. That is domain knowledge, not just context, and it is the part I was trying to pre-teach, so my customer did not have to teach it himself.
+
+There is a funny full circle here, too. ShowBook was built on the Embabel agent framework. I was building a domain-specific version of this layer on top of a general agent framework, and now Embabel is shipping a general version of the layer itself.
+
 ## ShowBook, in pictures
 
 ShowBook is shut down now, so these screenshots are the record of what it looked like to work in. All of them show the same fictional showbook, a made-up NorthStar Clinical Summit 2027, built from anonymized data so no real customer information appears anywhere.

@@ -89,7 +89,7 @@ None of these were nice-to-haves. They made the difference between a demo and so
 
 *The production schedule, with dates, times, activities, and technicians, and the columns panel open. All data shown is fictional, from a fake NorthStar Clinical Summit 2027 showbook I built for these screenshots.*
 
-Even a basic question like "When is the event?" turned out not to be basic. Sometimes there was an event but no confirmed date. Sometimes there was a time, but it was tentative. A spreadsheet lets you turn a cell yellow, add a question mark, and keep going. Software that insists on a definite answer can make the job harder.
+Even a basic question like "When is the event?" turned out not to be basic. Sometimes there was an event but no confirmed date. Sometimes there was a time, but it was tentative. A spreadsheet lets you turn a cell yellow, add a question mark, and keep going. Software that insists on a definite answer can make the job harder. ShowBook tried to handle this with a tentative confirmation status and a flag with a reason on any field, and you can see that flagging in the screenshots below, but it was not perfect, and the rest of the loop around it never worked well enough for day-to-day use.
 
 I started to understand a production schedule differently. For much of its life, it isn't a record of facts. It's a record of what you know, what you think you know, and what you're still waiting to find out.
 
@@ -139,7 +139,7 @@ A founder-operated service might have been worth pursuing, but it wouldn't have 
 
 While I was building, my customer was experimenting too.
 
-He was using Claude to read emails, meeting transcripts, planning documents, and his production schedule. In our October 14 meeting, he showed me how he was comparing information across those sources, finding discrepancies, and preparing updates.
+He was using Claude to read emails, meeting transcripts, planning documents, and his production schedule. In our October 14 meeting, he showed me how he was comparing information across those sources, finding discrepancies, and preparing updates. By October, Claude could edit his live Google Sheet directly, and he was making edits by dictation, with no manual edits in the schedule since late September.
 
 It wasn't perfect. He still checked its work. Sometimes it misread things. He had to explain his workflow and what belonged in a production schedule. But it worked inside the tools he already knew, and he could change what it did by asking.
 
@@ -177,7 +177,7 @@ Built-in expertise could save him effort. It didn't automatically make that trad
 
 My first instinct was to say this happened overnight. Looking back through our conversations, it wasn't quite overnight. The direction had been visible for a while. What changed was how much my customer could accomplish without waiting for ShowBook.
 
-We discussed a pivot: make ShowBook the structured source of truth and let Claude read and write to it. There were still reasons that might be useful. Reliable structure, business rules, change history, and traceable sources don't stop mattering because a chatbot can edit a spreadsheet.
+We discussed a pivot: make ShowBook the structured source of truth and let Claude read and write to it. There were still reasons that might be useful. Reliable structure, business rules, change history, and traceable sources don't stop mattering because a chatbot can edit a spreadsheet. On October 8 he asked for a ShowBook connector that would let Claude read, edit, and track changes in the schedule the same way.
 
 ![Field history for an activity name, showing a system-generated value and an edited value, each restorable](https://raw.githubusercontent.com/LiveNathan/blog/main/assets/images/2026/showbook-02-field-history.png)
 
@@ -248,6 +248,68 @@ My first reaction was that I'd spent six months and had nothing to show for it. 
 I wish those things had come with a sustainable income. They didn't.
 
 The part I will miss most isn't closing issues or planning the next feature. It's sending someone a question about a problem we both cared about and knowing I'd get a thoughtful answer back.
+
+## Update, November 15, 2026: what the comments taught me
+
+I posted this on Indie Hackers on November 14, and by midday on November 15 it had 22 upvotes and 49 comments. I replied to them all, and the replies changed how I think about a few parts of this story. I am adding this update instead of rewriting the post, because I want the original to stay as a record of what I thought when I shut ShowBook down.
+
+Thank you to everyone who read it that closely, especially Chester13, Sarmed Shafi, Sumedh Kolte, Ilia Pomirchi, Sama, Alex Aramendi, lukaslabs, zig, maildoer, duranlautaro, danielserafimov, lameiras, Noah Salas, and Sara. The full thread is here: https://www.indiehackers.com/post/i-built-a-saas-for-six-months-my-paying-customer-found-another-way-with-claude-and-google-sheets-pgxVdxvdwnsIAoNDubhW
+
+### Tentative data was not a blind spot. The loop around it was.
+
+In the post above I wrote that a spreadsheet lets you turn a cell yellow, add a question mark, and keep going, while software that insists on a definite answer can make the job harder. That is true about software in general, and it is a problem we talked about from the very beginning, since we first discussed software a couple of years ago.
+
+I should have said more clearly that ShowBook was built for it. Every activity had start and end times and dates, with a confirmation status you could set to tentative, with a reason, for the whole activity. You could flag any field with a reason, and that flag showed in the production schedule, in every input form, and in the pre-meeting readiness report. The classic case was a client who calls about a show next summer with no dates yet, and most software has no way to enter a range of tentative dates. We knew that, and we tried to handle it. You can see the flagging in the screenshots below, "Flagging a field" and "A flagged field."
+
+It was not perfect, and a yellow cell is still simpler in a lot of cases. But the gap was not that I had missed uncertainty. The gap was the rest of the loop around it: import, editing, and re-import, working well enough that he could live in that tentative state day to day instead of in Sheets.
+
+### He did name what he needed. I missed the part he never quite named.
+
+Early on, what he needed did move. In July it was setup and strike rows for each show. In August it was a readiness report for what was missing. In September it was handouts that could get paper into a tech's hands a week or two before Dallas.
+
+It got clear on August 31, when he sent a Dallas list, and on September 3 he gave me the test in plain words: if he could sit down and work in it for a day without reaching for Google Sheets, we were good to go.
+
+What neither of us quite named was that he was still doing all his edits in Google Sheets. So the real test was not just import. It was import, plus editing in ShowBook that was at least as fast as Sheets, plus re-import that was upload and done. On November 1 he spelled that test out: no review step, no list to check, nothing to fix by hand first. Changing a match field created a duplicate, a blank cell kept the old value live on the public Room Brief, and deleted rows stayed until removed by hand. Until that worked, he had a good reason to stay in Sheets.
+
+Trust, for him, was also provenance. On October 12 he said what he trusted was every change carrying where it came from, its history, and an undo option, more than the approval click itself. He approved on Claude's side before anything wrote to ShowBook, and wanted stop-and-ask for source disagreement, verified or locked items, and anything flowing into a client-facing output.
+
+### Sheets never failed him. That matters.
+
+Several commenters asked the question I should have asked myself more directly: was there a specific moment where Sheets hurt him, version confusion, a missed change, formatting time, or did it genuinely cover the whole job?
+
+I went back through my emails and meeting notes before replying, and I do not have a failure story to give you. There is no version confusion incident or missed change I can point to. The closest is a stale case from October 14: a planner sent an email referencing a space allocation from May, not July, and he had to catch that it was old. Claude was already auditing his planning book, tracker, and production schedule to make sure they were all in sync.
+
+So the honest answer is that Sheets plus Claude covered the job well enough, for one person, on one event at a time. The pain was effort, not failure. Building handouts by hand was hours per show, and that is where things get missed. Keeping everything current across 50 meeting transcripts and email chains took a lot of time and energy to keep at a high quality.
+
+That changes the lesson. I was not fixing a crash. I was trying to remove effort, and I had to make the whole trade worthwhile enough to justify learning a new tool, moving his information, and maintaining another system. I did not.
+
+### The change that made Claude win was specific, and recent.
+
+On October 14 he told me the Google Sheets connector that let Claude edit his live sheet directly had launched about two weeks earlier, and once that launched, it changed the game. Before that Claude had to generate a sheet, it could not work in the sheet, and controlling Chrome was slow.
+
+After that, he could dictate an edit, approve it on Claude's side, and have it land in the live schedule. By October he was making every edit through Claude by dictation, with no manual edits in the schedule since late September. He still checked the work. He spot checked five or six lines and then approved if he trusted the source, checked more if a source was notoriously wrong, and told Claude to double check its work and re-audit what it had just done. On September 18 he said the material was about 80 percent accurate, with gear and IO lists not yet carefully checked.
+
+That is why the comparison changed while I was building. I started competing with hours of manual synthesis and formatting. By the end I was competing with a person using Claude in a familiar spreadsheet, in a tool he already trusted for the day-to-day work.
+
+The homemade version was not free, either. That is a fair correction from Noah Salas, and I should have named it in the post. Reading up to 50 transcripts plus email chains for an event, and cross-checking them against the schedule, is a lot of AI work. If that runs on a flat monthly plan, the cost is invisible, so the homemade version looks free next to a subscription. If show week pushes it past the plan's usage limits, it either stops or starts billing by usage. He was on a Claude Max subscription, and I did not ask him to compare that cost to ShowBook's price. I should have.
+
+### The crew side is still unsolved, for Claude plus Sheets too.
+
+No one besides him had used ShowBook. Crew use was planned for Dallas, with read-only crew links and a handful of fields a tech could update on site. I know most of his team, I have worked events with them as a technician in previous years, including the Dallas event, so this was not a case of me never meeting them. The missed step was narrower: I never sat down with his teammate about ShowBook specifically, or asked him to try it on one of his own events.
+
+He is aware of that part now, too. In our last conversation he told me he is happy with his workflow, and now he is trying to figure out how to deploy and share it with everyone else in his company so they can all use it as well.
+
+That is the part where other people touch the work, and it is still unsolved. A spreadsheet plus Claude can copy almost any workflow that lives inside one person's head and one file. What it does not replace well is a whole team relying on the same schedule, with permissions and history. If I ever revisit this space, that is the buyer I would talk to first, not the owner of the spreadsheet, but the second and third people who need the same data at the same time.
+
+On October 8 he had asked for a ShowBook connector that would let Claude read, edit, and track changes in the schedule the same way Claude was already editing his live sheet. That direction, do not compete with Claude, let Claude do the work inside the tool, is closer to what he wanted than the product I built.
+
+### The adoption test I should have run
+
+If I did it again, I would define the first adoption milestone the way several commenters put it: one real job the customer completes without me operating the tool, with his familiar spreadsheet allowed to stay in place.
+
+His version of that test, on September 3, was if he could sit down and work in it for a day without reaching for Google Sheets. I did not run that test early enough, and I kept building the prerequisites first. Three months in without anyone using the product for their actual work should have been a big red flag, and I wrote that in the post above. The comments made it sharper: the test is not a deposit, a useful conversation, or a list of feature ideas. It is one real job, completed without the founder in the room.
+
+I still do not know what is next. I do know I want the next experiment to have that test in front of it from the start.
 
 ## ShowBook, in pictures
 

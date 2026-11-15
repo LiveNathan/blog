@@ -311,6 +311,16 @@ His version of that test, on September 3, was if he could sit down and work in i
 
 I still do not know what is next. I do know I want the next experiment to have that test in front of it from the start.
 
+### If I did it over again
+
+Writing this post and reading the comments has left me with two things I would do differently.
+
+First, I would try to replace Google Sheets as quickly as possible. As long as Sheets stayed the source of truth, every import was already going stale, and ShowBook could only ever be a viewer. That is really what his September 3 test was asking for: a day of work without reaching for Sheets.
+
+Second, I would get more people using it, not just him. That is the biggest difference between my customer using Claude by himself and an app like ShowBook. Claude is a great tool for one person. ShowBook was meant for collaboration, and it only earns its keep when a second and third person are in it, seeing the same schedule, contributing to it, and relying on the same history.
+
+There is another path I keep coming back to, and I am not sure if it is the right one: integrate with Sheets better instead of replacing it. Let Sheets stay where it is, and have ShowBook add structure, history, and crew views on top of it. Replacing Sheets and integrating with it are almost opposite bets, and they would pull in different directions as a main strategy. But integrating first and replacing later might have been a way to get him, and then his team, into ShowBook sooner, instead of asking him to make the whole switch at once.
+
 ## ShowBook, in pictures
 
 ShowBook is shut down now, so these screenshots are the record of what it looked like to work in. All of them show the same fictional showbook, a made-up NorthStar Clinical Summit 2027, built from anonymized data so no real customer information appears anywhere.

@@ -253,19 +253,19 @@ The part I will miss most isn't closing issues or planning the next feature. It'
 
 I posted this on Indie Hackers on November 14, and by midday on November 15 it had 22 upvotes and 49 comments. I replied to them all, and the replies changed how I think about a few parts of this story. I am adding this update instead of rewriting the post, because I want the original to stay as a record of what I thought when I shut ShowBook down.
 
-Thank you to everyone who read it that closely, especially Chester13, Sarmed Shafi, Sumedh Kolte, Ilia Pomirchi, Sama, Alex Aramendi, lukaslabs, zig, maildoer, duranlautaro, danielserafimov, lameiras, Noah Salas, and Sara. The full thread is here: https://www.indiehackers.com/post/i-built-a-saas-for-six-months-my-paying-customer-found-another-way-with-claude-and-google-sheets-pgxVdxvdwnsIAoNDubhW
+Thank you to everyone who read it that closely, especially Chester13, Sarmed Shafi, Sumedh Kolte, Ilia Pomirchi, Sama, Alex Aramendi, lukaslabs, zig, maildoer, duranlautaro, danielserafimov, lameiras, Noah Salas, and Sara. [The full thread is here.](https://www.indiehackers.com/post/i-built-a-saas-for-six-months-my-paying-customer-found-another-way-with-claude-and-google-sheets-pgxVdxvdwnsIAoNDubhW)
 
 ### Tentative data was not a blind spot. The loop around it was.
 
-In the post above I wrote that a spreadsheet lets you turn a cell yellow, add a question mark, and keep going, while software that insists on a definite answer can make the job harder. That is true about software in general, and it is a problem we talked about from the very beginning, since we first discussed software a couple of years ago.
+In the post above I wrote that a spreadsheet lets you turn a cell yellow, add a question mark, and keep going, while software that insists on a definite answer can make the job harder. That is true about software in general, and it is a problem that my customer and I talked about from the very beginning, since we first discussed software a couple of years ago.
 
 I should have said more clearly that ShowBook was built for it. Every activity had start and end times and dates, with a confirmation status you could set to tentative, with a reason, for the whole activity. You could flag any field with a reason, and that flag showed in the production schedule, in every input form, and in the pre-meeting readiness report. The classic case was a client who calls about a show next summer with no dates yet, and most software has no way to enter a range of tentative dates. We knew that, and we tried to handle it. You can see the flagging in the screenshots below, "Flagging a field" and "A flagged field."
 
-It was not perfect, and a yellow cell is still simpler in a lot of cases. But the gap was not that I had missed uncertainty. The gap was the rest of the loop around it: import, editing, and re-import, working well enough that he could live in that tentative state day to day instead of in Sheets.
+It was not perfect, and a yellow cell is still simpler in a lot of cases. But the gap was not that I had missed uncertainty. The gap was the rest of the surrounding loop: import, editing, and re-import, working well enough that he could live in that tentative state day to day instead of in Sheets.
 
 ### He did name what he needed. I missed the part he never quite named.
 
-Early on, what he needed did move. In July it was setup and strike rows for each show. In August it was a readiness report for what was missing. In September it was handouts that could get paper into a tech's hands a week or two before Dallas.
+Early on, what he needed did move. In July, it was setup and strike rows for each show. In August, it was a readiness report for what was missing. In September, it was handouts that could get paper into a tech's hands a week or two before Dallas.
 
 It got clear on August 31, when he sent a Dallas list, and on September 3 he gave me the test in plain words: if he could sit down and work in it for a day without reaching for Google Sheets, we were good to go.
 
@@ -287,7 +287,7 @@ That changes the lesson. I was not fixing a crash. I was trying to remove effort
 
 On October 14 he told me the Google Sheets connector that let Claude edit his live sheet directly had launched about two weeks earlier, and once that launched, it changed the game. Before that Claude had to generate a sheet, it could not work in the sheet, and controlling Chrome was slow.
 
-After that, he could dictate an edit, approve it on Claude's side, and have it land in the live schedule. By October he was making every edit through Claude by dictation, with no manual edits in the schedule since late September. He still checked the work. He spot checked five or six lines and then approved if he trusted the source, checked more if a source was notoriously wrong, and told Claude to double check its work and re-audit what it had just done. On September 18 he said the material was about 80 percent accurate, with gear and IO lists not yet carefully checked.
+After that, he could dictate an edit, approve it on Claude's side, and have it land in the live schedule. By October, he was making every edit through Claude by dictation, with no manual edits in the schedule since late September. He still checked the work. He spot checked five or six lines and then approved if he trusted the source, checked more if a source was notoriously wrong, and told Claude to double-check its work and re-audit what it had just done. On September 18 he said the material was about 80 percent accurate, with gear and IO lists not yet carefully checked.
 
 That is why the comparison changed while I was building. I started competing with hours of manual synthesis and formatting. By the end I was competing with a person using Claude in a familiar spreadsheet, in a tool he already trusted for the day-to-day work.
 
@@ -327,7 +327,7 @@ One more thing I have noticed since writing this post: the problem ShowBook was 
 
 Embabel calls it the semantic layer. Other people call it the context layer, or the contextual layer. The idea is the layer that sits between a chatbot and all of your business context. People are seeing how powerful LLM and chatbot assistant tools are, but those tools are also very ephemeral. They do not know everything you know, or everything about how you and your business and your company work. Every new conversation starts more or less from zero.
 
-Embabel came out with their own product for this, called Embabel Worlds, announced in October 2026. It tries to be that semantic layer, a layer above your business that understands it and exposes it to AI. You can read the announcement here: https://medium.com/@springrod/a-new-layer-for-a-new-client-introducing-embabel-worlds-616ccde93533
+Embabel came out with their own product for this, called Embabel Worlds, [announced in October 2026](https://medium.com/@springrod/a-new-layer-for-a-new-client-introducing-embabel-worlds-616ccde93533). It tries to be that semantic layer, a layer above your business that understands it and exposes it to AI.
 
 That is kind of, or exactly, what ShowBook was trying to be for my customer and for production companies. A place where the facts of the business live, with their history and their sources, so a chatbot is answering from something real instead of improvising.
 
